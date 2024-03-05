@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Добавление схемы</title>
+
+    <!--    <link th:rel="stylesheet" th:href="@{/assets/dropzonejs/dropzone.css}"/>-->
+    <!--    <script th:src="@{/assets/dropzonejs/dropzone.js}"></script>-->
+    <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/min/dropzone.min.js"></script>-->
+
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">Страничка управления схемами</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="elements">Elements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mt-5">
+
+            <!--            <div th:if="${message}">-->
+            <!--                <h2 th:text="${message}"/>-->
+            <!--            </div>-->
+
+
+            <div th:if="${message}" class="alert-success" th:text="${message}" style="display: none;"></div>
+            <script th:if="${message} == '201 CREATED'">toastr.success('Cхема добавлена');</script>
+            <script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: данные уже существуют');</script>
+            <script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка отправки');</script>
+
+            <form th:action="@{/upload/mix}" th:object="${description}" method="post" style="width: 500px"
+                  id="uploadForm" enctype="multipart/form-data">
+                <h4>Добавить схему для сборки</h4>
+                <label for="moduleName">Имя элемента</label>
+                <input list="naming-options" id="moduleName" name="moduleName"/>
+                <datalist id="naming-options">
+                    <option value="">--Please choose an option--</option>
+                    <th:block th:each="element: ${elements}">
+                        <option th:value="${element}" th:text="${element}"></option>
+                    </th:block>
+                </datalist>
+                <br/>
+
+                <label for="modification">Исполнение</label>
+                <input type="text" id="modification" name="modification"/>
+                <br/>
+
+                <label for="versionAssembly">Версия схемы</label>
+                <input type="text" id="versionAssembly" name="versionAssembly"/>
+                <br/>
+
+                <label for="contractNumber">Для какого договора</label>
+                <input type="text" id="contractNumber" name="contractNumber"/>
+
+                <input id="hidden-file-content" type="file" name="fileContent"/>
+
+                <button type="submit" class="btn btn-dark float-lg-right">Добавить</button>
+
+            </form>
+
+            <script>
+
+
+                document.getElementById("uploadForm").addEventListener("submit", function (event) {
+                    var moduleName = document.getElementById("moduleName").value;
+                    var modification = document.getElementById("modification").value;
+                    var versionAssembly = document.getElementById("versionAssembly").value;
+                    var contractNumber = document.getElementById("contractNumber").value;
+                    // var fileInput = document.getElementById("demo-upload").querySelector("input[type='file']");
+                    var fileInput = document.getElementById('hidden-file-content');
+
+                    var moduleNameInput = document.getElementById('moduleName');
+                    var selectedValue = moduleNameInput.value;
+
+                    // Проверяем, заполнены ли все поля
+                    if (!moduleName.trim() || !modification.trim() || !versionAssembly.trim() || !contractNumber.trim() || selectedValue.trim() === '') {
+                        toastr.warning('заполните все поля');
+                        event.preventDefault(); // Отменяем отправку формы
+                        return;
+                    }
+
+                    // Проверяем, выбран ли файл для загрузки
+                    if (fileInput.files.length === 0) {
+                        alert("Выберите файл для загрузки");
+                        event.preventDefault(); // Отменяем отправку формы
+                        return;
+                    }
+
+                    // Проверяем, выбран ли файл для загрузки
+                    // if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    //     alert("Выберите файл для загрузки");
+                    //     event.preventDefault(); // Отменяем отправку формы
+                    //     return;
+                    // }
+                    // var file= document.getElementById("hidden-file-input").value;
+                    //
+                    // // // Создаем объект FormData и добавляем в него файл и другие данные из формы
+                    // var formData = new FormData();
+                    // formData.append(document.getElementById("hidden-file-input").value);
+                    // formData.append(document.getElementById("description").value);
+                    // formData.append(document.getElementById("contractNumber").value);
+                    //
+                    // // Отправляем FormData на сервер
+                    // var xhr = new XMLHttpRequest();
+                    // xhr.open("POST", "/upload/mix", true); // Укажите URL вашего endpoint'а для загрузки
+                    // xhr.onload = function() {
+                    //     if (xhr.status == 200) {
+                    //         alert("Файл успешно загружен");
+                    //         toastr.success('File ' + file.name + ' uploaded successfully');
+                    //     } else {
+                    //         alert("Произошла ошибка при загрузке файла");
+                    //         toastr.warning('File ' + file.name + ' не загрузился');
+                    //     }
+                    // };
+                    // xhr.send(formData);
+
+                });
+
+            </script>
+
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    Dropzone.autoDiscover = false;
+
+    // $("#uploadForm").dropzone({
+    $("#demo-upload").dropzone({
+        maxFiles: 1,
+        minFiles: 1,
+        init: function () {
+            var dropzoneInstance = this; // сохраняем ссылку на экземпляр Dropzone
+            this.on("addedfile", function (file) {
+                if (dropzoneInstance.files.length > dropzoneInstance.options.maxFiles) {
+                    dropzoneInstance.removeFile(dropzoneInstance.files[0]);
+                }
+
+                console.log(file);
+                // Читаем содержимое файла и сохраняем его в скрытом поле
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    document.getElementById("hidden-file-content").value = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+        },
+        success: function (file, response) {
+            toastr.success('File ' + file.name + ' uploaded successfully');
+        }
+    });
+
+</script>
+
+
+</body>
+</html>

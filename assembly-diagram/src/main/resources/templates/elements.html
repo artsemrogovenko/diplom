@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Схемы модулей</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="elements">Страничка просмотра имеющихся схем</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="info">
+    <h4>Модулей: <span th:text="${#lists.size(elements)}"></span></h4>
+
+    <div class="box-info">
+
+<!--        <div>-->
+<!--            <form class="prevButton" method="get">-->
+<!--                <button type="submit">Prev</button>-->
+<!--            </form>-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <form class="nextButton" method="get">-->
+<!--                <button type="submit">Next</button>-->
+<!--            </form>-->
+<!--        </div>-->
+
+    </div>
+
+
+</div>
+
+<div class="container-elements">
+    <div class="cards-container" th:each="element: ${elements}">
+
+        <div class="character-card">
+
+            <h3 align="center" th:text="${element}"></h3>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+</body>
+</html>
