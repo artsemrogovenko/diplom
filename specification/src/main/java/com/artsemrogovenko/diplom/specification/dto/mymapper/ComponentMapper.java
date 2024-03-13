@@ -12,25 +12,35 @@ public class ComponentMapper {
     public static <T extends ComponentData> Component mapToComponent(T componentData) {
         Component component = new Component();
 
-        component.setFactoryNumber(componentData.getFactoryNumber());
-        component.setModel(componentData.getModel());
-        component.setName(componentData.getName());
-        component.setQuantity(componentData.getQuantity());
-        component.setUnit(componentData.getUnit());
-        component.setDescription(componentData.getDescription());
+        if (componentData.getFactoryNumber() != null) {
+            component.setFactoryNumber(componentData.getFactoryNumber().trim());
+        }
+        if (componentData.getModel() != null) {
+            component.setModel(componentData.getModel().trim());
+        }
+        if (componentData.getName() != null) {
+            component.setName(componentData.getName().trim());
+        }
+        if (componentData.getQuantity() != null) {
+            component.setQuantity(componentData.getQuantity());
+        }
+        component.setUnit(componentData.getUnit().trim());
+        if (componentData.getDescription() != null) {
+            component.setDescription(componentData.getDescription().trim());
+        }
 
         // Копирование модулей
         Set<Module> modules = new HashSet<>();
 
-        if (componentData instanceof ComponentRequest) {
-            ComponentRequest moduleRequest = (ComponentRequest) componentData;
-            if (moduleRequest.getModuleRequests() != null ) {
-                for (ModuleRequest moduleReq : moduleRequest.getModuleRequests()) {
-                    modules.add(getModules(moduleReq));
-                }
-            }
-        }
-        if (componentData instanceof ModuleResponse) {
+//        if (componentData instanceof ComponentRequest) {
+//            ComponentRequest moduleRequest = (ComponentRequest) componentData;
+//            if (moduleRequest.getModuleRequests() != null ) {
+//                for (ModuleRequest moduleReq : moduleRequest.getModuleRequests()) {
+//                    modules.add(getModules(moduleReq));
+//                }
+//            }
+//        }
+        if (componentData instanceof ComponentResponse) {
             ComponentResponse moduleResponse = (ComponentResponse) componentData;
             component.setId(moduleResponse.getId());
             if (moduleResponse.getModuleResponses() != null) {
@@ -46,23 +56,21 @@ public class ComponentMapper {
 
     private static <T extends ModuleData> Module getModules(T moduleData) {
         Module module = new Module();
-        module.setFactoryNumber(moduleData.getFactoryNumber());
-        module.setModel(moduleData.getModel());
-        module.setName(moduleData.getName());
+        module.setFactoryNumber(moduleData.getFactoryNumber().trim());
+        module.setModel(moduleData.getModel().trim());
+        module.setName(moduleData.getName().trim());
         module.setQuantity(moduleData.getQuantity());
-        module.setUnit(moduleData.getUnit());
-        module.setDescription(moduleData.getDescription());
+        module.setUnit(moduleData.getUnit().trim());
+        module.setDescription(moduleData.getDescription().trim());
         // Копирование компонентов
         Set<Component> components = new HashSet<>();
-
-        if (moduleData instanceof ModuleRequest) {
-            ModuleRequest moduleRequest = (ModuleRequest) moduleData;
-            for (ComponentRequest componentRequest : moduleRequest.getComponentRequests()) {
-                Component component = mapToComponent(componentRequest);
-                components.add(component);
-            }
-        }
-
+//        if (moduleData instanceof ModuleRequest) {
+//            ModuleRequest moduleRequest = (ModuleRequest) moduleData;
+//            for (ComponentRequest componentRequest : moduleRequest.getComponentRequests()) {
+//                Component component = mapToComponent(componentRequest);
+//                components.add(component);
+//            }
+//        }
         if (moduleData instanceof ModuleResponse) {
             ModuleResponse moduleResponse = (ModuleResponse) moduleData;
             module.setId(moduleResponse.getId());

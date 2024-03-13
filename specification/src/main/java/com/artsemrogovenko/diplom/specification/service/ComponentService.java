@@ -1,11 +1,15 @@
 package com.artsemrogovenko.diplom.specification.service;
 
+import com.artsemrogovenko.diplom.specification.dto.ComponentRequest;
+import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.specification.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.specification.model.Component;
 import com.artsemrogovenko.diplom.specification.repositories.ComponentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Service
@@ -14,39 +18,70 @@ public class ComponentService {
 
     private final ComponentRepository componentRepository;
 
-    public List<Component> getAllComponents() {
-        return componentRepository.findAll();
+    public List<ComponentResponse> getAllComponents() {
+        return componentRepository.findAll().stream().map(ComponentMapper::mapToComponentResponse).toList();
     }
 
-    public Component getComponentById(Long id) {
-        return componentRepository.findById(id).orElseThrow(null);
+    public ComponentResponse getComponentById(Long id) {
+        return ComponentMapper.mapToComponentResponse(componentRepository.findById(id).get());
     }
 
-    public Component updateComponent(Component component) {
-        Component componentById = getComponentById(component.getId());
+    public ComponentResponse updateComponent(ComponentResponse componentResponse) {
+        Component componentById = componentRepository.findById(componentResponse.getId()).get();
 
-        componentById.setFactoryNumber(component.getFactoryNumber());
-        componentById.setName(component.getName());
-        componentById.setModules(component.getModules());
-        componentById.setQuantity(component.getQuantity());
-        componentById.setUnit(component.getUnit());
-        componentById.setDescription(component.getDescription());
-        componentById.setModel(component.getModel());
+        componentById = ComponentMapper.mapToComponent(componentResponse);
 
-        return componentRepository.save(componentById);
+//        componentById.setFactoryNumber(componentResponse.getFactoryNumber());
+//        componentById.setName(componentResponse.getName());
+//        componentById.setModules(componentResponse.getModuleResponses().stream().  map(moduleResponse -> ComponentMapper.mapToComponent(moduleResponse)).toList());
+//        componentById.setQuantity(componentResponse.getQuantity());
+//        componentById.setUnit(componentResponse.getUnit());
+//        componentById.setDescription(componentResponse.getDescription());
+//        componentById.setModel(componentResponse.getModel());
+
+//                componentRepository.save(componentById);
+        return ComponentMapper.mapToComponentResponse(componentRepository.save(componentById));
     }
 
-    public Component createComponent(Component component) {
-        return componentRepository.save(component);
+    public ComponentResponse createComponent(ComponentRequest componentRequest) {
+        if (!componentRequest.fieldsIsNull()) {
+            Component temp = ComponentMapper.mapToComponent(componentRequest);
+            if (!componentRepository.equals(temp)) {
+                return ComponentMapper.mapToComponentResponse(componentRepository.save(temp));
+            }
+        }
+        return new ComponentResponse();
     }
 
     public void deleteComponent(Long id) {
-        Component componentById = getComponentById(id);
-        componentRepository.delete(componentById);
+//        Component componentById = getComponentById(id);
+        componentRepository.deleteById(id);
     }
 
-    public void saveAll(Set<Component> components) {
-        if(!components.isEmpty())
-        componentRepository.saveAll(components);
+    public List<Component> saveAll(Set<Component> components) {
+        if (components != null && !components.isEmpty()) {
+            List<Component> nonDuplicates = components.stream()
+                    .filter(component -> !component.fieldsIsNull())
+                    .filter(component -> notExist(component)).toList();
+            nonDuplicates.size();
+            // Сохранить все отфильтрованные компоненты
+            return componentRepository.saveAll(nonDuplicates);
+        }
+        return null;
+    }
+
+    public boolean notExist(Component component) {
+        String factoryNumber = component.getFactoryNumber();
+        String model = component.getModel();
+        String name = component.getName();
+//        String unit = component.getUnit();
+        String description = component.getDescription();
+        try {
+            Component existingComponent = componentRepository.findByFactoryNumberAndModelAndNameAndDescription(factoryNumber, model, name, description).get();
+        } catch (NoSuchElementException e) {
+            System.out.println("no element");
+            return true;
+        }
+        return false;
     }
 }

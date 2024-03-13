@@ -1,11 +1,7 @@
 package com.artsemrogovenko.diplom.storage;
 
 import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
-import com.artsemrogovenko.diplom.storage.dto.mymapper.ComponentMapper;
-import com.artsemrogovenko.diplom.storage.model.Component;
-import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
 import com.artsemrogovenko.diplom.storage.service.ComponentService;
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

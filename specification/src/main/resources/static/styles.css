@@ -1,0 +1,25 @@
+.add_circut {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.createmodule_button {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+/* Пример стилей для блоков */
+fields_module {
+    width: 100px;
+    height: 50px;
+    background-color: lightblue;
+    color: white;
+    text-align: center;
+    line-height: 50px;
+    font-family: Arial, sans-serif;
+}
+
+.add-btn {
+    margin-bottom: 10px;
+}

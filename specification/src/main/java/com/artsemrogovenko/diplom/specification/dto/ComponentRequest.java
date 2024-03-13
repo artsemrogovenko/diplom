@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,9 +13,15 @@ public class ComponentRequest implements ComponentData {
     private String factoryNumber;       // заводской номер
     private String model;       // модификация
     private String name;     // имя
-    private int quantity;    // какое количество компонента в модуле
+    private Integer quantity;    // какое количество компонента в модуле
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
-    private Set<ModuleRequest> moduleRequests = new HashSet<>();
+
+    @Override
+    public boolean fieldsIsNull() {
+        return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null;
+    }
+
+//    private Set<ModuleRequest> moduleRequests = new HashSet<>();
 
 }

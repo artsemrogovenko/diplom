@@ -1,0 +1,287 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Создание модуля</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <div class="container">
+        <a class="navbar-brand" href="/">Страничка создания спецификаций</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="elements">Elements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mt-5">
+
+            <!--            <div th:if="${message}">-->
+            <!--                <h2 th:text="${message}"/>-->
+            <!--            </div>-->
+
+            <div th:if="${message}" class="alert-success" th:text="${message}" style="display: none;"></div>
+            <script th:if="${message} == '201 CREATED'">toastr.success('Модуль создан');</script>
+            <script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: модуль уже существует');</script>
+            <script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Неверные параметры');</script>
+
+            <!--            th:object="${newModule}"-->
+            <form th:action="@{/createModule}" th:object="${newModule}" method="post" style="width: 500px"
+                  onsubmit="return validateInputs()">
+
+                <h4>Создать спецификацию для Модуля</h4>
+                <div class="fields_newModule">
+                    <label for="request_name">Имя</label>
+                    <input type="text" id="request_name" th:field="${newModule.name}"/>
+                    <br/>
+
+                    <label for="request_model">Модификация</label>
+                    <input type="text" id="request_model" th:field="${newModule.model}"/>
+                    <br/>
+
+
+                    <label for="request_unit">Единица измерения</label>
+                    <select id="request_unit" th:field="${newModule.unit}">
+                        <option value="шт">ШТ</option>
+                        <option value="м">M</option>
+                    </select>
+                    <br/>
+
+                    <label for="request_description">Описание</label>
+                    <input type="text" id="request_description" th:field="${newModule.description}"/>
+                    <br/>
+
+                    <input hidden="hidden" id="componentRequestsInput" th:value="${newModule.componentRequests}"/>
+                </div>
+
+                <div class="add_circut"><input type="text" id="request_circutFile" th:field="${newModule.circutFile}"
+                                               placeholder="ссылка на схему"/></div>
+                <div class="createnewModule_button">
+                    <button type="submit">Создать элемент</button>
+                </div>
+
+
+                <table id="component_table" class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th colspan="2">
+                            <h3>Компоненты</h3>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>код изготовителя</th>
+                        <th>модификация</th>
+                        <th>название</th>
+                        <th>количество</th>
+                        <th></th>
+                        <th>описание</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="componentRows">
+
+                    </tbody>
+                </table>
+            </form>
+
+            <button class="add-btn" onclick="addRow()">Добавить компонент</button>
+            <hr>
+
+
+            <script th:inline="javascript">
+                var rowCounter = 0;
+
+                function addRow() {
+                    var table = document.getElementById("component_table").getElementsByTagName('tbody')[0];
+                    var newRow = table.insertRow();
+
+                    // Инкрементируем itemStat.index
+                    rowCounter = document.querySelectorAll('#componentRows tr').length - 1;
+
+                    // Создаем новые ячейки и добавляем поля ввода
+                    var cell1 = newRow.insertCell(0);
+                    var cell2 = newRow.insertCell(1);
+                    var cell3 = newRow.insertCell(2);
+                    var cell4 = newRow.insertCell(3);
+                    var cell5 = newRow.insertCell(4);
+                    var cell6 = newRow.insertCell(5);
+                    var cell7 = newRow.insertCell(6);
+                    cell7.innerHTML = "<button onclick='deleteRow(this)'>Убрать</button>";
+
+                    var input1 = document.createElement('input');
+                    input1.setAttribute('id', 'componentRequests' + rowCounter + '.factoryNumber');
+                    input1.setAttribute('name', 'componentRequests[' + rowCounter + '].factoryNumber');
+                    input1.setAttribute('type', 'text');
+                    cell1.appendChild(input1);
+
+                    var input2 = document.createElement('input');
+                    input2.setAttribute('id', 'componentRequests' + rowCounter + '.model');
+                    input2.setAttribute('name', 'componentRequests[' + rowCounter + '].model');
+                    input2.setAttribute('type', 'text');
+                    cell2.appendChild(input2);
+
+                    var input3 = document.createElement('input');
+                    input3.setAttribute('id', 'componentRequests' + rowCounter + '.name');
+                    input3.setAttribute('name', 'componentRequests[' + rowCounter + '].name');
+                    input3.setAttribute('type', 'text');
+                    cell3.appendChild(input3);
+
+                    var input4 = document.createElement('input');
+                    input4.setAttribute('id', 'componentRequests' + rowCounter + '.quantity');
+                    input4.setAttribute('name', 'componentRequests[' + rowCounter + '].quantity');
+                    input4.setAttribute('type', 'number');
+                    input4.setAttribute('min', '1');
+                    input4.setAttribute('required', '');
+                    input4.setAttribute('value', '1');
+                    input4.addEventListener('change', function () {
+                        validateQuantity(this.value, this.id);
+                        // checkNumberInput(this.value,'количество');
+                    });
+                    cell4.appendChild(input4);
+
+                    var input5 = document.createElement('select');
+                    input5.setAttribute('id', 'componentRequests' + rowCounter + '.unit');
+                    input5.setAttribute('name', 'componentRequests[' + rowCounter + '].unit');
+                    input5.setAttribute('type', 'text');
+                    cell5.appendChild(input5);
+
+                    var input6 = document.createElement('input');
+                    input6.setAttribute('id', 'componentRequests' + rowCounter + '.description');
+                    input6.setAttribute('name', 'componentRequests[' + rowCounter + '].description');
+                    input6.setAttribute('type', 'text');
+                    cell6.appendChild(input6);
+
+                    var option1 = document.createElement('option');
+                    option1.setAttribute('value', 'шт');
+                    option1.text = 'ШТ';
+                    input5.appendChild(option1);
+
+                    var option2 = document.createElement('option');
+                    option2.setAttribute('value', 'м');
+                    option2.text = 'M';
+                    input5.appendChild(option2);
+
+                    var option3 = document.createElement('option');
+                    option3.setAttribute('value', 'км');
+                    option3.text = 'KM';
+                    input5.appendChild(option3);
+                }
+
+                //end addRow()
+
+
+                function deleteRow(btn) {
+                    var row = btn.parentNode.parentNode;
+                    row.parentNode.removeChild(row);
+                }
+
+                function validateQuantity(input, cel_id) {
+                    console.log(input);
+                    console.log(cel_id);
+                    var cell = document.getElementById(cel_id);
+
+                    var regex = /[+\-*\/]/;
+                    // if (input.charAt(0) === '0' || input.charAt(0) == '-' || regex.test(input.charAt(0))) {
+                    if (input.charAt(0) === '0' || regex.test(input.charAt(0))) {
+                        cell.style.backgroundColor = "yellow";
+                        alert("проверь данные")
+                    } else if (isNaN(input) || !Number.isInteger(parseFloat(input))) {
+                        cell.style.backgroundColor = "red";
+                        alert("это точно число?")
+                    } else {
+                        cell.style = "none";
+                    }
+                }
+
+
+                function validateInputs() {
+                    var isValid = true;
+                    var inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+                    inputs.forEach(function (input) {
+                        if (!input.value.trim()) { // Проверяем, что значение пустое
+                            isValid = false;
+                            return;
+                        }
+                    });
+                    if (!isValid) {
+                        toastr.warning('Заполните все поля');
+                    }
+                    return isValid;
+                }
+            </script>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="container py-3">
+    <header>
+    </header>
+
+    <main>
+        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+            <!-- Используем Thymeleaf для итерации по списку modules -->
+            <div class="col" th:if="${modules != null}" th:name="'module_[' + ${iterStat.index}+']'" th:each="element, iterStat : ${modules}">
+                <div class="card mb-4 rounded-3 shadow-sm">
+                    <div class="card-header py-3">
+                        <!-- Используем имя элемента в качестве ID -->
+                        <h4 class="my-0 fw-normal" th:text="${element.getName()}">noname</h4>
+                    </div>
+                    <form action="#" >
+                        <div class="card-body">
+                            <h3 class="card-title pricing-card-title">
+                                <span th:text="${element.getComponentResponses().size()}"></span>
+                                <small class="text-body-secondary fw-light">/Компонентов</small>
+                            </h3>
+                            <div th:if="${not #lists.isEmpty(element.getComponentResponses())}">
+                              <span th:each="component, iterStat : ${element.getComponentResponses()}">
+                                        <span th:text="${component.name}"></span>
+                                    <span th:if="${!iterStat.last}">, </span>
+                                    </span>
+                            </div>
+                            <ul class="list-unstyled mt-3 mb-4">
+                                <li>Модификация: <span th:text="${element.getModel()}"></span></li>
+                                <li>Единица измерения: <span th:text="${element.getUnit()}"></span></li>
+                                <li>Описание: <span th:text="${element.getDescription()}"></span></li>
+                                <li><a th:href="${element.getCircutFile()}" target="_blank">Cхема</a></li>
+                            </ul>
+                            <button type="submit" class="w-100 btn btn-lg btn-outline-primary">Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Добавляем дополнительные пустые div-колонки, если количество элементов не кратно 3 -->
+            <div class="col" th:if="${modules != null and iterStat != null and (iterStat.index + 1) % 3 == 0}"></div>
+
+        </div>
+    </main>
+</div>
+
+
+</body>
+</html>

@@ -8,10 +8,15 @@ public interface ModuleData {
 
     String getName();
 
-    int getQuantity();
+    Integer getQuantity();
 
     String getUnit();
 
     String getDescription();
+
+    String getCircutFile();
+
+    boolean fieldsIsNull();
+
 
 }

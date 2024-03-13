@@ -2,15 +2,14 @@ package com.artsemrogovenko.diplom.specification.controller;
 
 import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
 import com.artsemrogovenko.diplom.specification.dto.ModuleResponse;
-import com.artsemrogovenko.diplom.specification.model.Module;
 import com.artsemrogovenko.diplom.specification.service.ModuleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class ModuleController {
 
     @PostMapping
     public ResponseEntity<ModuleResponse> createComponent(@RequestBody ModuleRequest module) {
-        return new ResponseEntity<>(moduleService.createModule(module), HttpStatus.CREATED);
+        return moduleService.createModule(module);
     }
 
     @GetMapping("{id}")
@@ -34,7 +33,7 @@ public class ModuleController {
         ModuleResponse module;
         try {
             module = moduleService.getModuleById(id);
-        } catch (RuntimeException e) {
+        } catch (NoSuchElementException  e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ModuleResponse());
         }
         return new ResponseEntity<>(module, HttpStatus.OK);

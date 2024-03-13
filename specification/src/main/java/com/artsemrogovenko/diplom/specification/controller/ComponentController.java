@@ -1,5 +1,7 @@
 package com.artsemrogovenko.diplom.specification.controller;
 
+import com.artsemrogovenko.diplom.specification.dto.ComponentRequest;
+import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.specification.model.Component;
 import com.artsemrogovenko.diplom.specification.service.ComponentService;
 import lombok.RequiredArgsConstructor;
@@ -13,35 +15,34 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/component")
-
 public class ComponentController {
 
     private final ComponentService componentService;
 
     @GetMapping
-    public ResponseEntity<List<Component>> getAll() {
+    public ResponseEntity<List<ComponentResponse>> getAll() {
         return new ResponseEntity<>(componentService.getAllComponents(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Component> createComponent(@RequestBody Component Component) {
-        return new ResponseEntity<>(componentService.createComponent(Component), HttpStatus.CREATED);
+    public ResponseEntity<ComponentResponse> createComponent(@RequestBody ComponentRequest componentRequest) {
+        return new ResponseEntity<>(componentService.createComponent(componentRequest), HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Component> getComponent(@PathVariable("id") Long id) {
-        Component Component;
+    public ResponseEntity<ComponentResponse> getComponent(@PathVariable("id") Long id) {
+        ComponentResponse componentResponse;
         try {
-            Component = componentService.getComponentById(id);
+            componentResponse = componentService.getComponentById(id);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Component());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ComponentResponse());
         }
-        return new ResponseEntity<>(Component, HttpStatus.OK);
+        return new ResponseEntity<>(componentResponse, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Component> updateComponent(@RequestBody Component Component) {
-        return new ResponseEntity<>(componentService.updateComponent(Component), HttpStatus.OK);
+    public ResponseEntity<ComponentResponse> updateComponent(@RequestBody ComponentResponse componentRequest) {
+        return new ResponseEntity<>(componentService.updateComponent(componentRequest), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")

@@ -12,25 +12,39 @@ public class ModuleMapper {
 
     public static <T extends ModuleData> Module mapToModule(T data) {
         Module module = new Module();
-
-        module.setFactoryNumber(data.getFactoryNumber());
-        module.setModel(data.getModel());
-        module.setName(data.getName());
-        module.setQuantity(data.getQuantity());
-        module.setUnit(data.getUnit());
-        module.setDescription(data.getDescription());
+        if (data.getFactoryNumber() != null) {
+            module.setFactoryNumber(data.getFactoryNumber().trim());
+        }
+        if (data.getModel() != null) {
+            module.setModel(data.getModel().trim());
+        }
+        if (data.getName() != null) {
+            module.setName(data.getName().trim());
+        }
+        if (data.getQuantity() != null) {
+            module.setQuantity(data.getQuantity());
+        }
+        module.setUnit(data.getUnit().trim());
+        if (data.getDescription() != null) {
+            module.setDescription(data.getDescription().trim());
+        }
+        if (data.getCircutFile() != null) {
+            module.setCircutFile(data.getCircutFile().trim());
+        }
         // Копирование компонентов
         Set<Component> components = new HashSet<>();
 
-        if (data instanceof ModuleRequest){
+        if (data instanceof ModuleRequest) {
             ModuleRequest moduleRequest = (ModuleRequest) data;
-            for (ComponentRequest componentRequest : moduleRequest.getComponentRequests()) {
-                Component component = ComponentMapper.mapToComponent(componentRequest);
-                components.add(component);
+            if (moduleRequest.getComponentRequests() != null) {
+                for (ComponentRequest componentRequest : moduleRequest.getComponentRequests()) {
+                    Component component = ComponentMapper.mapToComponent(componentRequest);
+                    components.add(component);
+                }
             }
         }
 
-        if (data instanceof ModuleResponse){
+        if (data instanceof ModuleResponse) {
             ModuleResponse moduleResponse = (ModuleResponse) data;
             module.setId(moduleResponse.getId());
             for (ComponentResponse componentResponse : moduleResponse.getComponentResponses()) {
@@ -53,6 +67,7 @@ public class ModuleMapper {
         moduleResponse.setQuantity(module.getQuantity());
         moduleResponse.setUnit(module.getUnit());
         moduleResponse.setDescription(module.getDescription());
+        moduleResponse.setCircutFile(module.getCircutFile());
         // Копирование компонентов
         Set<ComponentResponse> componentResponses = new HashSet<>();
         for (Component component : module.getComponents()) {

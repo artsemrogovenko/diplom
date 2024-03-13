@@ -8,9 +8,11 @@ public interface ComponentData {
 
     String getName();
 
-    int getQuantity();
+    Integer getQuantity();
 
     String getUnit();
 
     String getDescription();
+    boolean fieldsIsNull();
+
 }

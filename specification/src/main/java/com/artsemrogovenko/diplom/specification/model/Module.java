@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.nio.file.Path;
 import java.util.*;
 
 @Data
@@ -24,8 +25,8 @@ public class Module {
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
     private String name;     // имя
 
-    @Column(columnDefinition = "INT", nullable = false)
-    private int quantity;    // какое количество компонента в модуле
+    @Column(columnDefinition = "INT", nullable = true)
+    private Integer quantity;    // какое количество
 
     @Column(columnDefinition = "VARCHAR(20)")
     private String unit;     // единица измерения
@@ -37,8 +38,13 @@ public class Module {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();   // список компонентов
+    private String circutFile;  // схема сборки
 
     public void addComponent(Component c) {
         components.add(c);
+    }
+
+    public boolean fieldsIsNull() {
+        return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && components.isEmpty() && circutFile == null;
     }
 }

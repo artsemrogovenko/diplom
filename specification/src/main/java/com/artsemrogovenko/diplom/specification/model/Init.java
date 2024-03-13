@@ -10,7 +10,6 @@ import jakarta.annotation.PostConstruct;
 public class Init {
 
     private ComponentRepository componentRepository;
-
     private ModuleRepository moduleRepository;
 
     @PostConstruct
@@ -20,14 +19,15 @@ public class Init {
         mycompo.setQuantity(2);
         mycompo.setUnit("km");
         mycompo.setDescription("зеленый");
-
-      //  componentRepository.save(mycompo);
         Module module = new Module();
 
-        module.setName("Box");
+        module.setName("Коробка");
+        module.setModel("С прорезями");
         module.setQuantity(1);
+        module.setUnit("шт");
         module.addComponent(mycompo);
         module.setDescription("black color");
+        module.setCircutFile("https://cdn.pixabay.com/photo/2013/07/13/13/48/cardboard-box-161578_1280.png");
         moduleRepository.save(module);
     }
 }
