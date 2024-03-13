@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Основной список</h2>
+<ul id="mainList">
+    <li data-id="1" data-name="Элемент 1">Элемент 1</li>
+    <li data-id="2" data-name="Элемент 2">Элемент 2</li>
+    <li data-id="3" data-name="Элемент 3">Элемент 3</li>
+    <li data-id="4" data-name="Элемент 4">Элемент 4</li>
+</ul>
+
+<h2>Выбранные элементы</h2>
+<ul id="selectedList">
+</ul>
+
+<script src="script.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Получаем основной список и список для выбранных элементов
+    const mainList = document.getElementById('mainList');
+    const selectedList = document.getElementById('selectedList');
+
+    // Создаем объект для отслеживания выбранных элементов
+    const selectedItems = {};
+
+    // Добавляем обработчик клика на основной список
+    mainList.addEventListener('click', function (event) {
+        // Проверяем, был ли клик на элементе списка
+        if (event.target.tagName === 'LI') {
+            const selectedItem = event.target;
+            const itemId = selectedItem.dataset.id;
+
+            // Проверяем, был ли элемент уже выбран
+            if (!selectedItems[itemId]) {
+                // Копируем выбранный элемент
+                const clonedItem = selectedItem.cloneNode(true);
+                // Добавляем выбранный элемент в список выбранных элементов
+                selectedList.appendChild(clonedItem);
+                // Помечаем элемент как выбранный
+                selectedItems[itemId] = true;
+            } else {
+                // Если элемент уже был выбран, можем выполнить какое-то действие,
+                // например, вывести сообщение об ошибке или проигнорировать выбор.
+                console.log("Этот элемент уже выбран!");
+            }
+        }
+    });
+});</script>
+
+</body>
+</html>

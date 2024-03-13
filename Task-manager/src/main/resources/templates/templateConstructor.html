@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Создание шаблона</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+    <script th:src="@{/script2.js}"></script>
+
+
+</head>
+<body>
+
+<nav class="navbar bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            На главную
+        </a>
+    </div>
+</nav>
+
+
+<script th:if="${message} == '201 CREATED'">toastr.success('Шаблон добавлен');</script>
+<script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: данные уже существуют');</script>
+<script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>
+
+<div class="d-flex align-items-center">
+
+    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
+         style="width: 380px;max-height: 500px;" id="mainList">
+        <div th:if="${specificationservice} == '503 SERVICE_UNAVAILABLE'">
+            <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+                </symbol>
+                <symbol id="info-fill" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                </symbol>
+            </svg>
+            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Info:" style="max-height: 20px;">
+                    <use xlink:href="#info-fill"/>
+                </svg>
+                Служба модулей временно недоступна
+            </div>
+        </div>
+        <a href="#"  th:if="${specificationservice !='503 SERVICE_UNAVAILABLE'}"  class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+            <span class="fs-5 fw-semibold">Список модулей <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span></span>
+        </a>
+
+        <div class="list-group list-group-flush border-bottom scrollarea">
+
+            <li href="#" class="list-group-item list-group-item-action py-3 lh-sm"
+                th:each="module, iterStat : ${specifications}" th:data-id="${iterStat.index}"
+                th:data-name="|Элемент ${module.id}|">
+            <span class="d-flex w-100 align-items-center justify-content-between">
+                <span class="mb-1" th:text="${module.getName()}">List group item heading</span>
+                <span class="text-body-secondary" th:text="${module.model}">Tues</span>
+            </span>
+                <span class="col-10 mb-1 small" th:text="${module.description}">Some placeholder content in a paragraph below the heading and date.</span>
+            </li>
+
+        </div>
+    </div>
+
+    <div class="b-example-divider b-example-vr"></div>
+
+    <main style="max-width: 960px; padding: 0px 22px 0px 22px;">
+        <div class="text-center">
+            <div class="row g-5">
+                <div>
+                    <h2>Общая форма для изделия</h2>
+                    <p class="lead">Из этого шаблона будет сделан расчет материалов для изделия.Готовое изделие включает
+                        в себя обязательные модули.</p>
+                </div>
+                <div class="col-md-7 col-lg-8">
+                    <!--                <h4 class="mb-3">Свойста</h4>-->
+                    <form th:action="@{/createTemplate}" th:object="${template}" method="post" class="needs-validation"
+                          onsubmit="return validateInputs()" id="templateForm">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label for="name" class="form-label">Название</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required="">
+                                <div class="invalid-feedback">
+                                    Valid first name is required.
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="description" class="form-label">Описание</label>
+                                <input type="text" class="form-control" id="description" th:field="*{description}"
+                                       required="">
+                                <div class="invalid-feedback">
+                                    Valid last name is required.
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                        <button class="w-100 btn btn-primary btn-lg" type="submit">Создать шаблон</button>
+
+                        <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
+                             style="width: 380px;" id="selectedList">
+                        <span class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+                            <span class="fs-5 fw-semibold">Выбранные модули</span>
+                        </span>
+                            <div class="list-group list-group-flush border-bottom scrollarea">
+                                <!-- Здесь будут отображаться выбранные модули -->
+                            </div>
+                        </div>
+                        <!-- Скрытое поле для передачи выбранных модулей -->
+                        <input type="hidden" id="selectedModules" name="selectedModules"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="b-example-divider b-example-vr"></div>
+
+
+</div>
+<script th:inline="javascript">
+    var countdown = [[${timer}]];
+    var countdownElement = document.getElementById('countdown');
+
+    function updateCountdown() {
+        var minutes = Math.floor(countdown / 60);
+        var seconds = countdown % 60;
+        var formattedTime = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+        countdownElement.innerText = 'можно обновить через : '+ formattedTime;
+        countdown--;
+        if (countdown < 0) {
+            clearInterval(interval);
+            countdownElement.innerText = "можно обновить";
+        }
+    }
+
+    // Вызываем функцию обновления таймера каждую секунду
+    var interval = setInterval(updateCountdown, 1000);
+    // Вызываем функцию обновления таймера сразу после загрузки страницы
+    updateCountdown();
+</script>
+
+
+<!--<ul id="mainList" th:each="module, iterStat : ${specifications}">-->
+<!--    <li th:data-id="${iterStat.index}" th:data-name="|Элемент ${module.id}|">-->
+<!--        <strong th:text="${module.getName()}"></strong>-->
+<!--        <span th:text="${module.model} + ' ' + ${module.description}"></span>-->
+<!--    </li>-->
+<!--</ul>-->
+
+<!--<h2>Выбранные элементы</h2>-->
+<!--<ul id="selectedList">-->
+<!--</ul>-->
+
+<script> function validateInputs() {
+    var isValid = true;
+    var inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+    inputs.forEach(function (input) {
+        if (!input.value.trim()) { // Проверяем, что значение пустое
+            isValid = false;
+            return;
+        }
+    });
+    if (!isValid) {
+        toastr.warning('Заполните все поля');
+    }
+    return isValid;
+}</script>
+
+</body>
+</html>

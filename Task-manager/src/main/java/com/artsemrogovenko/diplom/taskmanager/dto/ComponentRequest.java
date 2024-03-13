@@ -1,12 +1,9 @@
-package com.artsemrogovenko.diplom.storage.dto;
+package com.artsemrogovenko.diplom.taskmanager.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Builder
@@ -16,9 +13,15 @@ public class ComponentRequest implements ComponentData {
     private String factoryNumber;       // заводской номер
     private String model;       // модификация
     private String name;     // имя
-    private int quantity;    // какое количество компонента в модуле
+    private Integer quantity;    // какое количество компонента в модуле
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
-    private boolean refill;  // можно объединить?
+
+    @Override
+    public boolean fieldsIsNull() {
+        return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null;
+    }
+
+//    private Set<ModuleRequest> moduleRequests = new HashSet<>();
 
 }

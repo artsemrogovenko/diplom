@@ -15,10 +15,10 @@ public class ComponentMapper {
         component.setQuantity(componentData.getQuantity());
         component.setUnit(componentData.getUnit());
         component.setDescription(componentData.getDescription());
-        component.setRefill(componentData.isRefill());
 
         if (componentData instanceof ComponentResponse) {
             ComponentResponse moduleResponse = (ComponentResponse) componentData;
+            component.setRefill(moduleResponse.isRefill());
             component.setId(moduleResponse.getId());
         }
 
@@ -26,7 +26,7 @@ public class ComponentMapper {
     }
 
 
-    public static  ComponentResponse mapToComponentResponse(Component component) {
+    public static ComponentResponse mapToComponentResponse(Component component) {
         ComponentResponse componentResponse = new ComponentResponse();
 
         componentResponse.setId(component.getId());

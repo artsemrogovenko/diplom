@@ -1,10 +1,18 @@
-package com.artsemrogovenko.diplom.storage.dto;
+package com.artsemrogovenko.diplom.taskmanager.dto;
 
 public interface ComponentData {
+
     String getFactoryNumber();
+
     String getModel();
+
     String getName();
-    int getQuantity();
+
+    Integer getQuantity();
+
     String getUnit();
+
     String getDescription();
+    boolean fieldsIsNull();
+
 }

@@ -1,0 +1,42 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: task-server
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb3
+    username: sa
+    password: sa
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    org.thymeleaf: error
+    org.springframework.web:  debug
+
+
+
+#  jdbc:jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=true
+#  spring.datasource.url=jdbc:h2:mem:testdb
+#  spring.datasource.driverClassName=org.h2.Driver
+#
+#  spring.datasource.username=sa
+#  spring.datasource.password=sa
+#  spring.h2.console.enabled=true

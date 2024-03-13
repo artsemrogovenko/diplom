@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Создание шаблона</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+    <script th:src="@{/script1.js}"></script>
+
+
+</head>
+<body>
+<nav class="navbar bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            На главную
+        </a>
+    </div>
+</nav>
+
+<script th:if="${message} == '201 CREATED'">toastr.success('Задача создана );</script>
+<script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: Такая задача уже есть');</script>
+<script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>
+
+<div class="d-flex align-items-center">
+
+    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
+         style="width: 380px;max-height: 500px;" id="mainList">
+
+        <a href="#" th:if="${templateservice !='503 SERVICE_UNAVAILABLE'}"
+           class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+            <span class="fs-5 fw-semibold">Доступные шаблоны изделий<span class="countdown" id="countdown" th:text="${timer}"
+                                                                   style="font-size: 12px; text-align: right;"></span></span>
+        </a>
+
+        <div class="list-group list-group-flush border-bottom scrollarea">
+
+            <li href="#" class="list-group-item list-group-item-action py-3 lh-sm"
+                th:each="template, iterStat : ${templates}" th:data-id="${iterStat.index}"
+                th:data-name="|Элемент ${template.id}|">
+            <span class="d-flex w-100 align-items-center justify-content-between">
+                <span class="mb-1" th:text="${template.getName()}">List group item heading</span>
+                <span class="text-body-secondary" th:text="${template.getDescription()}">Tues</span>
+            </span>
+                <span class="col-10 mb-1 small" th:text="${template.getModules().size()}">Some placeholder content in a paragraph below the heading and date.</span>
+            </li>
+
+        </div>
+    </div>
+
+    <div class="b-example-divider b-example-vr"></div>
+
+    <main style="max-width: 960px; padding: 0px 22px 0px 22px;">
+        <div class="text-center">
+            <div class="row g-5">
+                <div>
+                    <h2>Форма для готового продукта</h2>
+                    <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci eius eligendi
+                        eveniet fugiat.</p>
+                </div>
+                <div class="col-md-7 col-lg-8">
+<!--                                    <h4 class="mb-3">Свойста</h4>-->
+                    <form th:action="@{/createProduct}" th:object="${product}" method="post" class="needs-validation"
+                          onsubmit="return validateInputs()" id="productForm">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label for="contractNumber" class="">Номер договора</label>
+                                <input type="text" class="form-control" id="contractNumber" th:field="*{contractNumber}"
+                                       required="">
+                                <div class="invalid-feedback">
+                                    Valid first name is required.
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="floors" class="">Количество остановок</label>
+                                <input type="number" class="form-control" id="floors" th:field="*{floors}" required=""
+                                       min="1" max="16">
+                                <div class="invalid-feedback">
+                                    Необходимо количество остановок.
+                                </div>
+                            </div>
+
+                            <div class="col-md-5">
+                                <label for="type" class="">Тип размещения станции</label>
+                                <select class="form-select" id="type" required="" th:field="*{type}">
+                                    <option value="">выбрать...</option>
+                                    <option value="Машинное">Машинное</option>
+                                    <option value="Безмашинное">Безмашинное</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select a valid type.
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="load" class="">Грузоподъесность</label>
+                                <select class="form-select" id="load" required="" type="number" th:field="*{load}">
+                                    <option value="">выбрать...</option>
+                                    <option value="400">400</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Нужно задать грузоподъесность.
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="color" class="">Цвет шкафа</label>
+                                <select class="form-select" id="color" required="" type="number" th:field="*{color}">
+                                    <option value="">выбрать...</option>
+                                    <option value="RAL 9005">RAL 9005</option>
+                                    <option value="AISI 304">AISI 304</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Нужно задать цвет.
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                        <hr class="my-4">
+                        <button class="w-100 btn btn-primary btn-lg" type="submit">Создать задачу</button>
+
+                        <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
+                             style="width: 380px;" id="selectedList">
+                        <span class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+                            <span class="fs-5 fw-semibold">Выбранные шаблоны</span>
+                        </span>
+                            <div class="list-group list-group-flush border-bottom scrollarea">
+                                <!-- Здесь будут отображаться выбранные модули -->
+                            </div>
+                        </div>
+                        <!-- Скрытое поле для передачи выбранных модулей -->
+                        <input type="hidden" id="selectedTemplates" name="selectedTemplates"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="b-example-divider b-example-vr"></div>
+
+
+</div>
+
+<!--<ul id="mainList" th:each="module, iterStat : ${templates}">-->
+<!--    <li th:data-id="${iterStat.index}" th:data-name="|Элемент ${module.id}|">-->
+<!--        <strong th:text="${module.getName()}"></strong>-->
+<!--        <span th:text="${module.model} + ' ' + ${module.description}"></span>-->
+<!--    </li>-->
+<!--</ul>-->
+
+<!--<h2>Выбранные элементы</h2>-->
+<!--<ul id="selectedList">-->
+<!--</ul>-->
+
+<script> function validateInputs() {
+    var isValid = true;
+    var inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+    inputs.forEach(function (input) {
+        if (!input.value.trim()) { // Проверяем, что значение пустое
+            isValid = false;
+            return;
+        }
+    });
+    if (!isValid) {
+        toastr.warning('Заполните все поля');
+    }
+    return isValid;
+}</script>
+
+</body>
+</html>

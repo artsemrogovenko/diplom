@@ -1,0 +1,11 @@
+.rotate-table {
+    transform: rotate(270deg);
+}
+
+.rotate-table th,
+.rotate-table td {
+    padding: 5px; /* Добавьте необходимые отступы */
+    text-align: center; /* Выравнивание содержимого */
+    writing-mode: vertical-rl; /* Устанавливаем вертикальное направление вывода текста */
+    transform: rotate(360deg); /* Поворачиваем текст на 90 градусов по часовой стрелке */
+}

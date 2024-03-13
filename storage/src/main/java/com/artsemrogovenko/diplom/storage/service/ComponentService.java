@@ -7,7 +7,10 @@ import com.artsemrogovenko.diplom.storage.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.storage.model.Component;
 import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,18 +31,18 @@ public class ComponentService {
                 componentByFields.setQuantity(componentByFields.getQuantity() + units.keySet().iterator().next());
 
             } else {
-                componentByFields =  ComponentMapper.mapToComponent( createComponent(newComponent)) ;
+                componentByFields = ComponentMapper.mapToComponent(createComponent(newComponent));
             }
 
-        }catch (NoSuchElementException n){ // если такого элемента нет
-            componentByFields =  ComponentMapper.mapToComponent( createComponent(newComponent)) ;
+        } catch (NoSuchElementException n) { // если такого элемента нет
+            componentByFields = ComponentMapper.mapToComponent(createComponent(newComponent));
         }
         return ComponentMapper.mapToComponentResponse(componentRepository.save(componentByFields));
     }
 
     public String increaseComponents(List<ComponentRequest> newComponents) {
         for (ComponentRequest newComponent : newComponents) {
-          increaseComponent(newComponent);
+            increaseComponent(newComponent);
         }
         return new String("Склад пополнился всеми компонентами");
     }
@@ -107,19 +110,19 @@ public class ComponentService {
         return null;
     }
 
-private  List<Component> findComponents(ComponentRequest request) throws NoSuchElementException {
-    String factoryNumber = request.getFactoryNumber();
-    String model = request.getModel();
-    String name = request.getName();
-    String unit = request.getUnit();
-    String description = request.getDescription();
+    private List<Component> findComponents(ComponentRequest request) throws NoSuchElementException {
+        String factoryNumber = request.getFactoryNumber();
+        String model = request.getModel();
+        String name = request.getName();
+        String unit = request.getUnit();
+        String description = request.getDescription();
 
-   return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description)
-            .orElseThrow(NoSuchElementException::new);
-}
+        return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description)
+                .orElseThrow(NoSuchElementException::new);
+    }
 
     //    @Transactional(readOnly = true)
-    public List<ComponentResponse> isInStock(List<ComponentRequest> requests) {
+    public ResponseEntity<List<ComponentResponse>> isInStock(List<ComponentRequest> requests) {
 //        System.out.println("isInStock");
         List<ComponentResponse> components = new ArrayList<>();
 //        List<ComponentResponse> responses = new ArrayList<>();
@@ -149,13 +152,13 @@ private  List<Component> findComponents(ComponentRequest request) throws NoSuchE
 
         if (!negativeQuantityComponents.isEmpty()) {
             // Обработка случая, когда есть элементы с отрицательным значением quantity
-            return negativeQuantityComponents;
+            return new ResponseEntity<>(negativeQuantityComponents, HttpStatus.I_AM_A_TEAPOT);
         } else {
             components.stream().forEach(componentResponse -> decreaseComponent(componentResponse));
             //updateComponents(responses);
         }
         // если нет отриц. полей
-        return components;
+        return new ResponseEntity<>(components, HttpStatus.OK);
     }
 
     private ComponentResponse checkList(List<Component> list, int requiredQuantity) {
@@ -186,6 +189,18 @@ private  List<Component> findComponents(ComponentRequest request) throws NoSuchE
             }
         }
         return null;
+    }
+
+    @Transactional
+    public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber,String userId, List<ComponentRequest> requiredComponents) {
+        ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
+        if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
+            //TODO сделать уведомление для заказа
+        }
+        if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
+            //TODO сделать перевод компонентов клиенту
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 }

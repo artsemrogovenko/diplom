@@ -2,6 +2,7 @@ package com.artsemrogovenko.diplom.storage.controller;
 
 import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.storage.model.Component;
 import com.artsemrogovenko.diplom.storage.service.ComponentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,10 +57,14 @@ public class ComponentController {
         return ResponseEntity.ok().build();
     }
 
-    // http://localhost:8082/api/storage?component=apple-13шт&component=wire-5м
+
     @GetMapping("/inventory")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ComponentResponse> isInStock(@RequestBody  List<ComponentRequest> requests) {
+    public ResponseEntity<List<ComponentResponse>> isInStock(@RequestBody  List<ComponentRequest> requests) {
         return componentService.isInStock(requests);
+    }
+
+    @PostMapping("/reserve")
+    public ResponseEntity<List<ComponentResponse>> reserve(@RequestBody List<ComponentRequest> requests, @RequestParam String user, @RequestParam String number) {
+        return componentService.reserveComponents(number,user,requests);
     }
 }
