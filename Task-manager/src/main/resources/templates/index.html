@@ -38,7 +38,7 @@
             <td><span th:text="${product.getLoad()}"> грузоподъемность </span></td>
             <td><span th:text="${product.getColor()}"> цвет шкафа </span></td>
             <td><span th:text="${product.getFloors()}"> оставновок </span></td>
-            <td><span th:text="${product.getDone()}"> Готовность </span></td>
+            <td> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></td>
         </tr>
     </table>
 </div>

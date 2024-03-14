@@ -4,6 +4,7 @@ import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.storage.service.ComponentService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,17 +15,14 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/")
-
 public class WebController {
 
     private final ComponentService componentService;
 
     @GetMapping("")
     public String getAll(Model model) {
-        ComponentRequest componentRequest = new ComponentRequest();
-        ComponentResponse componentResponse = new ComponentResponse();
         model.addAttribute("componentRequest",new ComponentRequest());
         model.addAttribute("componentResponse",new ComponentResponse());
         List<ComponentResponse> list= componentService.getAllComponents();

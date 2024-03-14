@@ -40,6 +40,11 @@ public class Module {
     private Set<Component> components = new HashSet<>();   // список компонентов
     private String circutFile;  // схема сборки
 
+    // Конструктор для установки идентификатора вручную
+    public Module(Long id) {
+        this.id = id;
+    }
+
     public void addComponent(Component c) {
         components.add(c);
     }

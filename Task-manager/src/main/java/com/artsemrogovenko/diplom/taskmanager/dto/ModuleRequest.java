@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ModuleRequest implements ModuleData {
+public class ModuleRequest implements ModuleData, SavedModule {
     private String factoryNumber;       // заводской номер
     private String model;       // модификация
     private String name;     // имя

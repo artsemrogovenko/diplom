@@ -20,6 +20,7 @@ public class ComponentResponse implements ComponentData {
     private Integer quantity;    // какое количество компонента в модуле
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
+    private boolean refill;  // можно объединить?
     private Set<ModuleResponse> moduleResponses = new HashSet<>();
     @Override
     public boolean fieldsIsNull() {

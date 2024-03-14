@@ -20,7 +20,7 @@ public class Task implements TemplateData {
     private String contractNumber; // номер договора
     private String owner; // у кого сейчас задача
     private boolean reserved;
-    @ManyToMany //один компонент может относится ко многим модулям
+    @ManyToMany // список модулей
     private List<Module> modules = new ArrayList<>();
 
     public Task(Template template) {

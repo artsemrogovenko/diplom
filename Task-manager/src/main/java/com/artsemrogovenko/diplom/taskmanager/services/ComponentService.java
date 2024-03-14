@@ -79,7 +79,7 @@ public class ComponentService {
         try {
             Component existingComponent = componentRepository.findByFactoryNumberAndModelAndNameAndDescription(factoryNumber, model, name, description).get();
         } catch (NoSuchElementException e) {
-            System.out.println("no element");
+//            System.out.println("no element");
             return true;
         }
         return false;

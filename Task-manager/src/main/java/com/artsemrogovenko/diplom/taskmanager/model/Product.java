@@ -30,5 +30,11 @@ public class Product {
     )
     private List<Task> tasks = new ArrayList<>();
 
+    @PrePersist
+    void onCreate() {
+        if (this.done == null) {
+            this.done = false;
+        }
+    }
 
 }

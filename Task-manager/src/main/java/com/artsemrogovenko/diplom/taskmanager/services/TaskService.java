@@ -70,14 +70,20 @@ public class TaskService {
         work.setReserved(true);
         work.setOwner(ownerId);
         work.setStatus(Task.Status.IN_PROGRESS);
+        //в задаче может быть несколько модулей, и в самих модулях компоненты
+        //то создание списка компонентов вынесен в другой блок
         List<Component> components = CollectComponets.calculate(work);
         components.forEach(System.out::println);
         System.out.println("а теперь подсчитаное");
-        //если я напрямую просумирую значения, то эти значения запишутся в базе данных, а мне это ненужно
+        // компоненты могут повторяться но их количество будет разное
+        // поэтому нужно создать список без повторов и с подсчитаным количеством,
+        // если просумировать на обьектах списках то это отразаться на базе данных
+        // а мне это не нужно
         List<ComponentRequest> calculatedComponents = totalizationComponents(components);
 
         calculatedComponents.forEach(System.out::println);
 //        ResponseEntity<List<ComponentResponse>> result = postRequest("http://storage-server:8081/inventory",ownerId,work.getContractNumber());
+
         taskRepository.save(work);
         System.out.println("task is reserved");
     }
@@ -87,12 +93,14 @@ public class TaskService {
      */
     @TrackUserAction
     @Transactional
-    public void rollbackReservedTask(Long id) {
+    public void rollbackReservedTask(Long id,String ownerId) {
         Task work = getTaskById(id);
-        work.setReserved(false);
-        work.setOwner("Kanban"); // сделать владельцем общее хранилище
-        work.setStatus(Task.Status.TO_DO);
-        taskRepository.save(work);
+        if (work.getOwner().equals(ownerId)) {
+            work.setReserved(false);
+            work.setOwner("Kanban"); // сделать владельцем общее хранилище
+            work.setStatus(Task.Status.TO_DO);
+            taskRepository.save(work);
+        }
     }
 
     @TrackUserAction
@@ -101,7 +109,7 @@ public class TaskService {
         Task work = getTaskById(id);
         if (work.getOwner().equals(ownerId)) {
             work.setStatus(Task.Status.DONE);
-            System.out.println(work);
+//            System.out.println(work);
             taskRepository.save(work);
             System.out.println("Блок complete применился");
         } else
@@ -113,7 +121,6 @@ public class TaskService {
         Map<Long, ComponentRequest> uniqueRequest = new HashMap<>();
         for (Component component : components) {
             if (uniqueRequest.containsKey(component.getId())) {
-
                 // Если уже есть такой компонент, обновляем значение quantity
                 ComponentRequest tempComponent = uniqueRequest.get(component.getId());
                 tempComponent.setQuantity(tempComponent.getQuantity() + component.getQuantity());
@@ -122,7 +129,6 @@ public class TaskService {
                 // Если такого компонента ещё нет, добавляем его в Map
                 ComponentRequest tempComponent = ComponentMapper.mapToComponentRequest(component);
                 uniqueRequest.put(component.getId(), tempComponent);
-
             }
         }
         return new ArrayList<>(uniqueRequest.values());

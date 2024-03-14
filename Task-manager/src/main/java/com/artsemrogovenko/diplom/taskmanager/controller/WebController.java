@@ -1,6 +1,5 @@
 package com.artsemrogovenko.diplom.taskmanager.controller;
 
-import com.artsemrogovenko.diplom.taskmanager.config.WebClientConfig;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.model.Product;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
@@ -8,10 +7,7 @@ import com.artsemrogovenko.diplom.taskmanager.model.TemplateRequest;
 import com.artsemrogovenko.diplom.taskmanager.services.ProductService;
 import com.artsemrogovenko.diplom.taskmanager.services.TemplateService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,11 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.nio.channels.ClosedChannelException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;

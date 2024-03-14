@@ -54,11 +54,11 @@
 
                 <h4>Создать спецификацию для Модуля</h4>
                 <div class="fields_newModule">
-                    <label for="request_name">Имя</label>
+                    <label for="request_name">Название</label>
                     <input type="text" id="request_name" th:field="${newModule.name}"/>
                     <br/>
 
-                    <label for="request_model">Модификация</label>
+                    <label for="request_model">Исполнение</label>
                     <input type="text" id="request_model" th:field="${newModule.model}"/>
                     <br/>
 
@@ -92,6 +92,7 @@
                         </th>
                     </tr>
                     <tr>
+                        <th>найти</th>
                         <th>код изготовителя</th>
                         <th>модификация</th>
                         <th>название</th>
@@ -112,43 +113,120 @@
             <hr>
 
 
+<!--            <div class="dropdown">-->
+<!--                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"-->
+<!--                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                </button>-->
+<!--                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
+<!--                    <table id="component_table_store">-->
+
+<!--                        <tbody>-->
+<!--                        <tr th:each="component: ${components}">-->
+<!--                            <td class="table-light" th:text="${component.factoryNumber}"></td>-->
+<!--                            <td class="table-light" th:text="${component.model}"></td>-->
+<!--                            <td class="table-light" th:text="${component.name}"></td>-->
+<!--                            <td class="table-light" th:text="${component.description}"></td>-->
+<!--                            <td class="table-light" th:text="${component.unit}"></td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+
+            <div id="componentsData" data-components="${components}"></div>
+
+
             <script th:inline="javascript">
                 var rowCounter = 0;
-
+                var dropCounter; // Объявляем переменную dropCounter
+                /*<![CDATA[*/
+                var components = /*[[${components}]]*/ [];
+                /*]]>*/
                 function addRow() {
+
                     var table = document.getElementById("component_table").getElementsByTagName('tbody')[0];
                     var newRow = table.insertRow();
 
                     // Инкрементируем itemStat.index
-                    rowCounter = document.querySelectorAll('#componentRows tr').length - 1;
+                    // rowCounter = document.querySelectorAll('#componentRows tr').length - 1;
+                    rowCounter = document.querySelectorAll('#component_table > tbody > tr').length-1;
+                    // Создаем элемент dropdown
+                    var dropdown = document.createElement('div');
+                    dropdown.classList.add('dropdown');
 
-                    // Создаем новые ячейки и добавляем поля ввода
+                    // Создаем меню dropdown-menu
+                    var dropdownMenu = document.createElement('div');
+                    dropdownMenu.classList.add('dropdown-menu');
+
+                    dropCounter = document.querySelectorAll('#component_table .dropdown-menu tbody tr').length;
+
+                    // Создаем кнопку dropdown-toggle
+                    var dropdownToggle = document.createElement('button');
+                    dropdownToggle.classList.add('btn', 'btn-secondary', 'dropdown-toggle');
+                    dropdownToggle.setAttribute('type', 'button');
+                    dropdownToggle.setAttribute('id', 'dropdownMenuButton' + dropCounter);
+                    dropdownToggle.setAttribute('data-toggle', 'dropdown');
+                    dropdownToggle.setAttribute('aria-haspopup', 'true');
+                    dropdownToggle.setAttribute('aria-expanded', 'false');
+                    dropdown.appendChild(dropdownToggle);
+
+                    dropdownMenu.setAttribute('aria-labelledby', 'dropdownMenuButton' + dropCounter);
+
+                    // Создаем таблицу внутри меню
+                    var tableInsideDropdown = document.createElement('table');
+                    tableInsideDropdown.classList.add('table');
+
+                    // Добавляем строки с данными компонентов
+                    components.forEach(function (component) {
+                        var row = tableInsideDropdown.insertRow();
+                        var cell1 = row.insertCell(0);
+                        cell1.classList.add('table-light');
+                        cell1.textContent = component.factoryNumber + ' - ' +
+                            component.model + ' - ' +
+                            component.name + ' - ' +
+                            component.description + ' - ' +
+                            component.unit;
+                        // Добавьте остальные поля компонента по аналогии
+                    });
+
+                    dropdownMenu.appendChild(tableInsideDropdown);
+                    dropdown.appendChild(dropdownMenu);
+
+                    // Вставляем dropdown в ячейку
                     var cell1 = newRow.insertCell(0);
+                    cell1.appendChild(dropdown);
+                    // Добавляем обработчик события к кнопке dropdown-toggle
+                    dropdownToggle.addEventListener('click', handleDropdownClick);
+
+                    /***/
+                    // Создаем новые ячейки и добавляем поля ввода
+                    // var cell1 = newRow.insertCell(0);
                     var cell2 = newRow.insertCell(1);
                     var cell3 = newRow.insertCell(2);
                     var cell4 = newRow.insertCell(3);
                     var cell5 = newRow.insertCell(4);
                     var cell6 = newRow.insertCell(5);
                     var cell7 = newRow.insertCell(6);
-                    cell7.innerHTML = "<button onclick='deleteRow(this)'>Убрать</button>";
+                    var cell8 = newRow.insertCell(7);
+                    cell8.innerHTML = "<button onclick='deleteRow(this)'>Убрать</button>";
 
                     var input1 = document.createElement('input');
                     input1.setAttribute('id', 'componentRequests' + rowCounter + '.factoryNumber');
                     input1.setAttribute('name', 'componentRequests[' + rowCounter + '].factoryNumber');
                     input1.setAttribute('type', 'text');
-                    cell1.appendChild(input1);
+                    cell2.appendChild(input1);
 
                     var input2 = document.createElement('input');
                     input2.setAttribute('id', 'componentRequests' + rowCounter + '.model');
                     input2.setAttribute('name', 'componentRequests[' + rowCounter + '].model');
                     input2.setAttribute('type', 'text');
-                    cell2.appendChild(input2);
+                    cell3.appendChild(input2);
 
                     var input3 = document.createElement('input');
                     input3.setAttribute('id', 'componentRequests' + rowCounter + '.name');
                     input3.setAttribute('name', 'componentRequests[' + rowCounter + '].name');
                     input3.setAttribute('type', 'text');
-                    cell3.appendChild(input3);
+                    cell4.appendChild(input3);
 
                     var input4 = document.createElement('input');
                     input4.setAttribute('id', 'componentRequests' + rowCounter + '.quantity');
@@ -161,19 +239,19 @@
                         validateQuantity(this.value, this.id);
                         // checkNumberInput(this.value,'количество');
                     });
-                    cell4.appendChild(input4);
+                    cell5.appendChild(input4);
 
                     var input5 = document.createElement('select');
                     input5.setAttribute('id', 'componentRequests' + rowCounter + '.unit');
                     input5.setAttribute('name', 'componentRequests[' + rowCounter + '].unit');
                     input5.setAttribute('type', 'text');
-                    cell5.appendChild(input5);
+                    cell6.appendChild(input5);
 
                     var input6 = document.createElement('input');
                     input6.setAttribute('id', 'componentRequests' + rowCounter + '.description');
                     input6.setAttribute('name', 'componentRequests[' + rowCounter + '].description');
                     input6.setAttribute('type', 'text');
-                    cell6.appendChild(input6);
+                    cell7.appendChild(input6);
 
                     var option1 = document.createElement('option');
                     option1.setAttribute('value', 'шт');
@@ -189,10 +267,10 @@
                     option3.setAttribute('value', 'км');
                     option3.text = 'KM';
                     input5.appendChild(option3);
+
                 }
 
                 //end addRow()
-
 
                 function deleteRow(btn) {
                     var row = btn.parentNode.parentNode;
@@ -232,6 +310,39 @@
                     }
                     return isValid;
                 }
+
+
+                function fillDropdown(dropdownId) {
+                    // Получаем выбранный компонент
+                    console.log(dropdownId);
+                    var dropdown = document.getElementById(dropdownId);
+                    var selectedComponent = components.find(function(component) {
+                        return component.id === dropdown.value; // предположим, что значение в списке соответствует id компонента
+                    });
+
+                    // Заполняем поля таблицы данными выбранного компонента
+                    if (selectedComponent) {
+                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.factoryNumber').value = selectedComponent.factoryNumber;
+                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.model').value = selectedComponent.model;
+                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.name').value = selectedComponent.name;
+                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.description').value = selectedComponent.description;
+                    }
+                }
+
+                // Обработчик события для кнопки dropdown-toggle
+                function handleDropdownClick(event) {
+                    var target = event.target;
+                    // Проверяем, что кликнули по элементу с классом dropdown-toggle
+                    if (target.classList.contains('dropdown-toggle')) {
+                        // Получаем id выпадающего списка
+                        var dropdownId = target.id;
+                        // Вызываем функцию заполнения для соответствующего dropdown
+                        fillDropdown(dropdownId);
+                    }
+                }
+                // Добавляем обработчик события к кнопке dropdown-toggle
+                document.addEventListener('click', handleDropdownClick);
+
             </script>
 
         </div>
@@ -246,13 +357,14 @@
     <main>
         <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
             <!-- Используем Thymeleaf для итерации по списку modules -->
-            <div class="col" th:if="${modules != null}" th:name="'module_[' + ${iterStat.index}+']'" th:each="element, iterStat : ${modules}">
+            <div class="col" th:if="${modules != null}" th:name="'module_[' + ${iterStat.index}+']'"
+                 th:each="element, iterStat : ${modules}">
                 <div class="card mb-4 rounded-3 shadow-sm">
                     <div class="card-header py-3">
                         <!-- Используем имя элемента в качестве ID -->
                         <h4 class="my-0 fw-normal" th:text="${element.getName()}">noname</h4>
                     </div>
-                    <form action="#" >
+                    <form action="#">
                         <div class="card-body">
                             <h3 class="card-title pricing-card-title">
                                 <span th:text="${element.getComponentResponses().size()}"></span>

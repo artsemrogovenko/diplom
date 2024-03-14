@@ -78,9 +78,9 @@ public class TaskController {
 
     @TrackUserAction
     @PostMapping("{id}/reserve/rollback")
-    public ResponseEntity<Void> rollbackReserveAmount(@PathVariable("id") Long id ){
+    public ResponseEntity<Void> rollbackReserveAmount(@PathVariable("id") Long id, @RequestBody String userId){
         System.out.println("Контроллер отмены выполнения");
-        taskService.rollbackReservedTask(id);
+        taskService.rollbackReservedTask(id,userId);
         return ResponseEntity.ok().body(null);
     }
 

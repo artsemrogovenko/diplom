@@ -15,6 +15,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Module implements SavedModule {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // этот компонент наследован из сервиса модулей, и не требует авто генерации
 
     @Column(columnDefinition = "VARCHAR(100)")
@@ -44,6 +45,10 @@ public class Module implements SavedModule {
     private List<Template> templates = new ArrayList<>();
     @ManyToMany
     private List<Task> tasks = new ArrayList<>();
+
+    public Module(Long id) {
+        this.id = id;
+    }
 
     public void addComponent(Component c) {
         components.add(c);

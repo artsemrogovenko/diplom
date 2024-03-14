@@ -1,5 +1,6 @@
 .rotate-table {
     transform: rotate(270deg);
+    margin-left: 100px;
 }
 
 .rotate-table th,

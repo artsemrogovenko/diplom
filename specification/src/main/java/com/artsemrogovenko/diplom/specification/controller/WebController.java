@@ -1,9 +1,11 @@
 package com.artsemrogovenko.diplom.specification.controller;
 
+import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.specification.dto.ModuleData;
 import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
 import com.artsemrogovenko.diplom.specification.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.specification.httprequest.MyRequest;
+import com.artsemrogovenko.diplom.specification.model.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -33,7 +35,6 @@ public class WebController {
     private String response;
     private boolean pushrequest = false;
     private boolean startView = true;
-
     private List<ModuleResponse> sessionList;
 
     @GetMapping("/")
@@ -42,9 +43,11 @@ public class WebController {
             pullList();
             startView = false;
         }
+        List<ComponentResponse> avaibleComponents = MyRequest.convertResponseList("http://localhost:8081/component", ComponentResponse.class).getBody();
         model.addAttribute("newModule", new ModuleRequest());
         model.addAttribute("modules", sessionList);
         model.addAttribute("message", response);
+        model.addAttribute("components", avaibleComponents);
         response=null;
         return "index";
     }

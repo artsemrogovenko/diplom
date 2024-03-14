@@ -76,13 +76,13 @@ public class TemplateService {
         // Преобразование JSON в список идентификаторов выбранных модулей
         List<String> selectedModuleIds = null;
         TemplateRequest temp = rawTemplate;
-        ResponseEntity<String> response;
+
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             selectedModuleIds = objectMapper.readValue(selectedModulesJson, new TypeReference<List<String>>() {
             });
             // Создание списка модулей на основе идентификаторов
-            List<ModuleResponse> selectedModules = new ArrayList<>();
+
             if (selectedModuleIds != null && !selectedModuleIds.isEmpty()) {
                 for (String position : selectedModuleIds) {
 

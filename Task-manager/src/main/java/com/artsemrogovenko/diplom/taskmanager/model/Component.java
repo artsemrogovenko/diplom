@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Component implements ComponentData {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // этот компонент наследован из сервиса модулей, и не требует авто генерации
     @ManyToMany //один компонент может относится ко многим модулям
     private Set<Module> modules = new HashSet<>();

@@ -11,13 +11,20 @@ public class ModuleMapper {
 
 
     public static <T extends ModuleData> Module mapToModule(T data) {
-        Module module = new Module();
-        if (data.getFactoryNumber() != null) {
-            module.setFactoryNumber(data.getFactoryNumber().trim());
+        Module module = null;
+        if (data instanceof ModuleResponse) {
+            module = new Module(((ModuleResponse) data).getId());
+        } else {
+            module = new Module();
         }
+
         if (data.getModel() != null) {
             module.setModel(data.getModel().trim());
         }
+        if (data.getFactoryNumber() != null) {
+            module.setFactoryNumber(data.getFactoryNumber().trim());
+        }
+
         if (data.getName() != null) {
             module.setName(data.getName().trim());
         }
@@ -46,7 +53,7 @@ public class ModuleMapper {
 
         if (data instanceof ModuleResponse) {
             ModuleResponse moduleResponse = (ModuleResponse) data;
-            module.setId(moduleResponse.getId());
+//            module.setId(moduleResponse.getId());
             for (ComponentResponse componentResponse : moduleResponse.getComponentResponses()) {
                 Component component = ComponentMapper.mapToComponent(componentResponse);
                 components.add(component);

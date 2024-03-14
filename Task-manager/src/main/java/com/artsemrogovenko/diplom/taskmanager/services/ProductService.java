@@ -1,15 +1,12 @@
 package com.artsemrogovenko.diplom.taskmanager.services;
 
+import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TemplateMapper;
-import com.artsemrogovenko.diplom.taskmanager.model.Module;
 import com.artsemrogovenko.diplom.taskmanager.model.Product;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
-import com.artsemrogovenko.diplom.taskmanager.model.TemplateData;
-import com.artsemrogovenko.diplom.taskmanager.repository.ModuleRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.ProductRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
-import com.artsemrogovenko.diplom.taskmanager.repository.TemplateRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,22 +14,19 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final TemplateRepository templateRepository;
     private final TaskRepository taskRepository;
 
-    private final ModuleRepository moduleRepository;
+    private final Formula formulaService;
+
 
     public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, List<Template> templateList) {
         // Преобразование JSON в список идентификаторов выбранных модулей
@@ -64,14 +58,18 @@ public class ProductService {
                 taskList.forEach(task -> task.setContractNumber(product.getContractNumber()));
                 newProduct.setTasks(taskList);
             }
+            //добавляю дополнительные компоненты
+            Task additional = formulaService.additionalTask(newProduct);
+            newProduct.getTasks().add(additional);
 
             saveProduct(newProduct);
-            System.out.println(newProduct);
-            return new ResponseEntity<>("Продукт создан", HttpStatus.CREATED);
+
+            System.out.println(    productRepository.getReferenceById(newProduct.getContractNumber()));
+
+            return new ResponseEntity<>("Продукт принят в производство", HttpStatus.CREATED);
         } catch (JsonProcessingException e) {
             System.out.println(e.getMessage());
         }
-//        System.out.println(newProduct);
         return new ResponseEntity<>("Ошибка выполнения", HttpStatus.BAD_REQUEST);
     }
 
