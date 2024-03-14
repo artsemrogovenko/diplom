@@ -118,5 +118,18 @@ public class ComponentMapper {
         return componentResponse;
     }
 
+    public static <T extends ComponentData> ComponentRequest mapToComponentRequest(T component) {
+        ComponentRequest componentRequest = new ComponentRequest();
+
+        componentRequest.setFactoryNumber(component.getFactoryNumber());
+        componentRequest.setModel(component.getModel());
+        componentRequest.setName(component.getName());
+        componentRequest.setQuantity(component.getQuantity());
+        componentRequest.setUnit(component.getUnit());
+        componentRequest.setDescription(component.getDescription());
+
+        return componentRequest;
+    }
+
 
 }

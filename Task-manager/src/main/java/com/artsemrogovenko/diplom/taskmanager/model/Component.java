@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.model;
 
+import com.artsemrogovenko.diplom.taskmanager.dto.ComponentData;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.Set;
 @Data
 @Entity
 @NoArgsConstructor
-public class Component {
+public class Component implements ComponentData {
     @Id
     private Long id; // этот компонент наследован из сервиса модулей, и не требует авто генерации
     @ManyToMany //один компонент может относится ко многим модулям
@@ -31,4 +32,5 @@ public class Component {
     public boolean fieldsIsNull() {
         return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null ;
     }
+
 }

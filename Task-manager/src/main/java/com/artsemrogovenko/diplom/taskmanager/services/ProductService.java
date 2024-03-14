@@ -35,7 +35,6 @@ public class ProductService {
     private final ModuleRepository moduleRepository;
 
     public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, List<Template> templateList) {
-        System.out.println(templateList);
         // Преобразование JSON в список идентификаторов выбранных модулей
         List<String> selectedTemplateIds = null;
         Product newProduct = product;
@@ -48,21 +47,17 @@ public class ProductService {
 
             if (selectedTemplateIds != null && !selectedTemplateIds.isEmpty()) {
                 for (String position : selectedTemplateIds) {
-                    selectedTemplates.add(templateList.get(Integer.parseInt(position)));
+                    try {
+                        selectedTemplates.add(templateList.get(Integer.parseInt(position)));
+                    } catch (NullPointerException | IndexOutOfBoundsException ex) {
+                        return new ResponseEntity<>("Список шаблонов устарел, повторите попытку", HttpStatus.BAD_REQUEST);
+                    }
                 }
-//                List<Module> templateModules = templateList.stream()
-//                        .flatMap(template -> moduleRepository.findByTemplateId(template.getId()).stream())
-//                        .toList();
 
-//                System.out.println(templateModules);
-//                List<Task> taskList = selectedTemplates.stream().map(template -> templateRepository.findById(template.getId())
-//                                .map(TemplateMapper::mapToTask).orElse(null)) // или другое значение по умолчанию
-//                                .filter(Objects::nonNull) // фильтруем null значения, если такие есть
-//                                .toList();
                 List<Task> taskList = new ArrayList<>();
                 for (Template selectedTemplate : selectedTemplates) {
                     Task temp = TemplateMapper.mapToTask(selectedTemplate);
-                    temp.setModules(selectedTemplate.getModules());
+                    temp.getModules().addAll(selectedTemplate.getModules());
                     taskList.add(temp);
                 }
 
@@ -71,6 +66,7 @@ public class ProductService {
             }
 
             saveProduct(newProduct);
+            System.out.println(newProduct);
             return new ResponseEntity<>("Продукт создан", HttpStatus.CREATED);
         } catch (JsonProcessingException e) {
             System.out.println(e.getMessage());

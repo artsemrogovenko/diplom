@@ -10,6 +10,8 @@ import com.artsemrogovenko.diplom.taskmanager.services.TemplateService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,16 +35,15 @@ public class WebController {
     private final ProductService productService;
     private final TemplateService templateService;
     private static List<ModuleResponse> modules = new ArrayList<>();
-    private static List<Template> templates ;
+    private static List<Template> templates;
     private static String specification_StatusCode = "";
     private static String responseCode = "";
+    private static String responseMessage;
 
 
-    //    private static LocalTime time = LocalTime.now();
-//    private static int totalSeconds = 0;
     @GetMapping("/")
     public String main(Model model) {
-        model.addAttribute("products",productService.getAllProducts());
+        model.addAttribute("products", productService.getAllProducts());
         return "index";
     }
 
@@ -50,26 +51,31 @@ public class WebController {
     public String createTemplate(@ModelAttribute("template") TemplateRequest rawTemplate, @RequestParam("selectedModules") String selectedModulesJson) {
         ResponseEntity<String> result = templateService.prepareData(rawTemplate, selectedModulesJson, modules);
         responseCode = result.getStatusCode().toString();
+        if (result.getStatusCode().isSameCodeAs(HttpStatus.BAD_REQUEST)) {
+            responseMessage = result.getBody();
+        }
         return "redirect:/constructTempate";
     }
 
     @PostMapping("/createProduct")
     public String createProduct(@ModelAttribute("product") Product product, @RequestParam("selectedTemplates") String selectedTemplatesJson) {
-        System.out.println(templates);
         ResponseEntity<String> result = productService.prepareData(product, selectedTemplatesJson, templates);
         responseCode = result.getStatusCode().toString();
+        if (result.getStatusCode().isSameCodeAs(HttpStatus.BAD_REQUEST)) {
+            responseMessage = result.getBody();
+        }
         return "redirect:/constructProduct";
     }
 
     @GetMapping("/constructProduct")
     public String constuctProduct(Model model, String message) {
         templates = templateService.getAllTemplates();
-        System.out.println(templates);
         model.addAttribute("message", responseCode);
+        model.addAttribute("errorInfo", responseMessage);
+        responseCode="";
+        responseMessage = null;
         model.addAttribute("product", new Product());
-//        model.addAttribute("dependencies", new ModuleResponse());
         model.addAttribute("templates", templates);
-//        model.addAttribute("timer", templateService.getSecondsDifference());
         return "productConstructor.html";
     }
 
@@ -91,9 +97,10 @@ public class WebController {
         }
         model.addAttribute("specificationservice", specification_StatusCode);
         model.addAttribute("message", responseCode);
+        model.addAttribute("errorInfo", responseMessage);
+        responseMessage = null;
         specification_StatusCode = "";
         model.addAttribute("template", new TemplateRequest());
-//        model.addAttribute("dependencies", new ModuleResponse());
         model.addAttribute("specifications", modules);
         model.addAttribute("timer", templateService.getSecondsDifference());
 //        System.out.println(modules);

@@ -22,7 +22,14 @@
     </div>
 </nav>
 
-<script th:if="${message} == '201 CREATED'">toastr.success('Задача создана );</script>
+<div th:if="${errorInfo} != null" class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Внимание</strong> <span th:text="${errorInfo}"></span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<script th:if="${message} == '201 CREATED'">toastr.success('Задача создана');</script>
 <script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: Такая задача уже есть');</script>
 <script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>
 

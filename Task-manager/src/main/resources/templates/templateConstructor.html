@@ -23,6 +23,12 @@
     </div>
 </nav>
 
+<div th:if="${errorInfo} != null" class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Внимание</strong> <span th:text="${errorInfo}"></span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
 
 <script th:if="${message} == '201 CREATED'">toastr.success('Шаблон добавлен');</script>
 <script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: данные уже существуют');</script>

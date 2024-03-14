@@ -85,7 +85,13 @@ public class TemplateService {
             List<ModuleResponse> selectedModules = new ArrayList<>();
             if (selectedModuleIds != null && !selectedModuleIds.isEmpty()) {
                 for (String position : selectedModuleIds) {
-                    temp.addModule(list.get(Integer.parseInt(position)));
+
+                    try {
+                        temp.addModule(list.get(Integer.parseInt(position)));
+                    } catch (NullPointerException | IndexOutOfBoundsException ex) {
+                        return new ResponseEntity<>("Список доступных модулей устарел, повторите попытку", HttpStatus.BAD_REQUEST);
+                    }
+
                 }
             }
             saveTemplate(TemplateMapper.mapToTemplate(temp));

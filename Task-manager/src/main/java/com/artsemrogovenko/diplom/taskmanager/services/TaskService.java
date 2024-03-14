@@ -2,30 +2,23 @@ package com.artsemrogovenko.diplom.taskmanager.services;
 
 
 import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
-import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.CollectComponets;
+import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.taskmanager.model.Component;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ExcessAmountException;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ResourceNotFoundException;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.artsemrogovenko.diplom.taskmanager.httprequest.MyRequest;
 
-import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.artsemrogovenko.diplom.taskmanager.httprequest.MyRequest.convertResponseList;
+import java.util.Map;
 
 /**
  * Сервис для работы с задачими.
@@ -79,9 +72,14 @@ public class TaskService {
         work.setStatus(Task.Status.IN_PROGRESS);
         List<Component> components = CollectComponets.calculate(work);
         components.forEach(System.out::println);
-//        ResponseEntity<List<ComponentResponse>> result = postRequest("http://storage-server:8081/inventory",,ownerId,work.getContractNumber());
+        System.out.println("а теперь подсчитаное");
+        //если я напрямую просумирую значения, то эти значения запишутся в базе данных, а мне это ненужно
+        List<ComponentRequest> calculatedComponents = totalizationComponents(components);
+
+        calculatedComponents.forEach(System.out::println);
+//        ResponseEntity<List<ComponentResponse>> result = postRequest("http://storage-server:8081/inventory",ownerId,work.getContractNumber());
         taskRepository.save(work);
-        System.out.println("reservedTask");
+        System.out.println("task is reserved");
     }
 
     /**
@@ -98,15 +96,35 @@ public class TaskService {
     }
 
     @TrackUserAction
+    @Transactional
     public void completedTask(Long id, String ownerId) {
         Task work = getTaskById(id);
         if (work.getOwner().equals(ownerId)) {
             work.setStatus(Task.Status.DONE);
+            System.out.println(work);
             taskRepository.save(work);
             System.out.println("Блок complete применился");
         } else
             System.out.println("Блок complete не применился");
     }
 
+    private List<ComponentRequest> totalizationComponents(List<Component> components) {
 
+        Map<Long, ComponentRequest> uniqueRequest = new HashMap<>();
+        for (Component component : components) {
+            if (uniqueRequest.containsKey(component.getId())) {
+
+                // Если уже есть такой компонент, обновляем значение quantity
+                ComponentRequest tempComponent = uniqueRequest.get(component.getId());
+                tempComponent.setQuantity(tempComponent.getQuantity() + component.getQuantity());
+
+            } else {
+                // Если такого компонента ещё нет, добавляем его в Map
+                ComponentRequest tempComponent = ComponentMapper.mapToComponentRequest(component);
+                uniqueRequest.put(component.getId(), tempComponent);
+
+            }
+        }
+        return new ArrayList<>(uniqueRequest.values());
+    }
 }
