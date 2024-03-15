@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Создание модуля</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+</head>
+<body>
+
+<div href="#"  th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"  class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+    <span class="fs-5 fw-semibold">Задачи <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span></span>
+</div>
+
+<script th:if="${message} == '201 CREATED'">toastr.success('Шаблон добавлен');</script>
+<script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: данные уже существуют');</script>
+<script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>
+
+<div class="container mt-5">
+    <h1 class="text-center">Выбери себе работу</h1>
+
+
+<!--    <div>-->
+<!--        <table class="rotate-table">-->
+<!--            <tr>-->
+<!--                <th>Номер договора</th>-->
+<!--                <th>Размещение станции</th>-->
+<!--                <th>Грузоподъесность</th>-->
+<!--                <th>Цвет шкафа</th>-->
+<!--                <th>Остановки</th>-->
+<!--                <th>Статус изготовления</th>-->
+<!--                &lt;!&ndash; Добавьте другие заголовки, если необходимо &ndash;&gt;-->
+<!--            </tr>-->
+<!--            <tr th:if="${products.empty}">-->
+<!--                <td colspan="2"> No Job Available </td>-->
+<!--            </tr>-->
+<!--            <tr th:each="product : ${products}">-->
+<!--                <td><span th:text="${product.getContractNumber()}"> номер </span></td>-->
+<!--                <td><span th:text="${product.getType()}"> тип </span></td>-->
+<!--                <td><span th:text="${product.getLoad()}"> грузоподъемность </span></td>-->
+<!--                <td><span th:text="${product.getColor()}"> цвет шкафа </span></td>-->
+<!--                <td><span th:text="${product.getFloors()}"> оставновок </span></td>-->
+<!--                <td> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></td>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </div>-->
+
+    <div th:if="${message != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Ошибка!</strong> <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Проверяем наличие атрибута confirm в модели -->
+    <div th:if="${confirm != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${confirm}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <nav class="navbar navbar-light bg-light justify-content-between">
+        <form class="form-inline" th:action="@{/admin-only}" method="get">
+            <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit">Admin panel</button>
+        </form>
+    </nav>
+    <!--    -->
+<!--    <table class="table table-hover">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th colspan="2">-->
+<!--                <h3>Мои задачи</h3>-->
+<!--            </th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        &lt;!&ndash;        th:if="${task.reserved}"&ndash;&gt;-->
+<!--        <tr th:each="task: ${tasks}" th:if="${task.reserved}">-->
+<!--            <td class="table-light" th:text="${task.description}"></td>-->
+<!--            <td class="table-light" style="float-right" th:style="${task.status == 'DONE' ? 'display: none;' : ''}">-->
+<!--                <form th:action="@{/{id}/complete(id=${task.id})}" method="post" class="d-inline">-->
+<!--                    <input type="hidden" name="userid" th:value="${userid}"/>-->
+<!--                    <button type="submit" class="btn btn-success ">Success</button>-->
+<!--                </form>-->
+<!--                <form th:action="@{/{id}/rollback(id=${task.id})}" method="post" class="d-inline">-->
+<!--                    <input type="hidden" name="userid" th:value="${userid}"/>-->
+<!--                    <button type="submit" class="btn btn-warning ">Cancel</button>-->
+<!--                </form>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--    </table>-->
+
+
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var components = /*[[${tasks}]]*/ [];
+        /*]]>*/
+console.log(components);
+    </script>
+
+    <div class="row mt-4">
+
+        <div class="col-md-4 mb-4" th:each="task: ${tasks}">
+<!--            <div class="card" th:if="${task.owner} == 'kanban'">-->
+            <div class="card" >
+
+                <div class="card-body">
+                    <!--                    <h1>User ID: <span th:text="${userid}"></span></h1>-->
+                    <h5 class="card-title text-center" th:text="${task.name}"></h5>
+                            <span th:text="'Для договора ' + ${task.contractNumber}"> </span>&emsp;
+                            <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно' "> </span>
+                    <form th:action="@{/take/{id}(id=${task.id})}" method="post" class="d-flex"
+                          enctype="application/x-www-form-urlencoded">
+                        <input type="hidden" name="userid" value="misa jijia"/>
+                        <button type="submit" class="btn btn-primary ms-2">Забрать</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var countdown = [[${timer}]];
+    var countdownElement = document.getElementById('countdown');
+
+    function updateCountdown() {
+        var minutes = Math.floor(countdown / 60);
+        var seconds = countdown % 60;
+        var formattedTime = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+        countdownElement.innerText = 'можно обновить через : '+ formattedTime;
+        countdown--;
+        if (countdown < 0) {
+            clearInterval(interval);
+            countdownElement.innerText = "можно обновить";
+        }
+    }
+
+    // Вызываем функцию обновления таймера каждую секунду
+    var interval = setInterval(updateCountdown, 1000);
+    // Вызываем функцию обновления таймера сразу после загрузки страницы
+    updateCountdown();
+</script>
+
+</body>
+
+</html>

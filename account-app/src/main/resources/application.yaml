@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: account-service
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          task-server:
+            url: http://localhost:8080/
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:h2:mem:accounts
+    driverClassName: org.h2.Driver
+
+    username: sa
+    password: sa
+
+  h2:
+    console:
+      enabled: true
+server:
+  port: 8084

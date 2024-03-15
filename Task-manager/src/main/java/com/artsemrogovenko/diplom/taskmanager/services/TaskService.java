@@ -5,7 +5,7 @@ import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
 import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
-import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.CollectComponets;
+import com.artsemrogovenko.diplom.taskmanager.dto.TaskForUser;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TaskMapper;
 import com.artsemrogovenko.diplom.taskmanager.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.taskmanager.model.Component;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -65,13 +64,13 @@ public class TaskService {
      */
     @TrackUserAction
     @Transactional
-    public void reservedTask(Long id, String ownerId) throws ExcessAmountException {
-        Task work = getTaskById(id);
+    public void reservedTask(Long taskId, String userId) throws ExcessAmountException {
+        Task work = getTaskById(taskId);
         if (work.isReserved()) {
             throw new ExcessAmountException("задача уже выполняется");
         }
         work.setReserved(true);
-        work.setOwner(ownerId);
+        work.setOwner(userId);
         work.setStatus(Task.Status.IN_PROGRESS);
         taskRepository.save(work);
         //в задаче может быть несколько модулей, получение списка компонентов вынесен в другой блок
@@ -86,18 +85,22 @@ public class TaskService {
         calculatedComponents.forEach(System.out::println);
 
         ResponseEntity<List<ComponentResponse>> result = MyRequest.postRequest(
-                "http://storage-server:8081/inventory", calculatedComponents, ownerId, work.getContractNumber());
+                "http://storage-server:8081/component/inventory", calculatedComponents, userId, work.getContractNumber());
 
         if (result.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
-            rollbackReservedTask(id, ownerId);
+            rollbackReservedTask(taskId, userId);
         }
         if (result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
+            TaskForUser forUser = TaskMapper.convertTask(work);
+            ResponseEntity<String> responseEntity = MyRequest.assignTask(forUser, userId);
 
+            if (!result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {//если на сервисе клиента ошибка
+                rollbackReservedTask(taskId, userId);//отмена резерва задачи
+                MyRequest.rollbackComponents(calculatedComponents); // возвращаю компоненты на склад
+            } else {
 
-
-
-            TaskMapper.convertTask(work);
-            System.out.println("task is reserved");
+                System.out.println("task is reserved");
+            }
         }
     }
 

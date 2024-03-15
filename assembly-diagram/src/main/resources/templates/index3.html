@@ -58,7 +58,7 @@
             <form th:action="@{/upload/mix}" th:object="${description}" method="post" style="width: 500px"
                   id="uploadForm" enctype="multipart/form-data">
                 <h4>Добавить схему для сборки</h4>
-                <label for="moduleName">Имя элемента</label>
+                <label for="moduleName">Название элемента</label>
                 <input list="naming-options" id="moduleName" name="moduleName"/>
                 <datalist id="naming-options">
                     <option value="">--Please choose an option--</option>
