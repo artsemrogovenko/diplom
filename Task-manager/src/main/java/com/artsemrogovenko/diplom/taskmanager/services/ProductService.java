@@ -59,8 +59,8 @@ public class ProductService {
                 newProduct.setTasks(taskList);
             }
             //добавляю дополнительные компоненты
-            Task additional = formulaService.additionalTask(newProduct);
-            newProduct.getTasks().add(additional);
+            List<Task> additional = formulaService.additionalTask(newProduct);
+            newProduct.getTasks().addAll(additional);
 
             saveProduct(newProduct);
 

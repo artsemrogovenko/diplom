@@ -95,6 +95,7 @@ public class TemplateService {
                 }
             }
             saveTemplate(TemplateMapper.mapToTemplate(temp));
+            System.out.println(templateRepository.findLastTemplate());
             return new ResponseEntity<>("Шаблон сохранен", HttpStatus.CREATED);
         } catch (JsonProcessingException e) {
             System.out.println(e.getMessage());

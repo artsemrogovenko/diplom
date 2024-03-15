@@ -16,7 +16,7 @@ import java.util.Set;
 public class Module implements SavedModule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // этот компонент наследован из сервиса модулей, и не требует авто генерации
+    private Long id; //
 
     @Column(columnDefinition = "VARCHAR(100)")
     private String factoryNumber;       // заводской номер
@@ -48,6 +48,16 @@ public class Module implements SavedModule {
 
     public Module(Long id) {
         this.id = id;
+    }
+
+    @PrePersist
+    void onCreate() {
+        if (this.unit == null) {
+            this.unit = "шт";
+        }
+        if (this.quantity == null) {
+            this.quantity = 1;
+        }
     }
 
     public void addComponent(Component c) {

@@ -92,7 +92,7 @@
                         </th>
                     </tr>
                     <tr>
-                        <th>найти</th>
+                        <th></th>
                         <th>код изготовителя</th>
                         <th>модификация</th>
                         <th>название</th>
@@ -113,26 +113,6 @@
             <hr>
 
 
-<!--            <div class="dropdown">-->
-<!--                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"-->
-<!--                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-<!--                </button>-->
-<!--                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">-->
-<!--                    <table id="component_table_store">-->
-
-<!--                        <tbody>-->
-<!--                        <tr th:each="component: ${components}">-->
-<!--                            <td class="table-light" th:text="${component.factoryNumber}"></td>-->
-<!--                            <td class="table-light" th:text="${component.model}"></td>-->
-<!--                            <td class="table-light" th:text="${component.name}"></td>-->
-<!--                            <td class="table-light" th:text="${component.description}"></td>-->
-<!--                            <td class="table-light" th:text="${component.unit}"></td>-->
-<!--                        </tr>-->
-<!--                        </tbody>-->
-<!--                    </table>-->
-<!--                </div>-->
-<!--            </div>-->
-
             <div id="componentsData" data-components="${components}"></div>
 
 
@@ -141,15 +121,14 @@
                 var dropCounter; // Объявляем переменную dropCounter
                 /*<![CDATA[*/
                 var components = /*[[${components}]]*/ [];
+
                 /*]]>*/
                 function addRow() {
-
                     var table = document.getElementById("component_table").getElementsByTagName('tbody')[0];
                     var newRow = table.insertRow();
 
                     // Инкрементируем itemStat.index
-                    // rowCounter = document.querySelectorAll('#componentRows tr').length - 1;
-                    rowCounter = document.querySelectorAll('#component_table > tbody > tr').length-1;
+                    rowCounter = document.querySelectorAll('#component_table > tbody > tr').length - 1;
                     // Создаем элемент dropdown
                     var dropdown = document.createElement('div');
                     dropdown.classList.add('dropdown');
@@ -173,20 +152,29 @@
                     dropdownMenu.setAttribute('aria-labelledby', 'dropdownMenuButton' + dropCounter);
 
                     // Создаем таблицу внутри меню
-                    var tableInsideDropdown = document.createElement('table');
-                    tableInsideDropdown.classList.add('table');
+                    var tableInsideDropdown = document.createElement('div');
+
+                    const fillRow = (index) => {
+                        const item = components[index];
+                        newRow.children[1].children[0].value = item.factoryNumber;
+                        newRow.children[2].children[0].value = item.model;
+                        newRow.children[3].children[0].value = item.name;
+                        newRow.children[5].children[0].value = item.unit;
+                        newRow.children[6].children[0].value = item.description;
+                    };
 
                     // Добавляем строки с данными компонентов
-                    components.forEach(function (component) {
-                        var row = tableInsideDropdown.insertRow();
-                        var cell1 = row.insertCell(0);
-                        cell1.classList.add('table-light');
-                        cell1.textContent = component.factoryNumber + ' - ' +
-                            component.model + ' - ' +
-                            component.name + ' - ' +
-                            component.description + ' - ' +
-                            component.unit;
-                        // Добавьте остальные поля компонента по аналогии
+                    components.forEach(function (component, index) {
+                        var item = document.createElement('button')
+                        item.setAttribute('type', 'button');
+                        item.classList.add('btn');
+                        item.classList.add('btn-outline-info');
+                        const {factoryNumber, model, name, unit, description} = component;
+                        item.innerText = `${factoryNumber} - ${model} - ${name} - ${unit} - ${description} `;
+                        item.addEventListener('click', () => {
+                            fillRow(index);
+                        });
+                        tableInsideDropdown.appendChild(item);
                     });
 
                     dropdownMenu.appendChild(tableInsideDropdown);
@@ -195,8 +183,6 @@
                     // Вставляем dropdown в ячейку
                     var cell1 = newRow.insertCell(0);
                     cell1.appendChild(dropdown);
-                    // Добавляем обработчик события к кнопке dropdown-toggle
-                    dropdownToggle.addEventListener('click', handleDropdownClick);
 
                     /***/
                     // Создаем новые ячейки и добавляем поля ввода
@@ -298,7 +284,7 @@
 
                 function validateInputs() {
                     var isValid = true;
-                    var inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+                    var inputs = document.querySelectorAll('input[type="text"], input[type="number"],  select');
                     inputs.forEach(function (input) {
                         if (!input.value.trim()) { // Проверяем, что значение пустое
                             isValid = false;
@@ -312,36 +298,6 @@
                 }
 
 
-                function fillDropdown(dropdownId) {
-                    // Получаем выбранный компонент
-                    console.log(dropdownId);
-                    var dropdown = document.getElementById(dropdownId);
-                    var selectedComponent = components.find(function(component) {
-                        return component.id === dropdown.value; // предположим, что значение в списке соответствует id компонента
-                    });
-
-                    // Заполняем поля таблицы данными выбранного компонента
-                    if (selectedComponent) {
-                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.factoryNumber').value = selectedComponent.factoryNumber;
-                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.model').value = selectedComponent.model;
-                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.name').value = selectedComponent.name;
-                        document.getElementById('componentRequests' + dropdownId.substr(-1) + '.description').value = selectedComponent.description;
-                    }
-                }
-
-                // Обработчик события для кнопки dropdown-toggle
-                function handleDropdownClick(event) {
-                    var target = event.target;
-                    // Проверяем, что кликнули по элементу с классом dropdown-toggle
-                    if (target.classList.contains('dropdown-toggle')) {
-                        // Получаем id выпадающего списка
-                        var dropdownId = target.id;
-                        // Вызываем функцию заполнения для соответствующего dropdown
-                        fillDropdown(dropdownId);
-                    }
-                }
-                // Добавляем обработчик события к кнопке dropdown-toggle
-                document.addEventListener('click', handleDropdownClick);
 
             </script>
 

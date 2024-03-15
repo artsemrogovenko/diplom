@@ -29,7 +29,8 @@ public class Product {
             inverseJoinColumns = @JoinColumn(name = "task_id") // Столбец для связи с Template
     )
     private List<Task> tasks = new ArrayList<>();
-
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Deficit> deficit = new ArrayList<>(); // что нехватает для изготовления
     @PrePersist
     void onCreate() {
         if (this.done == null) {

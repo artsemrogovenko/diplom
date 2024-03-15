@@ -30,8 +30,8 @@ public class WebController {
     private final TemplateService templateService;
     private static List<ModuleResponse> modules = new ArrayList<>();
     private static List<Template> templates;
-    private static String specification_StatusCode = "";
-    private static String responseCode = "";
+    private static String specification_StatusCode ;
+    private static String responseCode ;
     private static String responseMessage;
 
 
@@ -66,7 +66,7 @@ public class WebController {
         templates = templateService.getAllTemplates();
         model.addAttribute("message", responseCode);
         model.addAttribute("errorInfo", responseMessage);
-        responseCode="";
+        responseCode=null;
         responseMessage = null;
         model.addAttribute("product", new Product());
         model.addAttribute("templates", templates);
@@ -93,7 +93,7 @@ public class WebController {
         model.addAttribute("message", responseCode);
         model.addAttribute("errorInfo", responseMessage);
         responseMessage = null;
-        specification_StatusCode = "";
+        specification_StatusCode =null;
         model.addAttribute("template", new TemplateRequest());
         model.addAttribute("specifications", modules);
         model.addAttribute("timer", templateService.getSecondsDifference());

@@ -35,6 +35,15 @@ public class ComponentController {
         return new ResponseEntity<>(componentService.increaseComponents(components), HttpStatus.ACCEPTED);
     }
 
+    /**
+     * если пользователь решил сам отменить задачу
+     * @param components детали которые он взял
+     */
+    @PostMapping("/rollbackTask")
+    public ResponseEntity<?> rollbackComponents(@RequestBody List<ComponentRequest> components) {
+        return saveComponents(components);
+    }
+
     @GetMapping("{name}")
     public ResponseEntity<List<ComponentResponse>> getComponent(@PathVariable("name") String name) {
         List<ComponentResponse> componentResponses;
@@ -59,12 +68,12 @@ public class ComponentController {
 
 
     @GetMapping("/inventory")
-    public ResponseEntity<List<ComponentResponse>> isInStock(@RequestBody  List<ComponentRequest> requests) {
+    public ResponseEntity<List<ComponentResponse>> isInStock(@RequestBody List<ComponentRequest> requests) {
         return componentService.isInStock(requests);
     }
 
     @PostMapping("/reserve")
     public ResponseEntity<List<ComponentResponse>> reserve(@RequestBody List<ComponentRequest> requests, @RequestParam String user, @RequestParam String number) {
-        return componentService.reserveComponents(number,user,requests);
+        return componentService.reserveComponents(number, user, requests);
     }
 }

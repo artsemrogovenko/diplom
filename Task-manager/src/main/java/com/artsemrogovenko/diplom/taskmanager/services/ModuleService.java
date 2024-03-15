@@ -91,6 +91,8 @@ public class ModuleService {
                 }
             }
             ModuleResponse result = ModuleMapper.mapModuleToModuleResponse(moduleRepository.save(module));
+
+            System.out.println(moduleRepository.findLastModule());
             return new ResponseEntity<>(result, CREATED);
         }
         return new ResponseEntity<>(new ModuleResponse(), HttpStatus.CONFLICT);

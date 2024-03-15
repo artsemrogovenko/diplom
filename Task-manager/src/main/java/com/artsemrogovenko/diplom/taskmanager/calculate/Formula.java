@@ -15,10 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -37,33 +34,59 @@ public class Formula {
                 .block();
     }
 
-    public Task additionalTask(Product product) {
+    public List<Task> additionalTask(Product product) {
         Task equipment = new Task();
-        equipment.setName("комплектация");
+        equipment.setName("Комплектация");
         equipment.setContractNumber(product.getContractNumber());
 
         Module special = new Module();
-        special.setName("для договора " + product.getContractNumber());
+        special.setName("коробка для договора " + product.getContractNumber());
         special.setQuantity(1);
 
-        MyCollection<Component> components = new MyCollection<>(Component.class, additionalComponents(product));
+        MyCollection<Component> additionalComponents = new MyCollection<>(Component.class, additionalComponents(product));
+        special.setComponents(additionalComponents);
 
-        special.setComponents(components);
+        Task metal = new Task();
+        metal.setName("металл");
+        metal.setContractNumber(product.getContractNumber());
 
         Module controlCabinet = new Module();
-        controlCabinet.setName("шкаф управления");
+        controlCabinet.setName("шкаф");
+        controlCabinet.setUnit("шт");
         controlCabinet.setQuantity(1);
         controlCabinet.setModel(product.getType());
         controlCabinet.setDescription(product.getColor());
 
+        MyCollection<Component> controlCabinetComponents = new MyCollection<>(Component.class, controlCabinet(product));
+        controlCabinet.setComponents(controlCabinetComponents);
+
+
         moduleService.createModule(controlCabinet);
         moduleService.createModule(special);
 
-
-        equipment.addModule(controlCabinet);
+        metal.addModule(controlCabinet);
         equipment.addModule(special);
 
-        return equipment;
+        return new LinkedList<>(List.of(equipment, metal));
+    }
+
+    private static List<Component> controlCabinet(Product product) {
+        ComponentRequest box = new ComponentRequest().builder()
+                .name("корпус").model(product.getType()).quantity(1).unit("шт").description(product.getColor()).build();
+
+        ComponentRequest door =new ComponentRequest().builder()
+                .name("дверь").model(product.getType()).quantity(1).unit("шт").description(product.getColor()).build();
+
+        ComponentRequest locks =new ComponentRequest().builder()
+                .name("замок").model("20-20/50").quantity(2).unit("шт").description("трехгранный ключ").build();
+
+
+        List<Component> result = new ArrayList<>();
+        result.add(ComponentMapper.mapToComponent(box));
+        result.add(ComponentMapper.mapToComponent(door));
+        result.add(ComponentMapper.mapToComponent(locks));
+
+        return result;
     }
 
     public static List<Component> additionalComponents(Product product) {
@@ -107,5 +130,30 @@ public class Formula {
             }
         }
         return new ArrayList<>(List.of(electricMotor, floorDetector));
+    }
+
+    public static List<ComponentRequest> totalizationComponents(List<Component> components) {
+
+        Map<Long, ComponentRequest> uniqueRequest = new HashMap<>();
+        for (Component component : components) {
+            if (uniqueRequest.containsKey(component.getId())) {
+                // Если уже есть такой компонент, обновляем значение quantity
+                ComponentRequest tempComponent = uniqueRequest.get(component.getId());
+                tempComponent.setQuantity(tempComponent.getQuantity() + component.getQuantity());
+
+            } else {
+                // Если такого компонента ещё нет, добавляем его в Map
+                ComponentRequest tempComponent = ComponentMapper.mapToComponentRequest(component);
+                uniqueRequest.put(component.getId(), tempComponent);
+            }
+        }
+        return new ArrayList<>(uniqueRequest.values());
+    }
+
+    public static List<Component> componentsFromAllModules(Task task) {
+        List<Component> components = task.getModules().stream()
+                .flatMap(module -> module.getComponents().stream())
+                .toList();
+        return components;
     }
 }

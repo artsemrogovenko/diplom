@@ -195,10 +195,10 @@ public class ComponentService {
     public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber,String userId, List<ComponentRequest> requiredComponents) {
         ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
         if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
-            //TODO сделать уведомление для заказа
+            //TODO можно сделать уведомление для заказа
         }
         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
-            //TODO сделать перевод компонентов клиенту
+            //TODO можно сделать перевод компонентов клиенту
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

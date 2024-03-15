@@ -2,36 +2,38 @@ package com.artsemrogovenko.diplom.taskmanager.services;
 
 
 import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
+import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
+import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.CollectComponets;
-import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ComponentMapper;
+import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TaskMapper;
+import com.artsemrogovenko.diplom.taskmanager.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.taskmanager.model.Component;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ExcessAmountException;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ResourceNotFoundException;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * Сервис для работы с задачими.
  */
 @Service
 @AllArgsConstructor
-@Transactional(readOnly = true)
 public class TaskService {
     /**
      * Объект репозитория.
      */
     private final TaskRepository taskRepository;
-    private final WebClient.Builder builder;
+
 
     /**
      * Получение всех задач.
@@ -58,7 +60,8 @@ public class TaskService {
 
 
     /**
-     * Резервирование задачи на доске.
+     * Резервирование задачи на для пользователя.
+     * при отстутствии компонентов на складе задача будет отклонена
      */
     @TrackUserAction
     @Transactional
@@ -70,22 +73,32 @@ public class TaskService {
         work.setReserved(true);
         work.setOwner(ownerId);
         work.setStatus(Task.Status.IN_PROGRESS);
-        //в задаче может быть несколько модулей, и в самих модулях компоненты
-        //то создание списка компонентов вынесен в другой блок
-        List<Component> components = CollectComponets.calculate(work);
+        taskRepository.save(work);
+        //в задаче может быть несколько модулей, получение списка компонентов вынесен в другой блок
+        List<Component> components = Formula.componentsFromAllModules(work);
         components.forEach(System.out::println);
         System.out.println("а теперь подсчитаное");
         // компоненты могут повторяться но их количество будет разное
         // поэтому нужно создать список без повторов и с подсчитаным количеством,
         // если просумировать на обьектах списках то это отразаться на базе данных
         // а мне это не нужно
-        List<ComponentRequest> calculatedComponents = totalizationComponents(components);
-
+        List<ComponentRequest> calculatedComponents = Formula.totalizationComponents(components);
         calculatedComponents.forEach(System.out::println);
-//        ResponseEntity<List<ComponentResponse>> result = postRequest("http://storage-server:8081/inventory",ownerId,work.getContractNumber());
 
-        taskRepository.save(work);
-        System.out.println("task is reserved");
+        ResponseEntity<List<ComponentResponse>> result = MyRequest.postRequest(
+                "http://storage-server:8081/inventory", calculatedComponents, ownerId, work.getContractNumber());
+
+        if (result.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
+            rollbackReservedTask(id, ownerId);
+        }
+        if (result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
+
+
+
+
+            TaskMapper.convertTask(work);
+            System.out.println("task is reserved");
+        }
     }
 
     /**
@@ -93,11 +106,11 @@ public class TaskService {
      */
     @TrackUserAction
     @Transactional
-    public void rollbackReservedTask(Long id,String ownerId) {
+    public void rollbackReservedTask(Long id, String ownerId) {
         Task work = getTaskById(id);
         if (work.getOwner().equals(ownerId)) {
             work.setReserved(false);
-            work.setOwner("Kanban"); // сделать владельцем общее хранилище
+            work.setOwner("kanban"); // сделать владельцем общее хранилище
             work.setStatus(Task.Status.TO_DO);
             taskRepository.save(work);
         }
@@ -116,21 +129,5 @@ public class TaskService {
             System.out.println("Блок complete не применился");
     }
 
-    private List<ComponentRequest> totalizationComponents(List<Component> components) {
 
-        Map<Long, ComponentRequest> uniqueRequest = new HashMap<>();
-        for (Component component : components) {
-            if (uniqueRequest.containsKey(component.getId())) {
-                // Если уже есть такой компонент, обновляем значение quantity
-                ComponentRequest tempComponent = uniqueRequest.get(component.getId());
-                tempComponent.setQuantity(tempComponent.getQuantity() + component.getQuantity());
-
-            } else {
-                // Если такого компонента ещё нет, добавляем его в Map
-                ComponentRequest tempComponent = ComponentMapper.mapToComponentRequest(component);
-                uniqueRequest.put(component.getId(), tempComponent);
-            }
-        }
-        return new ArrayList<>(uniqueRequest.values());
-    }
 }

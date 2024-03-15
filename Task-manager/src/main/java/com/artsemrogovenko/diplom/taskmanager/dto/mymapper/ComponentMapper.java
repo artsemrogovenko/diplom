@@ -25,7 +25,10 @@ public class ComponentMapper {
         if (componentData.getQuantity() != null) {
             component.setQuantity(componentData.getQuantity());
         }
-        component.setUnit(componentData.getUnit().trim());
+        if (componentData.getUnit() != null) {
+            component.setUnit(componentData.getUnit().trim());
+
+        }
         if (componentData.getDescription() != null) {
             component.setDescription(componentData.getDescription().trim());
         }

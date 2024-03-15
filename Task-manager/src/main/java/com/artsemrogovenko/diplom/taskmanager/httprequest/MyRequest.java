@@ -2,7 +2,10 @@ package com.artsemrogovenko.diplom.taskmanager.httprequest;
 
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.taskmanager.dto.TaskForUser;
+import com.artsemrogovenko.diplom.taskmanager.services.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.observation.ObservationRegistry;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -11,13 +14,25 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.codec.ClientCodecConfigurer;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.*;
+import org.springframework.web.util.UriBuilderFactory;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class MyRequest {
+
+
     /**
      * @param request        метод Http запроса
      * @param serializedData тело запроса json
@@ -80,7 +95,7 @@ public class MyRequest {
         return new ResponseEntity<>(result, HttpStatus.valueOf(statusCode));
     }
 
-    public ResponseEntity<List<ComponentResponse>> postRequest(String url, List<ComponentRequest> componentRequests, String user, String number) {
+    public static ResponseEntity<List<ComponentResponse>> postRequest(String url, List<ComponentRequest> componentRequests, String user, String number) {
         RestTemplate restTemplate = new RestTemplate();
         // Создаем объект HttpHeaders для указания типа контента
         HttpHeaders headers = new HttpHeaders();
@@ -102,5 +117,13 @@ public class MyRequest {
         );
         return responseEntity;
     }
+
+public static assignTask(TaskForUser task){
+
+    convertResponse();
+    get("http://account-service:8084/assignTask/{id}").
+            MyRequest.postRequest(
+                    "http://storage-server:8081/inventory", calculatedComponents, ownerId, work.getContractNumber());
+}
 
 }

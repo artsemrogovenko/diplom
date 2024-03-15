@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.repository;
 
+import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,7 @@ import java.util.List;
 public interface TemplateRepository extends JpaRepository<Template,Long> {
     @Query("SELECT t.modules FROM Template t WHERE t.id = :templateId")
     List<Module> findModulesByTemplateId(@Param("templateId") Long templateId);
+
+    @Query("SELECT e FROM Template e ORDER BY e.id DESC")
+    Template findLastTemplate();
 }
