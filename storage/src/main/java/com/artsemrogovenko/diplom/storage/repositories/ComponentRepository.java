@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ComponentRepository extends JpaRepository<Component, Long> {
     List<Component> findAllByName(String name);
- Optional< List<Component>> findByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
+    Optional<List<Component>> findByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
 }

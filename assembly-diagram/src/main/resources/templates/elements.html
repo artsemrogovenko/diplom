@@ -38,16 +38,16 @@
 
     <div class="box-info">
 
-<!--        <div>-->
-<!--            <form class="prevButton" method="get">-->
-<!--                <button type="submit">Prev</button>-->
-<!--            </form>-->
-<!--        </div>-->
-<!--        <div>-->
-<!--            <form class="nextButton" method="get">-->
-<!--                <button type="submit">Next</button>-->
-<!--            </form>-->
-<!--        </div>-->
+        <!--        <div>-->
+        <!--            <form class="prevButton" method="get">-->
+        <!--                <button type="submit">Prev</button>-->
+        <!--            </form>-->
+        <!--        </div>-->
+        <!--        <div>-->
+        <!--            <form class="nextButton" method="get">-->
+        <!--                <button type="submit">Next</button>-->
+        <!--            </form>-->
+        <!--        </div>-->
 
     </div>
 
@@ -55,11 +55,17 @@
 </div>
 
 <div class="container-elements">
-    <div class="cards-container" th:each="element: ${elements}">
+    <div class="cards-container" th:each="sheme_for_module: ${elements}">
 
         <div class="character-card">
 
-            <h3 align="center" th:text="${element}"></h3>
+            <h3 th:text="${sheme_for_module.getModuleName()}"></h3>
+            <ul>
+                <li th:text="'Исполнение' + ${sheme_for_module.getModification()}"></li>
+                <li th:text="'Версия' + ${sheme_for_module.getVersionAssembly()}"></li>
+                <a th:href="${sheme_for_module.getFilePath()}">схема</a>
+            </ul>
+
         </div>
     </div>
 </div>

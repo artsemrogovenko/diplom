@@ -1,6 +1,7 @@
 package com.artsemrogovenko.diplom.diagrams.controller;
 
 import com.artsemrogovenko.diplom.diagrams.dto.DiagramDto;
+import com.artsemrogovenko.diplom.diagrams.model.DiagramDescription;
 import com.artsemrogovenko.diplom.diagrams.service.DiagramService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,4 +33,10 @@ private final DiagramService diagramService;
         log.info("Received  request for scheme: {}", diagramDto.toString());
         return diagramService.getScheme(diagramDto.getModuleName(),diagramDto.getModification(),diagramDto.getVersionAssembly(), diagramDto.getContractNumber());
     }
+
+    @PostMapping("/getUrlsheme")
+    public ResponseEntity<String> requestSheme(@RequestBody DiagramDescription diagramDescription) {
+        return diagramService.getUrlsheme(diagramDescription);
+    }
+
 }

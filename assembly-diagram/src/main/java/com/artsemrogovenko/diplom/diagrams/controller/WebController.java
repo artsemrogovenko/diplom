@@ -34,7 +34,8 @@ public class WebController {
 
     @GetMapping("/elements")
     public String showElements(Model model) {
-        model.addAttribute("elements", diagramService.getAllmodulesNames());
+//        model.addAttribute("elements", diagramService.getAllmodulesNames());
+        model.addAttribute("elements", diagramService.showAllSchemes());
         return "elements";
     }
 

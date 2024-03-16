@@ -2,10 +2,10 @@ package com.artsemrogovenko.diplom.storage.controller;
 
 import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.storage.service.DeficitService;
 import com.artsemrogovenko.diplom.storage.service.ComponentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +16,10 @@ import java.util.List;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/")
 public class WebController {
 
     private final ComponentService componentService;
+    private final DeficitService deficitService;
 
     @GetMapping("")
     public String getAll(Model model) {
@@ -36,6 +36,12 @@ public class WebController {
         componentService.createComponent(componentRequest);
 //        redirectAttributes.addAttribute("confirm", "компонент добавлен");
         return "redirect:/";
+    }
+
+    @GetMapping("/buy")
+    public String showCard(Model model) {
+        model.addAttribute("needs", deficitService.getAll());
+        return "card";
     }
 
     @GetMapping("/{name}")

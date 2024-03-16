@@ -22,7 +22,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountService {
     private final AccountRepository accountRepository;
+    public void saveUser(Account user) {
+        accountRepository.save(user);
+    }
 
+    public Account findUserById(String name) {
+        return accountRepository.findById(name).orElse(null);
+    }
     public ResponseEntity<?> getTaskByOwner(String userId, String description) {
         Optional<Task> taskOptional = accountRepository.findById(userId).get().getTasks().stream()
                 .filter(task -> task.getDescription().equals(description)).findFirst();

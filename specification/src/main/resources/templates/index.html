@@ -13,6 +13,7 @@
 </head>
 <body>
 
+
 <!-- Navigation -->
 <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
     <div class="container">
@@ -34,6 +35,10 @@
         </div>
     </div>
 </nav>
+
+<script th:if="${errorInfo != null}">
+    toastr.info([[${errorInfo}]]);
+</script>
 
 <div class="container">
     <div class="row">
@@ -77,8 +82,8 @@
                     <input hidden="hidden" id="componentRequestsInput" th:value="${newModule.componentRequests}"/>
                 </div>
 
-                <div class="add_circut"><input type="text" id="request_circutFile" th:field="${newModule.circutFile}"
-                                               placeholder="ссылка на схему"/></div>
+                <div class="add_circut"><input type="text" id="request_circutFile" th:field="${newModule.circuitVersion}"
+                                               placeholder="Версия схемы"/></div>
                 <div class="createnewModule_button">
                     <button type="submit">Создать элемент</button>
                 </div>
@@ -335,7 +340,7 @@
                                 <li>Модификация: <span th:text="${element.getModel()}"></span></li>
                                 <li>Единица измерения: <span th:text="${element.getUnit()}"></span></li>
                                 <li>Описание: <span th:text="${element.getDescription()}"></span></li>
-                                <li><a th:href="${element.getCircutFile()}" target="_blank">Cхема</a></li>
+                                <li><a th:href="${element.getCircuitFile()}" target="_blank">Cхема</a></li>
                             </ul>
                             <button type="submit" class="w-100 btn btn-lg btn-outline-primary">Edit</button>
                         </div>

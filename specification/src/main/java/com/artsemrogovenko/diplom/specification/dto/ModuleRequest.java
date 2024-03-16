@@ -28,7 +28,7 @@ public class ModuleRequest implements ModuleData {
 
     //один модуль может содержать несколько компонентов
     private MyCollection componentRequests;
-    private String circutFile;  // схема сборки
+    private String circuitVersion;  // схема сборки
 
     public void addComponent(ComponentRequest c) {
         componentRequests.add(c);
@@ -36,8 +36,12 @@ public class ModuleRequest implements ModuleData {
 
     @Override
     public boolean fieldsIsNull() {
-        return factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && componentRequests == null && circutFile == null;
+        return factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && componentRequests == null && circuitVersion == null;
     }
 
+    @Override
+    public String getCircuitFile() {
+        return circuitVersion;
+    }
 
 }

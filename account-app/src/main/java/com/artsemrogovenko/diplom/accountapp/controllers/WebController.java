@@ -1,19 +1,22 @@
 package com.artsemrogovenko.diplom.accountapp.controllers;
 
 import com.artsemrogovenko.diplom.accountapp.api.TaskApi;
+import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.services.TaskService;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.net.ConnectException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +36,18 @@ public class WebController {
     public String takeMeTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
         ResponseEntity<Void> responseEntity = taskService.takeTask(taskId, userid);
         responseCode = responseEntity.getStatusCode().toString();
-        return "/";
+        return "redirect:/";
     }
 
-    @GetMapping
+    @GetMapping("/myTasks")
+    public String myTasks(@RequestBody String userId, Model model) {
+        List<Task> as= taskService.showMyTasks(userId);
+         model.addAttribute("tasks", as);
+        System.out.println(as);
+        return "mytasks.html";
+    }
+
+    @GetMapping("/")
     public String mainPage(Model model) {
         try {
             if (startView) {
@@ -48,11 +59,9 @@ public class WebController {
                     tasks = temp;
                 }
             }
-
-        } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException ex) {
+        } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException | ConnectException ex) {
             taskservice_StatusCode = "503 SERVICE_UNAVAILABLE";
         }
-
         tasks = taskApi.getTasks().getBody();
 
         model.addAttribute("message", responseCode);
@@ -66,4 +75,31 @@ public class WebController {
 //        System.out.println(modules);
         return "index.html";
     }
+
+    @LogMethod
+    @ExceptionHandler(value = FeignException.InternalServerError.class)
+    public String errorPage(FeignException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "redirect:/";
+    }
+
+    @LogMethod
+    @ExceptionHandler(value = FeignException.MethodNotAllowed.class)
+    public String notsupported(FeignException e, Model model) {
+        model.addAttribute("message", e.getMessage());
+        return "redirect:/";
+    }
+
+    @LogMethod
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public String handleMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        return "index.html"; // Перенаправление на страницу
+    }
+
+    @LogMethod
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public String handleNoResourceFoundException(NoHandlerFoundException ex) {
+        return "index.html"; // Перенаправление на страницу
+    }
+
 }

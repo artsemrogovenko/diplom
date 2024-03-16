@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.storage.controller;
 
+import com.artsemrogovenko.diplom.storage.aspect.LogMethod;
 import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.storage.model.Component;
@@ -37,6 +38,7 @@ public class ComponentController {
 
     /**
      * если пользователь решил сам отменить задачу
+     *
      * @param components детали которые он взял
      */
     @PostMapping("/rollbackTask")
@@ -72,8 +74,9 @@ public class ComponentController {
         return componentService.isInStock(requests);
     }
 
+    @LogMethod
     @PostMapping("/reserve")
-    public ResponseEntity<List<ComponentResponse>> reserve(@RequestBody List<ComponentRequest> requests, @RequestParam String user, @RequestParam String number) {
-        return componentService.reserveComponents(number, user, requests);
+    public ResponseEntity<List<ComponentResponse>> reserve(@RequestBody List<ComponentRequest> requests, @RequestParam String user, @RequestParam String contractNumber, @RequestParam Long taskId) {
+        return componentService.reserveComponents(contractNumber,taskId, user, requests);
     }
 }

@@ -1,11 +1,9 @@
 package com.artsemrogovenko.diplom.specification.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.*;
 
 @Data
@@ -38,7 +36,7 @@ public class Module {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();   // список компонентов
-    private String circutFile;  // схема сборки
+    private String circuitFile;  // схема сборки
 
     // Конструктор для установки идентификатора вручную
     public Module(Long id) {
@@ -50,6 +48,6 @@ public class Module {
     }
 
     public boolean fieldsIsNull() {
-        return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && components.isEmpty() && circutFile == null;
+        return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && components.isEmpty() && circuitFile == null;
     }
 }

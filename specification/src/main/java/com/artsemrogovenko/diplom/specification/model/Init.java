@@ -17,7 +17,7 @@ public class Init {
         Component mycompo = new Component();
         mycompo.setName("wire");
         mycompo.setQuantity(2);
-        mycompo.setUnit("km");
+        mycompo.setUnit("км");
         mycompo.setDescription("зеленый");
         Module module = new Module();
 
@@ -27,7 +27,7 @@ public class Init {
         module.setUnit("шт");
         module.addComponent(mycompo);
         module.setDescription("black color");
-        module.setCircutFile("https://cdn.pixabay.com/photo/2013/07/13/13/48/cardboard-box-161578_1280.png");
+        module.setCircuitFile("https://cdn.pixabay.com/photo/2013/07/13/13/48/cardboard-box-161578_1280.png");
         moduleRepository.save(module);
     }
 }

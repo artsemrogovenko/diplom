@@ -248,6 +248,10 @@ public class DiagramService {
         return schemeFileRepository.findAllModuleNames();
     }
 
+    public List<SchemeForModule> showAllSchemes() {
+        return schemeFileRepository.findAll();
+    }
+
     public ResponseEntity<Path> getScheme(String moduleName, String modification, String versionAssembly, String number) {
         List<SchemeForModule> list = schemeFileRepository.findByModuleNameAndModificationAndVersionAssembly(
                 moduleName, modification, versionAssembly).get();
@@ -260,5 +264,18 @@ public class DiagramService {
             return new ResponseEntity<Path>(Path.of(result.get().getFilePath()), HttpStatus.OK);
         }
         return new ResponseEntity<Path>(Path.of(null), HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<String> getUrlsheme(DiagramDescription diagramDescription) {
+        Optional<String> urlresult =
+                schemeFileRepository.findFilePathByModuleNameAndModificationAndVersionAssembly(
+                        diagramDescription.getModuleName(),
+                        diagramDescription.getModification(),
+                        diagramDescription.getVersionAssembly());
+        //если результат найден
+        if (urlresult.isPresent()) {
+           return new ResponseEntity<>(urlresult.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 }

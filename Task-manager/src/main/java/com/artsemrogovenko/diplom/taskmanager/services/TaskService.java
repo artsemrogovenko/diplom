@@ -2,6 +2,8 @@ package com.artsemrogovenko.diplom.taskmanager.services;
 
 
 import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
+import com.artsemrogovenko.diplom.taskmanager.api.AccountApi;
+import com.artsemrogovenko.diplom.taskmanager.api.StorageApi;
 import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -32,7 +36,11 @@ public class TaskService {
      * Объект репозитория.
      */
     private final TaskRepository taskRepository;
-
+    /**
+     * OpenFeign интерфейсы
+     */
+    private final StorageApi storageApi;
+    private final AccountApi accountApi;
 
     /**
      * Получение всех задач.
@@ -83,16 +91,22 @@ public class TaskService {
         // а мне это не нужно
         List<ComponentRequest> calculatedComponents = Formula.totalizationComponents(components);
         calculatedComponents.forEach(System.out::println);
+//
+//        ResponseEntity<List<ComponentResponse>> result = MyRequest.postRequest(
+//                "http://storage-server:8081/component/inventory", calculatedComponents, userId, work.getContractNumber());
+        // проверка на наличие компонентов
 
-        ResponseEntity<List<ComponentResponse>> result = MyRequest.postRequest(
-                "http://storage-server:8081/component/inventory", calculatedComponents, userId, work.getContractNumber());
+        ResponseEntity<List<ComponentResponse>> result = storageApi.reserve(calculatedComponents, userId, work.getContractNumber(), taskId);
 
         if (result.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
+            // Отмена задачи
             rollbackReservedTask(taskId, userId);
         }
         if (result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
             TaskForUser forUser = TaskMapper.convertTask(work);
-            ResponseEntity<String> responseEntity = MyRequest.assignTask(forUser, userId);
+//            ResponseEntity<String> responseEntity = MyRequest.assignTask(forUser, userId);
+            //назначаю задачу
+            accountApi.assignTask(forUser, userId);
 
             if (!result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {//если на сервисе клиента ошибка
                 rollbackReservedTask(taskId, userId);//отмена резерва задачи

@@ -26,10 +26,5 @@ public class TaskForUser {
 
     private List<Module> modules = new ArrayList<>();
 
-    public enum Status {
-        TO_DO,
-        DONE,
-        IN_PROGRESS,
-    }
 
 }

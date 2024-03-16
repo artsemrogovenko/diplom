@@ -13,8 +13,14 @@
 </head>
 <body>
 
-<div href="#"  th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"  class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-    <span class="fs-5 fw-semibold">Задачи <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span></span>
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/myTasks" >Мои задачи</a>
+</nav>
+
+<div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
+     class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+    <span class="fs-5 fw-semibold">Задачи <span class="countdown" id="countdown" th:text="${timer}"
+                                                style="font-size: 12px; text-align: right;"></span></span>
 </div>
 
 <script th:if="${message} == '201 CREATED'">toastr.success('Шаблон добавлен');</script>
@@ -25,30 +31,30 @@
     <h1 class="text-center">Выбери себе работу</h1>
 
 
-<!--    <div>-->
-<!--        <table class="rotate-table">-->
-<!--            <tr>-->
-<!--                <th>Номер договора</th>-->
-<!--                <th>Размещение станции</th>-->
-<!--                <th>Грузоподъесность</th>-->
-<!--                <th>Цвет шкафа</th>-->
-<!--                <th>Остановки</th>-->
-<!--                <th>Статус изготовления</th>-->
-<!--                &lt;!&ndash; Добавьте другие заголовки, если необходимо &ndash;&gt;-->
-<!--            </tr>-->
-<!--            <tr th:if="${products.empty}">-->
-<!--                <td colspan="2"> No Job Available </td>-->
-<!--            </tr>-->
-<!--            <tr th:each="product : ${products}">-->
-<!--                <td><span th:text="${product.getContractNumber()}"> номер </span></td>-->
-<!--                <td><span th:text="${product.getType()}"> тип </span></td>-->
-<!--                <td><span th:text="${product.getLoad()}"> грузоподъемность </span></td>-->
-<!--                <td><span th:text="${product.getColor()}"> цвет шкафа </span></td>-->
-<!--                <td><span th:text="${product.getFloors()}"> оставновок </span></td>-->
-<!--                <td> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></td>-->
-<!--            </tr>-->
-<!--        </table>-->
-<!--    </div>-->
+    <!--    <div>-->
+    <!--        <table class="rotate-table">-->
+    <!--            <tr>-->
+    <!--                <th>Номер договора</th>-->
+    <!--                <th>Размещение станции</th>-->
+    <!--                <th>Грузоподъесность</th>-->
+    <!--                <th>Цвет шкафа</th>-->
+    <!--                <th>Остановки</th>-->
+    <!--                <th>Статус изготовления</th>-->
+    <!--                &lt;!&ndash; Добавьте другие заголовки, если необходимо &ndash;&gt;-->
+    <!--            </tr>-->
+    <!--            <tr th:if="${products.empty}">-->
+    <!--                <td colspan="2"> No Job Available </td>-->
+    <!--            </tr>-->
+    <!--            <tr th:each="product : ${products}">-->
+    <!--                <td><span th:text="${product.getContractNumber()}"> номер </span></td>-->
+    <!--                <td><span th:text="${product.getType()}"> тип </span></td>-->
+    <!--                <td><span th:text="${product.getLoad()}"> грузоподъемность </span></td>-->
+    <!--                <td><span th:text="${product.getColor()}"> цвет шкафа </span></td>-->
+    <!--                <td><span th:text="${product.getFloors()}"> оставновок </span></td>-->
+    <!--                <td> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></td>-->
+    <!--            </tr>-->
+    <!--        </table>-->
+    <!--    </div>-->
 
     <div th:if="${message != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Ошибка!</strong> <span th:text="${message}"></span>
@@ -65,32 +71,6 @@
             <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit">Admin panel</button>
         </form>
     </nav>
-    <!--    -->
-<!--    <table class="table table-hover">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th colspan="2">-->
-<!--                <h3>Мои задачи</h3>-->
-<!--            </th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        &lt;!&ndash;        th:if="${task.reserved}"&ndash;&gt;-->
-<!--        <tr th:each="task: ${tasks}" th:if="${task.reserved}">-->
-<!--            <td class="table-light" th:text="${task.description}"></td>-->
-<!--            <td class="table-light" style="float-right" th:style="${task.status == 'DONE' ? 'display: none;' : ''}">-->
-<!--                <form th:action="@{/{id}/complete(id=${task.id})}" method="post" class="d-inline">-->
-<!--                    <input type="hidden" name="userid" th:value="${userid}"/>-->
-<!--                    <button type="submit" class="btn btn-success ">Success</button>-->
-<!--                </form>-->
-<!--                <form th:action="@{/{id}/rollback(id=${task.id})}" method="post" class="d-inline">-->
-<!--                    <input type="hidden" name="userid" th:value="${userid}"/>-->
-<!--                    <button type="submit" class="btn btn-warning ">Cancel</button>-->
-<!--                </form>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        </tbody>-->
-<!--    </table>-->
 
 
 
@@ -98,23 +78,22 @@
         /*<![CDATA[*/
         var components = /*[[${tasks}]]*/ [];
         /*]]>*/
-console.log(components);
     </script>
 
     <div class="row mt-4">
 
         <div class="col-md-4 mb-4" th:each="task: ${tasks}">
-<!--            <div class="card" th:if="${task.owner} == 'kanban'">-->
-            <div class="card" >
+            <!--            <div class="card" th:if="${task.owner} == 'kanban'">-->
+            <div class="card">
 
                 <div class="card-body">
                     <!--                    <h1>User ID: <span th:text="${userid}"></span></h1>-->
                     <h5 class="card-title text-center" th:text="${task.name}"></h5>
-                            <span th:text="'Для договора ' + ${task.contractNumber}"> </span>&emsp;
-                            <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно' "> </span>
+                    <span th:text="'Для договора ' + ${task.contractNumber}"> </span>&emsp;
+                    <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно' "> </span>
                     <form th:action="@{/take/{id}(id=${task.id})}" method="post" class="d-flex"
                           enctype="application/x-www-form-urlencoded">
-                        <input type="hidden" name="userid" value="misa jijia"/>
+                        <input type="hidden" name="userid" value="user"/>
                         <button type="submit" class="btn btn-primary ms-2">Забрать</button>
                     </form>
                 </div>
@@ -131,7 +110,7 @@ console.log(components);
         var minutes = Math.floor(countdown / 60);
         var seconds = countdown % 60;
         var formattedTime = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
-        countdownElement.innerText = 'можно обновить через : '+ formattedTime;
+        countdownElement.innerText = 'можно обновить через : ' + formattedTime;
         countdown--;
         if (countdown < 0) {
             clearInterval(interval);

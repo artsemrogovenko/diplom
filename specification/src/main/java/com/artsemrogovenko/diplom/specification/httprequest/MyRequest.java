@@ -15,7 +15,7 @@ import java.util.List;
 
 public class MyRequest {
 
-    public static  <T> ResponseEntity<T> convertResponse(HttpRequestBase request, String serializedData, Class<T> required) throws IOException {
+    public static <T> ResponseEntity<T> convertResponse(HttpRequestBase request, String serializedData, Class<T> required) throws IOException {
         T result = null;
         int statusCode = 0;
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -27,7 +27,7 @@ public class MyRequest {
         }
         if (request instanceof HttpPut) {
             HttpPut httpPut = (HttpPut) request;
-            httpPut.setEntity(new StringEntity(serializedData,ContentType.APPLICATION_JSON));
+            httpPut.setEntity(new StringEntity(serializedData, ContentType.APPLICATION_JSON));
             response = httpClient.execute(httpPut);
         }
 
@@ -42,7 +42,7 @@ public class MyRequest {
         return new ResponseEntity<>(result, HttpStatus.valueOf(statusCode));
     }
 
-    public static  <T> ResponseEntity<List<T>> convertResponseList(String url, Class<T> clazz) throws IOException {
+    public static <T> ResponseEntity<List<T>> convertResponseList(String url, Class<T> clazz) throws IOException {
         List<T> result = null;
         int statusCode = 0; // Объявляем statusCode за пределами блока try
         CloseableHttpClient httpClient = HttpClients.createDefault();   // Создаем экземпляр HttpClient

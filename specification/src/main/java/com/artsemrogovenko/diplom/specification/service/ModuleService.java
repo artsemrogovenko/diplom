@@ -1,10 +1,12 @@
 package com.artsemrogovenko.diplom.specification.service;
 
+import com.artsemrogovenko.diplom.specification.api.AssemblyApi;
 import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
 import com.artsemrogovenko.diplom.specification.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.specification.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.specification.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.specification.model.Component;
+import com.artsemrogovenko.diplom.specification.model.DiagramDescription;
 import com.artsemrogovenko.diplom.specification.model.Module;
 import com.artsemrogovenko.diplom.specification.repositories.ModuleRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @Service
 @RequiredArgsConstructor
 public class ModuleService {
+    private final AssemblyApi assemblyApi;
     private final ComponentService componentService;
     private final ModuleRepository moduleRepository;
 
@@ -39,7 +42,7 @@ public class ModuleService {
                                 .componentResponses(module.getComponents().stream()
                                         .map(component -> ComponentMapper.mapToComponentResponse(component))
                                         .collect(Collectors.toSet()))
-                                .circutFile(module.getCircutFile())
+                                .circuitFile(module.getCircuitFile())
                                 .build()
                 ).toList();
     }
@@ -71,6 +74,10 @@ public class ModuleService {
             return new ResponseEntity<>(new ModuleResponse(), HttpStatus.BAD_REQUEST);
         }
         Module module = ModuleMapper.mapToModule(moduleRequest);
+        DiagramDescription diagramrequest = new DiagramDescription(module.getName(), module.getModel(), module.getCircuitFile().trim());
+        String circuit = assemblyApi.requestSheme(diagramrequest).getBody();
+        module.setCircuitFile(circuit);
+
         if (notExist(module)) {
             if (module.getComponents() != null) {
                 List<Component> componentList = componentService.saveAll(module.getComponents());

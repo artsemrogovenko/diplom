@@ -27,7 +27,6 @@ public class ComponentMapper {
         }
         if (componentData.getUnit() != null) {
             component.setUnit(componentData.getUnit().trim());
-
         }
         if (componentData.getDescription() != null) {
             component.setDescription(componentData.getDescription().trim());

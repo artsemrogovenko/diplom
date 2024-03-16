@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
+//@Component
 public class AccountCreate {
-    @Autowired
+//    @Autowired
     AccountRepository accountRepository;
-    @PostConstruct
+//    @PostConstruct
     public void initializeAccount() {
         Account server = new Account("desk");
         Account admin = new Account("admin");

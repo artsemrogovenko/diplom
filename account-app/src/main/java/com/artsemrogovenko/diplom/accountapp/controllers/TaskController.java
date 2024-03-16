@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.controllers;
 
+import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
 import com.artsemrogovenko.diplom.accountapp.models.Account;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.services.AccountService;
@@ -32,7 +33,7 @@ public class TaskController {
 
 
     @PostMapping("/assignTask/{id}")
-    public ResponseEntity<String> assignTask(@RequestBody Task task, @RequestParam String userId) {
+    public ResponseEntity<String> assignTask(@RequestBody TaskForUser task, @RequestParam String userId) {
         return taskService.assign(userId, task);
     }
 }

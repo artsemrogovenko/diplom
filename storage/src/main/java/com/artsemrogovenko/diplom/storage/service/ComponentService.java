@@ -1,11 +1,13 @@
 package com.artsemrogovenko.diplom.storage.service;
 
+import com.artsemrogovenko.diplom.storage.aspect.LogMethod;
 import com.artsemrogovenko.diplom.storage.dto.ComponentData;
 import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.storage.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.storage.model.Component;
 import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
+import com.artsemrogovenko.diplom.storage.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +20,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ComponentService {
-
+    private final DeficitService deficitService;
     private final ComponentRepository componentRepository;
+    private final AccountRepository accountRepository;
 
     public ComponentResponse increaseComponent(ComponentRequest newComponent) {
         Component componentByFields;
@@ -191,16 +194,22 @@ public class ComponentService {
         return null;
     }
 
+
     @Transactional
-    public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber,String userId, List<ComponentRequest> requiredComponents) {
+    @LogMethod
+    public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber, Long taskId , String userId, List<ComponentRequest> requiredComponents) {
         ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
         if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
             //TODO можно сделать уведомление для заказа
+            System.out.println("вызван метод закупки");
+            deficitService.addToCard(contractNumber ,userId ,response.getBody());
         }
         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
             //TODO можно сделать перевод компонентов клиенту
+            System.out.println("компоненты есть");
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return response;
     }
+
 
 }

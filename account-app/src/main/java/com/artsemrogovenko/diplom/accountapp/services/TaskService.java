@@ -2,6 +2,8 @@ package com.artsemrogovenko.diplom.accountapp.services;
 
 
 import com.artsemrogovenko.diplom.accountapp.api.TaskApi;
+import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
+import com.artsemrogovenko.diplom.accountapp.dto.TaskMapper;
 import com.artsemrogovenko.diplom.accountapp.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.accountapp.models.Component;
 import com.artsemrogovenko.diplom.accountapp.models.ComponentRequest;
@@ -9,6 +11,7 @@ import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.models.exceptions.DuplicateExeption;
 import com.artsemrogovenko.diplom.accountapp.repositories.AccountRepository;
 import com.artsemrogovenko.diplom.accountapp.repositories.TaskRepository;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import com.artsemrogovenko.diplom.accountapp.models.Account;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.net.ConnectException;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -52,7 +56,7 @@ public class TaskService {
      *
      * @param currentTime время веб клиента
      */
-    public List<Task> getTasks(LocalTime currentTime) throws WebClientResponseException.ServiceUnavailable, WebClientRequestException {
+    public List<Task> getTasks(LocalTime currentTime) throws FeignException.ServiceUnavailable, ConnectException {
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         if (currentTime.isAfter(requiredTime)) {
             requiredTime = LocalTime.now().plusMinutes(2);
@@ -62,8 +66,11 @@ public class TaskService {
     }
 
 
-    public List<Task> pullTasks() throws WebClientResponseException.ServiceUnavailable, WebClientRequestException {
-        tasks = taskApi.getTasks().getBody();
+    public List<Task> pullTasks() throws FeignException.ServiceUnavailable, ConnectException {
+        ResponseEntity<List<Task>> taskList = taskApi.getTasks();
+        if (taskList.hasBody()) {
+            tasks = taskList.getBody();
+        }
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         return tasks;
     }
@@ -77,9 +84,9 @@ public class TaskService {
     }
 
 
-    public ResponseEntity<String> assign(String userId, Task assignTask) {
+    public ResponseEntity<String> assign(String userId, TaskForUser assignTask) {
         try {
-            Task newTask = assignTask;
+            Task newTask = TaskMapper.mapToTask(assignTask);
             Account recieverAccount = accountRepository.findByName(userId);
             // очень сложная проверка)
             if (recieverAccount.getTasks().stream()
@@ -104,5 +111,9 @@ public class TaskService {
 
     public ResponseEntity<Void> takeTask(Long taskId, String userid) {
         return taskApi.reserveAmount(taskId, userid);
+    }
+
+    public List<Task> showMyTasks(String userId) {
+        return accountRepository.getReferenceById(userId).getTasks();
     }
 }

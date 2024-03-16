@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Мои задачи</title>
+  <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+  <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+  <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+  <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+  <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+</head>
+
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/">Главная</a>
+</nav>
+<body>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th colspan="2">
+                <h3>Мои задачи</h3>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--        th:if="${task.reserved}"-->
+        <tr th:each="task: ${tasks}" th:if="${task.reserved}">
+            <td class="table-light" th:text="${task.description}"></td>
+            <td class="table-light" style="float-right" th:style="${task.taskStatus == 'DONE' ? 'display: none;' : ''}">
+                <form th:action="@{/{id}/complete(id=${task.id})}" method="post" class="d-inline">
+                    <input type="hidden" name="userid" th:value="${userid}"/>
+                    <button type="submit" class="btn btn-success ">Success</button>
+                </form>
+                <form th:action="@{/{id}/rollback(id=${task.id})}" method="post" class="d-inline">
+                    <input type="hidden" name="userid" th:value="${userid}"/>
+                    <button type="submit" class="btn btn-warning ">Cancel</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>

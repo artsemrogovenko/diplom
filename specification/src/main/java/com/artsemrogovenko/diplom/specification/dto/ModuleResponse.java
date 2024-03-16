@@ -25,13 +25,14 @@ public class ModuleResponse implements ModuleData {
     //один модуль может содержать несколько компонентов
     private Set<ComponentResponse> componentResponses = new HashSet<>();   // список компонентов
 
-    private String circutFile;
+    private String circuitFile;
 
     public void addComponent(ComponentResponse c) {
         componentResponses.add(c);
     }
+
     @Override
     public boolean fieldsIsNull() {
-        return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null && componentResponses.isEmpty() &&  circutFile==null;
+        return factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && componentResponses.isEmpty() && circuitFile == null;
     }
 }
