@@ -32,7 +32,7 @@ public class DeficitService {
      * @param components     компоненты с отрицательным значением
      */
 
-    public void addToCard(String contractNumber, String userId, List<ComponentResponse> components) {
+    public void addToCard(String contractNumber, Long taskId, String userId, List<ComponentResponse> components) {
         for (ComponentResponse component : components) {
 
             Optional<Deficit> verify = deficitRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndRefill(
@@ -43,10 +43,16 @@ public class DeficitService {
                     component.getDescription(),
                     component.isRefill()
             );
-            // если уже есть в базе такой компонент увеличиваю необходимое значение
+            // если уже есть в базе такой компонент
             if (verify.isPresent()) {
-                int quantity = verify.get().getQuantity();
-                verify.get().setQuantity(quantity + (component.getQuantity() * (-1)));
+                // если такой задачи не встречалось и номер заказа то добавлю в закупки
+                if (!verify.get().getTaskIds().equals(taskId) && !verify.get().getContractNumbers().equals(contractNumber)) {
+
+                    // увеличиваю на необходимое значение
+                    int quantity = verify.get().getQuantity();
+                    verify.get().setQuantity(quantity + (component.getQuantity() * (-1)));
+                }
+
 
             } else {
                 ContractNumber number = new ContractNumber(contractNumber);

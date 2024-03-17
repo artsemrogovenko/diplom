@@ -16,11 +16,11 @@ public interface TaskApi {
     @GetMapping("/task")
     ResponseEntity<List<Task>> getTasks();
     @PostMapping("/task/{id}/reserve")
-    public ResponseEntity<Void> reserveAmount(@PathVariable("id") Long id,@RequestBody String userId);
+    public ResponseEntity<String> reserveAmount(@PathVariable("id") Long id,@RequestBody String userId);
     @PostMapping("/task/{id}/complete")
-    public ResponseEntity<Void> completeTask(@PathVariable Long id, @RequestBody String userId);
+    public ResponseEntity<String> completeTask(@PathVariable Long id, @RequestBody String userId);
     @PostMapping("/task/{id}/reserve/rollback")
-    ResponseEntity<Void> rollbackReserveAmount(@PathVariable("id") Long id, @RequestBody String userId);
+    ResponseEntity<String> rollbackReserveAmount(@PathVariable("id") Long id, @RequestBody String userId);
 
 
 }

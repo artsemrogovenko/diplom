@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Страница ошибок</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" th:href="@{/}" >На главную</a>
+    <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</nav>
+
+
+<div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
+     class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+   <span class="countdown" id="countdown" th:text="${timer}"                                                style="font-size: 12px; text-align: right;"></span>
+</div>
+
+<script th:if="${message} == '201 CREATED'">toastr.success(' ');</script>
+<script th:if="${message} == '409 CONFLICT'">toastr.error(' ');</script>
+<script th:if="${message} == '400 BAD_REQUEST'">toastr.error(' ');</script>
+
+    <div th:if="${errorInfo != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Ошибка!</strong> <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+
+
+</body>
+
+</html>

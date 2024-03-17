@@ -43,7 +43,11 @@ public class StorageService {
             try {
                 listResponseEntity = storageApi.getAll();
                 if (listResponseEntity.hasBody()) {
-                    components.addAll(listResponseEntity.getBody());
+                    for (ComponentResponse componentResponse : listResponseEntity.getBody()) {
+                        if(!components.contains(componentResponse)){
+                            components.add(componentResponse);
+                        }
+                    }
                 }
             } catch (FeignException ex) {
 

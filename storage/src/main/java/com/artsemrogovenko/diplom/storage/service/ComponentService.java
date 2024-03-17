@@ -113,6 +113,12 @@ public class ComponentService {
         return null;
     }
 
+    /**
+     *
+     * @param request найти объект с такими параметрами
+     * @return список полных совпадений
+     * @throws NoSuchElementException
+     */
     private List<Component> findComponents(ComponentRequest request) throws NoSuchElementException {
         String factoryNumber = request.getFactoryNumber();
         String model = request.getModel();
@@ -124,7 +130,11 @@ public class ComponentService {
                 .orElseThrow(NoSuchElementException::new);
     }
 
-    //    @Transactional(readOnly = true)
+    /**
+     * есть ли компоненты на складе
+     * @param requests список желаемого
+     * @return
+     */
     public ResponseEntity<List<ComponentResponse>> isInStock(List<ComponentRequest> requests) {
 //        System.out.println("isInStock");
         List<ComponentResponse> components = new ArrayList<>();
@@ -132,6 +142,13 @@ public class ComponentService {
         for (ComponentRequest request : requests) {
 
             int requiredQuantity = request.getQuantity();
+
+            if (request.getUnit().toLowerCase().equals("м")) {
+                requiredQuantity *= 1000;
+            }
+            if (request.getUnit().toLowerCase().equals("км")) {
+                requiredQuantity *= 1000000;
+            }
 
             List<Component> list = new ArrayList<>();
             try {
@@ -164,6 +181,14 @@ public class ComponentService {
         return new ResponseEntity<>(components, HttpStatus.OK);
     }
 
+    /**
+     * ищу подходящий элемент начиная с наименьшего значения.
+     * например если это 2 куска провода, выбор будет мделан на наименьший отрезок
+     * @param list список по по характеристикам, может содержать разное количество
+     * @param requiredQuantity желаемое количество компонента
+     * @return вернется элемент такой как нужно, либо сгенерируется значение недостачи
+     */
+
     private ComponentResponse checkList(List<Component> list, int requiredQuantity) {
         ComponentResponse reqComponent;
         boolean NonSufficient = list.stream().allMatch(component -> component.getQuantity() < requiredQuantity);
@@ -194,15 +219,22 @@ public class ComponentService {
         return null;
     }
 
-
+    /**
+     * Если исполнитель запрашивает задачу на выполнение
+     * @param contractNumber на какой договор
+     * @param taskId номер задачи
+     * @param userId кто взял
+     * @param requiredComponents список компонентов
+     * @return ответ о наличии всех компонентов
+     */
     @Transactional
     @LogMethod
-    public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber, Long taskId , String userId, List<ComponentRequest> requiredComponents) {
+    public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber, Long taskId, String userId, List<ComponentRequest> requiredComponents) {
         ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
         if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
             //TODO можно сделать уведомление для заказа
             System.out.println("вызван метод закупки");
-            deficitService.addToCard(contractNumber ,userId ,response.getBody());
+            deficitService.addToCard(contractNumber, taskId, userId, response.getBody());
         }
         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
             //TODO можно сделать перевод компонентов клиенту

@@ -22,12 +22,10 @@ public class WebController {
 
     @GetMapping("/")
     public String main(Model model) {
-        System.out.println(model);
         model.addAttribute("description", new DiagramDescription());
         model.addAttribute("contractNumber", new ContractNumber());
         model.addAttribute("elements", diagramService.getAllmodulesNames());
         model.addAttribute("message", response);
-        System.out.println(response);
         response = null;
         return "index3";
     }
@@ -42,9 +40,7 @@ public class WebController {
     @PostMapping("/upload/mix")
     public String uploadmix(@RequestParam("fileContent") MultipartFile file, DiagramDescription description, String contractNumber, Model model) {
         HttpStatus statusCode = HttpStatus.valueOf(diagramService.saveToRepositiry(file, description, contractNumber).getStatusCode().value());
-
         response = statusCode.toString();
-
         return "redirect:/"; // Редирект на главную страницу
     }
 

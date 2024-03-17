@@ -21,11 +21,13 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.net.ConnectException;
+import java.net.SocketException;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -56,7 +58,7 @@ public class TaskService {
      *
      * @param currentTime время веб клиента
      */
-    public List<Task> getTasks(LocalTime currentTime) throws FeignException.ServiceUnavailable, ConnectException {
+    public List<Task> getTasks(LocalTime currentTime) throws FeignException.ServiceUnavailable, feign.RetryableException {
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         if (currentTime.isAfter(requiredTime)) {
             requiredTime = LocalTime.now().plusMinutes(2);
@@ -66,7 +68,7 @@ public class TaskService {
     }
 
 
-    public List<Task> pullTasks() throws FeignException.ServiceUnavailable, ConnectException {
+    public List<Task> pullTasks() throws FeignException.ServiceUnavailable, feign.RetryableException {
         ResponseEntity<List<Task>> taskList = taskApi.getTasks();
         if (taskList.hasBody()) {
             tasks = taskList.getBody();
@@ -88,6 +90,9 @@ public class TaskService {
         try {
             Task newTask = TaskMapper.mapToTask(assignTask);
             Account recieverAccount = accountRepository.findByName(userId);
+            if (recieverAccount == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("пользо");
+            }
             // очень сложная проверка)
             if (recieverAccount.getTasks().stream()
                     .anyMatch(task -> task.getId().equals(newTask.getId())
@@ -99,7 +104,7 @@ public class TaskService {
                 accountRepository.save(recieverAccount);
                 // Если ошибок нет, возвращаем успешный ответ
                 System.out.println("сохранил изменения " + LocalTime.now());
-                return ResponseEntity.ok().build();
+                return ResponseEntity.status(HttpStatus.OK).body("Задача присвоена");
             }
 
         } catch (DuplicateExeption e) {
@@ -107,9 +112,10 @@ public class TaskService {
             // Возвращаем информацию об ошибке в теле ответа
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка: " + e.getMessage());
         }
+
     }
 
-    public ResponseEntity<Void> takeTask(Long taskId, String userid) {
+    public ResponseEntity<String> takeTask(Long taskId, String userid) {
         return taskApi.reserveAmount(taskId, userid);
     }
 

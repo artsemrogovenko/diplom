@@ -62,11 +62,11 @@ public class TaskController {
     @PostMapping("{id}/reserve")
     public ResponseEntity<String> reserveAmount(@PathVariable("id") Long id, @RequestBody String userId) {
         try {
-            taskService.reservedTask(id, userId);
+            return taskService.reservedTask(id, userId);
         } catch (ResourceNotFoundException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntity.ok().body(null);
+//        return ResponseEntity.ok().body("Задача принята");
     }
 
     /**
@@ -75,9 +75,8 @@ public class TaskController {
      */
     @TrackUserAction
     @PostMapping("/{id}/complete")
-    public ResponseEntity<Void> completeTask(@PathVariable Long id, @RequestBody String userId) {
-        taskService.completedTask(id, userId);
-        return ResponseEntity.ok().body(null);
+    public ResponseEntity<String> completeTask(@PathVariable Long id, @RequestBody String userId) {
+        return taskService.completedTask(id, userId);
     }
 
     /**
@@ -89,10 +88,8 @@ public class TaskController {
 
     @TrackUserAction
     @PostMapping("{id}/reserve/rollback")
-    public ResponseEntity<Void> rollbackReserveAmount(@PathVariable("id") Long id, @RequestBody String userId) {
-        System.out.println("Контроллер отмены выполнения");
-        taskService.rollbackReservedTask(id, userId);
-        return ResponseEntity.ok().body(null);
+    public ResponseEntity<String> rollbackReserveAmount(@PathVariable("id") Long id, @RequestBody String userId) {
+        return taskService.rollbackReservedTask(id, userId);
     }
 
 }

@@ -1,45 +1,61 @@
 package com.artsemrogovenko.diplom.accountapp.config;
 
+import com.artsemrogovenko.diplom.accountapp.models.Account;
+import com.artsemrogovenko.diplom.accountapp.services.AccountService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig   {
+public class WebSecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-
+        http
                 .authorizeRequests(authorize -> authorize
-//                        .requestMatchers("/**").authenticated()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/registration/**").hasRole("ADMIN")
+                        .requestMatchers("/", "/myTasks/**", "/take/**").authenticated()
+                        .requestMatchers("/webjars/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().permitAll()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login").permitAll()
+                .formLogin(form -> form.permitAll()
+                        .successForwardUrl("/")
+                        .failureHandler((request, response, exception) -> {
+                            response.sendRedirect("/login?error=true&message=" + URLEncoder.encode("Неверные данные.", StandardCharsets.UTF_8));
+                        })
+
                 )
-                .logout(logout -> logout
-//                        .logoutSuccessUrl("/login").permitAll()
-                                .logoutSuccessUrl("/").permitAll()
+                .logout(logout -> logout.permitAll()
+                        .logoutSuccessUrl("/login?logout=true")
                 )
                 .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/login?error=У%20вас%20нет%20доступа.%20Введите%20данные%20администратора")
-                );
-        return  http.build();
+                        .accessDeniedPage("/login?error=true&message=" + URLEncoder.encode("У вас нет доступа.Введите данные администратора", StandardCharsets.UTF_8)))
+                .csrf(csrf -> csrf.disable())// Отключаем CSRF
+                .headers(headers -> headers.disable());// Разрешаем встраивание фреймов
+
+        return http.build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder().username("user").password("123").roles("USER").build();
-        UserDetails admin = User.withDefaultPasswordEncoder().username("admin").password("admin").roles("ADMIN").build();
-
-        return new InMemoryUserDetailsManager(user,admin);
+        UserDetails admin = User.withDefaultPasswordEncoder().username("admin").password("admin").roles("ADMIN").build();//
+        return new InMemoryUserDetailsManager(admin);
     }
+
+
 }

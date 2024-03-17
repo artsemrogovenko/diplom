@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -37,6 +34,8 @@ public class Deficit {
             inverseJoinColumns = @JoinColumn(name = "contract_number_id") // Столбец с внешним ключом для ContractNumber
     )
     private Set<ContractNumber> contractNumbers = new HashSet<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Long> taskIds = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

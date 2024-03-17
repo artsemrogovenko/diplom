@@ -3,7 +3,7 @@ package com.artsemrogovenko.diplom.accountapp.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GeneratedColumn;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
@@ -12,18 +12,27 @@ import java.util.*;
  */
 @Data
 @Entity
+@NoArgsConstructor
 public class Account {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "name")
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String password;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new LinkedList<>();   // список задач
 
-    public Account(String name) {
-        this.name = name;
+
+    public Account(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.name = username;
+        this.password = password;
+        for (GrantedAuthority authority : authorities) {
+            roles.add(authority.getAuthority());
+        }
     }
-    public Account() {
-    }
+
+
 }

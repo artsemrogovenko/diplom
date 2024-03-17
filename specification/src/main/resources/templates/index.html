@@ -82,7 +82,8 @@
                     <input hidden="hidden" id="componentRequestsInput" th:value="${newModule.componentRequests}"/>
                 </div>
 
-                <div class="add_circut"><input type="text" id="request_circutFile" th:field="${newModule.circuitVersion}"
+                <div class="add_circut"><input type="text" id="request_circutFile"
+                                               th:field="${newModule.circuitVersion}"
                                                placeholder="Версия схемы"/></div>
                 <div class="createnewModule_button">
                     <button type="submit">Создать элемент</button>
@@ -126,6 +127,7 @@
                 var dropCounter; // Объявляем переменную dropCounter
                 /*<![CDATA[*/
                 var components = /*[[${components}]]*/ [];
+
                 /*]]>*/
                 function addRow() {
                     var table = document.getElementById("component_table").getElementsByTagName('tbody')[0];
@@ -163,7 +165,19 @@
                         newRow.children[1].children[0].value = item.factoryNumber;
                         newRow.children[2].children[0].value = item.model;
                         newRow.children[3].children[0].value = item.name;
-                        newRow.children[5].children[0].value = item.unit;
+                        console.log(item.unit);
+                        if (item.unit != 'шт') {
+                            if (item.quantity <= 999) {
+                                newRow.children[5].children[0].value = 'мм';
+                            }
+                            if (item.quantity > 999 && item.quantity <= 999999) {
+                                newRow.children[5].children[0].value = 'м';
+                            } else {
+                                newRow.children[5].children[0].value = 'км';
+                            }
+                        } else {
+                            newRow.children[5].children[0].value = item.unit;
+                        }
                         newRow.children[6].children[0].value = item.description;
                     };
 
@@ -173,7 +187,7 @@
                         item.setAttribute('type', 'button');
                         item.classList.add('btn');
                         item.classList.add('btn-outline-info');
-                        const {factoryNumber, model, name, unit, description} = component;
+                        const {factoryNumber, model, name, quantity, unit, description} = component;
                         item.innerText = `${factoryNumber} - ${model} - ${name} - ${unit} - ${description} `;
                         item.addEventListener('click', () => {
                             fillRow(index);
@@ -300,7 +314,6 @@
                     }
                     return isValid;
                 }
-
 
 
             </script>

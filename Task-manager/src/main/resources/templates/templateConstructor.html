@@ -52,8 +52,8 @@
                 Служба модулей временно недоступна
             </div>
         </div>
-        <a href="#"  th:if="${specificationservice !='503 SERVICE_UNAVAILABLE'}"  class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-            <span class="fs-5 fw-semibold">Список модулей <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span></span>
+        <a href="/constructTempate" th:if="${specificationservice !='503 SERVICE_UNAVAILABLE'}"  class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+            <div class="fs-5 fw-semibold">Список модулей <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span></div>
         </a>
 
         <div class="list-group list-group-flush border-bottom scrollarea">

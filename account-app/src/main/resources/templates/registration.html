@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+</head>
+<body>
+
+<div th:if="${message != null}">
+    <script> toastr.info("[[${message}]]"); </script>
+</div>
+
+<div class="card border-primary mb-3" style="max-width: 18rem;">
+
+    <form class="form-signin" method="post" id="registrationForm" th:object="${account}"  onsubmit="return validateInputs();">
+        <h2 class="form-signin-heading">Регистрация</h2>
+        <div class="col-12">
+            <label for="firstName" class="form-label">Имя</label>
+            <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
+        </div>
+
+        <div class="col-12">
+            <label for="lastName" class="form-label">Фамилия</label>
+            <input type="text" class="form-control" id="lastName" placeholder="" value="" required=""
+                   autocomplete="current-password">
+        </div>
+        <div class="col-12">
+            <label for="Password" class="form-label">Пароль</label>
+            <div class="input-group has-validation">
+                <input type="password" class="form-control" id="password" placeholder="password" required=""
+                       name="Password" th:value="${account.password}" autocomplete="current-password">
+            </div>
+        </div>
+
+        <!-- Поле для имени пользователя -->
+        <input type="hidden" id="username" name="Username"  th:field="*{name}"/>
+        <br>
+        <!-- Кнопка для отправки формы -->
+        <button class="btn btn-lg btn-primary btn-block" type="submit" th:action="@{/registration}">
+            Зарегистрировать
+        </button>
+    </form>
+</div>
+
+
+<script>
+    // Функция для объединения имени и фамилии и установки значения в поле username
+    function validateInputs() {
+        console.log('вызван метод');
+        var isValid = true;
+        var inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+        inputs.forEach(function (input) {
+            if (!input.value.trim()) { // Проверяем, что значение пустое
+                isValid = false;
+                return;
+            }
+        });
+        if (!isValid) {
+            toastr.warning('Заполните все поля');
+        } else {
+            var firstName = document.getElementById("firstName").value.trim();
+            var lastName = document.getElementById("lastName").value.trim();
+            var combinedName = firstName + " " + lastName;
+            document.getElementById("username").value = combinedName;
+            document.getElementById("registrationForm").submit();
+
+        }
+        return isValid;
+    }
+
+
+</script>
+
+
+</body>
+</html>

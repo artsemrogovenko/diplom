@@ -15,13 +15,12 @@ import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ExcessAmountException;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ResourceNotFoundException;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -60,20 +59,26 @@ public class TaskService {
      * @throws ResourceNotFoundException исключение при отсутствии задачи.
      */
     @TrackUserAction
-    public Task getTaskById(Long id) throws ResourceNotFoundException {
-        return taskRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("задача " + id + " не найдена!"));
+    public Task getTaskById(Long id) {
+//        return taskRepository.findById(id).orElseThrow(
+//                () -> new ResourceNotFoundException("задача " + id + " не найдена!"));
+        return taskRepository.findById(id).get();
     }
 
 
     /**
      * Резервирование задачи на для пользователя.
      * при отстутствии компонентов на складе задача будет отклонена
+     *
+     * @return
      */
     @TrackUserAction
     @Transactional
-    public void reservedTask(Long taskId, String userId) throws ExcessAmountException {
+    public ResponseEntity<String> reservedTask(Long taskId, String userId) throws ExcessAmountException,ResourceNotFoundException {
         Task work = getTaskById(taskId);
+        if (work==null){
+            return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
+        }
         if (work.isReserved()) {
             throw new ExcessAmountException("задача уже выполняется");
         }
@@ -95,27 +100,42 @@ public class TaskService {
 //        ResponseEntity<List<ComponentResponse>> result = MyRequest.postRequest(
 //                "http://storage-server:8081/component/inventory", calculatedComponents, userId, work.getContractNumber());
         // проверка на наличие компонентов
+        ResponseEntity<List<ComponentResponse>> result = new ResponseEntity<>(HttpStatus.OK);
+        try {
+            result = storageApi.reserve(calculatedComponents, userId, work.getContractNumber(), taskId);
 
-        ResponseEntity<List<ComponentResponse>> result = storageApi.reserve(calculatedComponents, userId, work.getContractNumber(), taskId);
-
-        if (result.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
-            // Отмена задачи
+        } catch (ResourceNotFoundException ex) {
             rollbackReservedTask(taskId, userId);
+            return new ResponseEntity<>("Недостаточно материалов для выполнения", HttpStatus.NOT_FOUND);
         }
+//        ResponseEntity<List<ComponentResponse>> result = storageApi.reserve(calculatedComponents, userId, work.getContractNumber(), taskId);
+//
+//        if (result.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
+//            // Отмена задачи
+//            rollbackReservedTask(taskId, userId);
+//        }
         if (result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
             TaskForUser forUser = TaskMapper.convertTask(work);
 //            ResponseEntity<String> responseEntity = MyRequest.assignTask(forUser, userId);
             //назначаю задачу
-            accountApi.assignTask(forUser, userId);
+            try {
+                accountApi.assignTask(forUser, userId);
 
-            if (!result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {//если на сервисе клиента ошибка
+            } catch (FeignException.FeignClientException ex) {
                 rollbackReservedTask(taskId, userId);//отмена резерва задачи
                 MyRequest.rollbackComponents(calculatedComponents); // возвращаю компоненты на склад
-            } else {
-
-                System.out.println("task is reserved");
             }
+
+//            accountApi.assignTask(forUser, userId);
+//            if (!result.getStatusCode().isSameCodeAs(HttpStatus.OK)) {//если на сервисе клиента ошибка
+//                rollbackReservedTask(taskId, userId);//отмена резерва задачи
+//                MyRequest.rollbackComponents(calculatedComponents); // возвращаю компоненты на склад
+//            } else {
+//
+//            }
         }
+        System.out.println("task is reserved");
+        return new ResponseEntity<>("Задача принята", HttpStatus.OK);
     }
 
     /**
@@ -123,27 +143,37 @@ public class TaskService {
      */
     @TrackUserAction
     @Transactional
-    public void rollbackReservedTask(Long id, String ownerId) {
+    public ResponseEntity<String> rollbackReservedTask(Long id, String ownerId) {
         Task work = getTaskById(id);
+        if (work==null){
+            return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
+        }
         if (work.getOwner().equals(ownerId)) {
             work.setReserved(false);
             work.setOwner("kanban"); // сделать владельцем общее хранилище
             work.setStatus(Task.Status.TO_DO);
             taskRepository.save(work);
+            return new ResponseEntity<>("Вы отказались от задачи", HttpStatus.OK);
         }
+        return new ResponseEntity<>("Такой задачи нет, или вы не владелец", HttpStatus.BAD_REQUEST);
     }
 
     @TrackUserAction
     @Transactional
-    public void completedTask(Long id, String ownerId) {
+    public ResponseEntity<String> completedTask(Long id, String ownerId) {
         Task work = getTaskById(id);
+        if (work==null){
+            return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
+        }
         if (work.getOwner().equals(ownerId)) {
             work.setStatus(Task.Status.DONE);
 //            System.out.println(work);
             taskRepository.save(work);
             System.out.println("Блок complete применился");
-        } else
-            System.out.println("Блок complete не применился");
+            return new ResponseEntity<>("Поздравляю", HttpStatus.OK);
+        }
+        System.out.println("Блок complete не применился");
+        return new ResponseEntity<>("Такой задачи нет, или вы не владелец", HttpStatus.BAD_REQUEST);
     }
 
 

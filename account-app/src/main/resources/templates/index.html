@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Создание модуля</title>
+    <title>Страница исполнителя</title>
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
     <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
@@ -14,13 +14,18 @@
 <body>
 
 <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" href="/myTasks" >Мои задачи</a>
+    <a class="navbar-brand" th:href="@{'/myTasks?userId=' + ${username}}" >Мои задачи</a>
+    <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
 </nav>
+
 
 <div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
      class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-    <span class="fs-5 fw-semibold">Задачи <span class="countdown" id="countdown" th:text="${timer}"
-                                                style="font-size: 12px; text-align: right;"></span></span>
+    <a class="fs-5 fw-semibold" th:href="@{/}">Список задач <span class="countdown" id="countdown" th:text="${timer}"
+                                                style="font-size: 12px; text-align: right;"></span></a>
 </div>
 
 <script th:if="${message} == '201 CREATED'">toastr.success('Шаблон добавлен');</script>
@@ -64,10 +69,17 @@
     <!-- Проверяем наличие атрибута confirm в модели -->
     <div th:if="${confirm != null}" class="alert alert-success alert-dismissible fade show" role="alert">
         <span th:text="${confirm}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+
+    <div th:if="${errorInfo != null}" class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Инфо: </strong> <span th:text="${errorInfo}"></span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
+
     <nav class="navbar navbar-light bg-light justify-content-between">
-        <form class="form-inline" th:action="@{/admin-only}" method="get">
+        <form class="form-inline" th:action="@{/registration}" method="get">
             <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit">Admin panel</button>
         </form>
     </nav>
@@ -93,7 +105,7 @@
                     <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно' "> </span>
                     <form th:action="@{/take/{id}(id=${task.id})}" method="post" class="d-flex"
                           enctype="application/x-www-form-urlencoded">
-                        <input type="hidden" name="userid" value="user"/>
+                        <input type="hidden" name="userid" th:value="${username}"/>
                         <button type="submit" class="btn btn-primary ms-2">Забрать</button>
                     </form>
                 </div>

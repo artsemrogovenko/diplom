@@ -9,20 +9,46 @@ spring:
           task-server:
             url: http://localhost:8080/
 
-  jpa:
-    generate-ddl: false
-    hibernate:
-      ddl-auto: update
+  #  jpa:
+  #    generate-ddl: true
+  #    hibernate:
+  #      ddl-auto: update
+
 
   datasource:
-    url: jdbc:h2:mem:accounts
-    driverClassName: org.h2.Driver
-
+    url: jdbc:postgresql://192.168.100.130:32769/sa
     username: sa
     password: sa
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # или update, если вы хотите, чтобы JPA обновил существующую схему
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  h2:
-    console:
-      enabled: true
+
+    show-sql: true
+
+#  datasource:
+#    url: jdbc:h2:mem:accounts;DB_CLOSE_ON_EXIT=FALSE
+#    driverClassName: org.h2.Driver
+#
+#    username: sa
+#    password: sa
+#
+#  h2:
+#    console:
+#      enabled: true
+
+
 server:
   port: 8084
+
+logging:
+  level:
+    org:
+      thymeleaf: DEBUG
+
+      springframework:
+        security: DEBUG

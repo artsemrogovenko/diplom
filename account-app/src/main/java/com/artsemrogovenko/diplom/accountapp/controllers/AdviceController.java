@@ -4,19 +4,22 @@ import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.models.exceptions.ExceptionBody;
 import com.artsemrogovenko.diplom.accountapp.models.exceptions.ExcessAmountException;
 import com.artsemrogovenko.diplom.accountapp.models.exceptions.ResourceNotFoundException;
+import feign.FeignException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 
 /**
  * Контроллер обработки исключений.
  */
-@RestControllerAdvice
+//@RestControllerAdvice
 public class AdviceController {
 
 
@@ -43,4 +46,5 @@ public class AdviceController {
         exceptionBody.setDateTime(LocalDateTime.now());
         return exceptionBody;
     }
+
 }

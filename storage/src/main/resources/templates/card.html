@@ -79,20 +79,6 @@
             <td class="table-light" th:if="${deficit.unit == 'шт'}"
                 th:text="${deficit.quantity} + ${deficit.unit}"></td>
             <td class="table-light">
-                <!--                <form method=" " class="d-inline">-->
-                <!--                    <button type="button" class="btn btn-info float-right"-->
-                <!--                            th:attr="c-id=${deficit.getId()},-->
-                <!--                                        c-factoryNumber=${deficit.getFactoryNumber()},-->
-                <!--                                        c-model=${deficit.getModel()},-->
-                <!--                                        c-name=${deficit.getName()},-->
-                <!--                                        c-quantity=${deficit.getQuantity()},-->
-                <!--                                        c-description=${deficit.getDescription()},-->
-                <!--                                        c-refill=${deficit.isRefill()},-->
-                <!--                                        c-unit=${deficit.getUnit()}"-->
-                <!--                            onclick="openModalEdit(this)">Edit-->
-                <!--                    </button>-->
-                <!--                    <button th:action="@{/delete/{id}(id=${deficit.getId()})}" method="post" type="submit" class="d-inline btn btn-dark float-right">Delete</button>-->
-                <!--                </form>-->
 
         </tr>
         </tbody>
