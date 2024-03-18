@@ -120,6 +120,6 @@ public class TaskService {
     }
 
     public List<Task> showMyTasks(String userId) {
-        return accountRepository.getReferenceById(userId).getTasks();
+        return accountRepository.findById(userId).get().getTasks();
     }
 }

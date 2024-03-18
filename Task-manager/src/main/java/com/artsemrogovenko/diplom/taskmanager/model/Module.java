@@ -43,8 +43,9 @@ public class Module implements SavedModule {
 
     @ManyToMany
     private List<Template> templates = new ArrayList<>();
-    @ManyToMany
-    private List<Task> tasks = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    private Task task ;//= new ArrayList<>();
 
     public Module(Long id) {
         this.id = id;

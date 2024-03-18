@@ -61,11 +61,11 @@ public class TaskController {
     @TrackUserAction
     @PostMapping("{id}/reserve")
     public ResponseEntity<String> reserveAmount(@PathVariable("id") Long id, @RequestBody String userId) {
-        try {
+//        try {
             return taskService.reservedTask(id, userId);
-        } catch (ResourceNotFoundException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+//        } catch (ResourceNotFoundException ex) {
+//            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
 //        return ResponseEntity.ok().body("Задача принята");
     }
 

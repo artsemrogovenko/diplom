@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -59,10 +60,10 @@ public class TaskService {
      * @throws ResourceNotFoundException исключение при отсутствии задачи.
      */
     @TrackUserAction
-    public Task getTaskById(Long id) {
-//        return taskRepository.findById(id).orElseThrow(
-//                () -> new ResourceNotFoundException("задача " + id + " не найдена!"));
-        return taskRepository.findById(id).get();
+    public Task getTaskById(Long id) throws NoSuchElementException{
+        return taskRepository.findById(id).orElseThrow(
+                () -> new NoSuchElementException("задача " + id + " не найдена!"));
+//        return taskRepository.findById(id).get();
     }
 
 
@@ -74,9 +75,12 @@ public class TaskService {
      */
     @TrackUserAction
     @Transactional
-    public ResponseEntity<String> reservedTask(Long taskId, String userId) throws ExcessAmountException,ResourceNotFoundException {
-        Task work = getTaskById(taskId);
-        if (work==null){
+//    public ResponseEntity<String> reservedTask(Long taskId, String userId) throws ExcessAmountException,ResourceNotFoundException {
+    public ResponseEntity<String> reservedTask(Long taskId, String userId) {
+        Task work = new Task();
+        try{
+            work=  getTaskById(taskId);
+        }catch (NoSuchElementException ex){
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.isReserved()) {
@@ -104,9 +108,12 @@ public class TaskService {
         try {
             result = storageApi.reserve(calculatedComponents, userId, work.getContractNumber(), taskId);
 
-        } catch (ResourceNotFoundException ex) {
-            rollbackReservedTask(taskId, userId);
-            return new ResponseEntity<>("Недостаточно материалов для выполнения", HttpStatus.NOT_FOUND);
+        } catch (FeignException.FeignClientException ex) {
+            if (ex.getMessage().contains("[418] during [POST]")) {
+                rollbackReservedTask(taskId, userId);
+                return new ResponseEntity<>("Недостаточно материалов для выполнения", HttpStatus.NOT_FOUND);
+
+            }
         }
 //        ResponseEntity<List<ComponentResponse>> result = storageApi.reserve(calculatedComponents, userId, work.getContractNumber(), taskId);
 //
@@ -143,9 +150,11 @@ public class TaskService {
      */
     @TrackUserAction
     @Transactional
-    public ResponseEntity<String> rollbackReservedTask(Long id, String ownerId) {
-        Task work = getTaskById(id);
-        if (work==null){
+    public ResponseEntity<String> rollbackReservedTask(Long taskId, String ownerId) {
+        Task work = new Task();
+        try{
+            work=  getTaskById(taskId);
+        }catch (NoSuchElementException ex){
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.getOwner().equals(ownerId)) {
@@ -160,9 +169,11 @@ public class TaskService {
 
     @TrackUserAction
     @Transactional
-    public ResponseEntity<String> completedTask(Long id, String ownerId) {
-        Task work = getTaskById(id);
-        if (work==null){
+    public ResponseEntity<String> completedTask(Long taskId, String ownerId) {
+        Task work = new Task();
+        try{
+            work=  getTaskById(taskId);
+        }catch (NoSuchElementException ex){
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.getOwner().equals(ownerId)) {

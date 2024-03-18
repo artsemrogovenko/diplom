@@ -62,10 +62,18 @@ public class WebController {
     public String takeMeTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body(null);
         try {
-        responseEntity = taskService.takeTask(taskId, userid);
+            responseEntity = taskService.takeTask(taskId, userid);
             confirm = responseEntity.getBody();
-        }catch (feign.FeignException.InternalServerError ex){
+            System.out.println(confirm);
+        } catch (feign.FeignException.InternalServerError ex) {
             responseMessage = responseEntity.getBody();
+            System.out.println(responseMessage);
+            System.out.println(ex.getMessage());
+
+        } catch (feign.FeignException.NotFound ex) {
+            responseMessage = responseEntity.getBody();
+            System.out.println(responseMessage);
+            System.out.println(ex.getMessage());
         }
 //        if (responseEntity.getStatusCode().is2xxSuccessful()) {
 //            confirm = responseEntity.getBody();
@@ -82,9 +90,9 @@ public class WebController {
 
     @GetMapping("/myTasks")
     public String myTasks(@RequestParam("userId") String userId, Model model) {
-        List<Task> as = taskService.showMyTasks(userId);
-        model.addAttribute("tasks", as);
-        System.out.println(as);
+        List<Task> my = taskService.showMyTasks(userId);
+        model.addAttribute("tasks", my);
+        System.out.println(my);
         return "mytasks.html";
     }
 

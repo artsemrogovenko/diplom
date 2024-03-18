@@ -37,7 +37,7 @@
         <div class="card-deck">
 
         <td class="table-light" th:text="${task.description}"></td>
-        <td class="table-light" style="float-right" th:text="${task.taskStatus == 'DONE' ? 'display: none;' : ''}">
+        <td class="table-light"  th:text="${task.taskStatus == 'DONE' ? 'display: none;' : ''}">
             <form th:action="@{/{id}/complete(id=${task.id})}" method="post" class="d-inline">
                 <input type="hidden" name="userid" th:value="${userid}"/>
                 <button type="submit" class="btn btn-success ">Success</button>

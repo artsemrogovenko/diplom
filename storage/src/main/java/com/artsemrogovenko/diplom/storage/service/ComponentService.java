@@ -126,12 +126,13 @@ public class ComponentService {
         String unit = request.getUnit();
         String description = request.getDescription();
 
-        return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description)
-                .orElseThrow(NoSuchElementException::new);
+        return componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
+//                .orElseThrow(NoSuchElementException::new);
+
     }
 
     /**
-     * есть ли компоненты на складе
+     * Есть ли компоненты на складе
      * @param requests список желаемого
      * @return
      */
@@ -143,12 +144,12 @@ public class ComponentService {
 
             int requiredQuantity = request.getQuantity();
 
-            if (request.getUnit().toLowerCase().equals("м")) {
-                requiredQuantity *= 1000;
-            }
-            if (request.getUnit().toLowerCase().equals("км")) {
-                requiredQuantity *= 1000000;
-            }
+//            if (request.getUnit().toLowerCase().equals("м")) {
+//                requiredQuantity *= 1000;
+//            }
+//            if (request.getUnit().toLowerCase().equals("км")) {
+//                requiredQuantity *= 1000000;
+//            }
 
             List<Component> list = new ArrayList<>();
             try {
@@ -177,14 +178,14 @@ public class ComponentService {
             components.stream().forEach(componentResponse -> decreaseComponent(componentResponse));
             //updateComponents(responses);
         }
-        // если нет отриц. полей
+        // Если нет отриц. полей
         return new ResponseEntity<>(components, HttpStatus.OK);
     }
 
     /**
-     * ищу подходящий элемент начиная с наименьшего значения.
-     * например если это 2 куска провода, выбор будет мделан на наименьший отрезок
-     * @param list список по по характеристикам, может содержать разное количество
+     * Ищу подходящий элемент начиная с наименьшего значения.
+     * Например, если это 2 куска провода, выбор будет сделан на наименьший отрезок
+     * @param list список по характеристикам, может содержать разное количество
      * @param requiredQuantity желаемое количество компонента
      * @return вернется элемент такой как нужно, либо сгенерируется значение недостачи
      */
@@ -232,12 +233,12 @@ public class ComponentService {
     public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber, Long taskId, String userId, List<ComponentRequest> requiredComponents) {
         ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
         if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
-            //TODO можно сделать уведомление для заказа
+
             System.out.println("вызван метод закупки");
             deficitService.addToCard(contractNumber, taskId, userId, response.getBody());
         }
         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
-            //TODO можно сделать перевод компонентов клиенту
+
             System.out.println("компоненты есть");
         }
         return response;

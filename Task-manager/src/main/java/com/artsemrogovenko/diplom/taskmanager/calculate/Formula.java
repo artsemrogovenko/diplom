@@ -74,10 +74,10 @@ public class Formula {
         ComponentRequest box = new ComponentRequest().builder()
                 .name("корпус").model(product.getType()).quantity(1).unit("шт").description(product.getColor()).build();
 
-        ComponentRequest door =new ComponentRequest().builder()
+        ComponentRequest door = new ComponentRequest().builder()
                 .name("дверь").model(product.getType()).quantity(1).unit("шт").description(product.getColor()).build();
 
-        ComponentRequest locks =new ComponentRequest().builder()
+        ComponentRequest locks = new ComponentRequest().builder()
                 .name("замок").model("20-20/50").quantity(2).unit("шт").description("трехгранный ключ").build();
 
 
@@ -151,9 +151,17 @@ public class Formula {
     }
 
     public static List<Component> componentsFromAllModules(Task task) {
-        List<Component> components = task.getModules().stream()
-                .flatMap(module -> module.getComponents().stream())
-                .toList();
+        List<Component> components = new LinkedList<>();
+
+        for (Module module : task.getModules()) {
+            module.getComponents().forEach(components::add);
+        }
+//        components.forEach(ComponentMapper::mapToComponent);
+
+//        List<Component> components = task.getModules().stream()
+//                .flatMap(module -> module.getComponents().stream())
+//                .toList();
+//        return components;
         return components;
     }
 }

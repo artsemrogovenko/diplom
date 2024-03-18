@@ -34,7 +34,9 @@ public class ComponentMapper {
 
         // Копирование модулей
         Set<Module> modules = new HashSet<>();
-
+        if (componentData instanceof Component) {
+            component.setId(((Component) componentData).getId());
+        }
         if (componentData instanceof ComponentRequest) {
 //            ComponentRequest moduleRequest = (ComponentRequest) componentData;
 //            if (moduleRequest.getModuleRequests() != null ) {

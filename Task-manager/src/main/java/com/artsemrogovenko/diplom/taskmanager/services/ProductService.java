@@ -51,20 +51,22 @@ public class ProductService {
                 List<Task> taskList = new ArrayList<>();
                 for (Template selectedTemplate : selectedTemplates) {
                     Task temp = TemplateMapper.mapToTask(selectedTemplate);
-                    temp.getModules().addAll(selectedTemplate.getModules());
+//                    temp.getModules().addAll(selectedTemplate.getModules());
                     taskList.add(temp);
                 }
 
                 taskList.forEach(task -> task.setContractNumber(product.getContractNumber()));
-                newProduct.setTasks(taskList);
+//                taskRepository.saveAll(taskList);
+                newProduct.getTasks().addAll(taskList);
             }
             //добавляю дополнительные компоненты
             List<Task> additional = formulaService.additionalTask(newProduct);
+//            taskRepository.saveAll(additional);
             newProduct.getTasks().addAll(additional);
 
             saveProduct(newProduct);
 
-            System.out.println(    productRepository.getReferenceById(newProduct.getContractNumber()));
+            System.out.println(    productRepository.findById(newProduct.getContractNumber()));
 
             return new ResponseEntity<>("Продукт принят в производство", HttpStatus.CREATED);
         } catch (JsonProcessingException e) {
