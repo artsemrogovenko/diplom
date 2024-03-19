@@ -5,6 +5,7 @@ import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ComponentMapper;
+import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.taskmanager.model.*;
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
 import com.artsemrogovenko.diplom.taskmanager.repository.ComponentRepository;
@@ -61,11 +62,11 @@ public class Formula {
         controlCabinet.setComponents(controlCabinetComponents);
 
 
-        moduleService.createModule(controlCabinet);
-        moduleService.createModule(special);
+        Module first = ModuleMapper.mapToModule(moduleService.createModule(controlCabinet).getBody());
+        Module second = ModuleMapper.mapToModule(moduleService.createModule(special).getBody());
 
-        metal.addModule(controlCabinet);
-        equipment.addModule(special);
+        metal.addModule(first);
+        equipment.addModule(second);
 
         return new LinkedList<>(List.of(equipment, metal));
     }

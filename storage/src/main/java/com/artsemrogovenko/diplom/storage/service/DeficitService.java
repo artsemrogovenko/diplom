@@ -10,7 +10,9 @@ import com.artsemrogovenko.diplom.storage.repositories.DeficitRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -35,11 +37,22 @@ public class DeficitService {
     public void addToCard(String contractNumber, Long taskId, String userId, List<ComponentResponse> components) {
         for (ComponentResponse component : components) {
 
+            String unit = component.getUnit();
+            Integer componentQuantity = component.getQuantity();
+
+            if (component.getUnit().toLowerCase().equals("м")) {
+                componentQuantity *= 1000;
+                unit = "мм";
+            }
+            if (component.getUnit().toLowerCase().equals("км")) {
+                componentQuantity *= 1000000;
+                unit = "мм";
+            }
             Optional<Deficit> verify = deficitRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndRefill(
                     component.getFactoryNumber(),
                     component.getModel(),
                     component.getName(),
-                    component.getUnit(),
+                    unit,
                     component.getDescription(),
                     component.isRefill()
             );
@@ -49,8 +62,8 @@ public class DeficitService {
                 if (!verify.get().getTaskIds().equals(taskId) && !verify.get().getContractNumbers().equals(contractNumber)) {
 
                     // увеличиваю на необходимое значение
-                    int quantity = verify.get().getQuantity();
-                    verify.get().setQuantity(quantity + (component.getQuantity() * (-1)));
+                    int quantitySet = verify.get().getQuantity();
+                    verify.get().setQuantity(quantitySet + (componentQuantity * (-1)));
                 }
 
 
@@ -69,8 +82,8 @@ public class DeficitService {
                 deficitComponent.setFactoryNumber(component.getFactoryNumber());
                 deficitComponent.setModel(component.getModel());
                 deficitComponent.setName(component.getName());
-                deficitComponent.setQuantity(component.getQuantity() * (-1));
-                deficitComponent.setUnit(component.getUnit());
+                deficitComponent.setQuantity(componentQuantity * (-1));
+                deficitComponent.setUnit(unit);
                 deficitComponent.setDescription(component.getDescription());
                 deficitComponent.setRefill(component.isRefill());
 
@@ -86,23 +99,34 @@ public class DeficitService {
     /**
      * Метод для удаления из долгового списка
      *
-     * @param components элементы переданые при пополнении склада
+     * @param components элементы переданные при пополнении склада
      * @return
      */
     public void removeFromToCard(List<ComponentResponse> components) {
         for (ComponentResponse component : components) {
 
+            String unit = component.getUnit();
+            Integer componentQuantity = component.getQuantity();
+
+            if (component.getUnit().toLowerCase().equals("м")) {
+                componentQuantity *= 1000;
+                unit = "мм";
+            }
+            if (component.getUnit().toLowerCase().equals("км")) {
+                componentQuantity *= 1000000;
+                unit = "мм";
+            }
             Optional<Deficit> verify = deficitRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndRefill(
                     component.getFactoryNumber(),
                     component.getModel(),
                     component.getName(),
-                    component.getUnit(),
+                    unit,
                     component.getDescription(),
                     component.isRefill());
             //если такой элемент есть
             if (verify.isPresent()) {
                 int quantity = verify.get().getQuantity();
-                verify.get().setQuantity(quantity - component.getQuantity());
+                verify.get().setQuantity(quantity - componentQuantity);
             }
         }
     }

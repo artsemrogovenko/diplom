@@ -21,15 +21,17 @@
     </form>
 </nav>
 
-
+<script th:inline="javascript">
+    $(document).ready(function() {
+        var errorInfo = /*[[${errorInfo}]]*/ '';
+        toastr.error(errorInfo);
+    });
+</script>
 <div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
      class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
    <span class="countdown" id="countdown" th:text="${timer}"                                                style="font-size: 12px; text-align: right;"></span>
 </div>
 
-<script th:if="${message} == '201 CREATED'">toastr.success(' ');</script>
-<script th:if="${message} == '409 CONFLICT'">toastr.error(' ');</script>
-<script th:if="${message} == '400 BAD_REQUEST'">toastr.error(' ');</script>
 
     <div th:if="${errorInfo != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Ошибка!</strong> <span th:text="${message}"></span>

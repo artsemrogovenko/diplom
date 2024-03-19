@@ -24,7 +24,7 @@ public class ComponentService {
     private final ComponentRepository componentRepository;
     private final AccountRepository accountRepository;
 
-    public ComponentResponse increaseComponent(ComponentRequest newComponent) {
+    public ComponentResponse createComponent(ComponentRequest newComponent) {
         Component componentByFields;
         try {
             componentByFields = findComponents(newComponent).stream().max(Comparator.comparingInt(Component::getQuantity)).get();
@@ -34,18 +34,18 @@ public class ComponentService {
                 componentByFields.setQuantity(componentByFields.getQuantity() + units.keySet().iterator().next());
 
             } else {
-                componentByFields = ComponentMapper.mapToComponent(createComponent(newComponent));
+                componentByFields = ComponentMapper.mapToComponent(saveComponent(newComponent));
             }
 
         } catch (NoSuchElementException n) { // если такого элемента нет
-            componentByFields = ComponentMapper.mapToComponent(createComponent(newComponent));
+            componentByFields = ComponentMapper.mapToComponent(saveComponent(newComponent));
         }
         return ComponentMapper.mapToComponentResponse(componentRepository.save(componentByFields));
     }
 
     public String increaseComponents(List<ComponentRequest> newComponents) {
         for (ComponentRequest newComponent : newComponents) {
-            increaseComponent(newComponent);
+            createComponent(newComponent);
         }
         return new String("Склад пополнился всеми компонентами");
     }
@@ -86,7 +86,7 @@ public class ComponentService {
         return new HashMap<Integer, String>(Map.of(component.getQuantity(), component.getUnit().toLowerCase()));
     }
 
-    public ComponentResponse createComponent(ComponentRequest componentRequest) {
+    public ComponentResponse saveComponent(ComponentRequest componentRequest) {
         ComponentRequest temp = componentRequest;
         HashMap<Integer, String> units = convertUnits(componentRequest);
 
@@ -114,7 +114,6 @@ public class ComponentService {
     }
 
     /**
-     *
      * @param request найти объект с такими параметрами
      * @return список полных совпадений
      * @throws NoSuchElementException
@@ -126,13 +125,19 @@ public class ComponentService {
         String unit = request.getUnit();
         String description = request.getDescription();
 
-        return componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
-//                .orElseThrow(NoSuchElementException::new);
-
+        if (request.getUnit().toLowerCase() != "шт") {
+            unit = "мм";
+        }
+        List<Component> result= componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
+        if (result.isEmpty() || result == null) {
+            throw new NoSuchElementException();
+        }
+        return result;
     }
 
     /**
      * Есть ли компоненты на складе
+     *
      * @param requests список желаемого
      * @return
      */
@@ -144,12 +149,12 @@ public class ComponentService {
 
             int requiredQuantity = request.getQuantity();
 
-//            if (request.getUnit().toLowerCase().equals("м")) {
-//                requiredQuantity *= 1000;
-//            }
-//            if (request.getUnit().toLowerCase().equals("км")) {
-//                requiredQuantity *= 1000000;
-//            }
+            if (request.getUnit().toLowerCase().equals("м")) {
+                requiredQuantity *= 1000;
+            }
+            if (request.getUnit().toLowerCase().equals("км")) {
+                requiredQuantity *= 1000000;
+            }
 
             List<Component> list = new ArrayList<>();
             try {
@@ -178,23 +183,25 @@ public class ComponentService {
             components.stream().forEach(componentResponse -> decreaseComponent(componentResponse));
             //updateComponents(responses);
         }
-        // Если нет отриц. полей
+        // Если нет отриц. полей.
         return new ResponseEntity<>(components, HttpStatus.OK);
     }
 
     /**
      * Ищу подходящий элемент начиная с наименьшего значения.
      * Например, если это 2 куска провода, выбор будет сделан на наименьший отрезок
-     * @param list список по характеристикам, может содержать разное количество
+     *
+     * @param list             список по характеристикам, может содержать разное количество
      * @param requiredQuantity желаемое количество компонента
      * @return вернется элемент такой как нужно, либо сгенерируется значение недостачи
      */
 
     private ComponentResponse checkList(List<Component> list, int requiredQuantity) {
         ComponentResponse reqComponent;
+        //проверяю весть список, у всех ли компонентов количество меньше требуемого
         boolean NonSufficient = list.stream().allMatch(component -> component.getQuantity() < requiredQuantity);
 
-        //если нет нужного количества отплавлю обьект с отрицательным значением
+        //если нет нужного количества отправлю объект с отрицательным значением
         if (NonSufficient) {
             ComponentResponse deficient = ComponentMapper.mapToComponentResponse(list.stream().max(Comparator.comparingInt(Component::getQuantity)).get());
             if (deficient.getQuantity() < requiredQuantity) {
@@ -222,9 +229,10 @@ public class ComponentService {
 
     /**
      * Если исполнитель запрашивает задачу на выполнение
-     * @param contractNumber на какой договор
-     * @param taskId номер задачи
-     * @param userId кто взял
+     *
+     * @param contractNumber     на какой договор
+     * @param taskId             номер задачи
+     * @param userId             кто взял
      * @param requiredComponents список компонентов
      * @return ответ о наличии всех компонентов
      */
@@ -233,12 +241,10 @@ public class ComponentService {
     public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber, Long taskId, String userId, List<ComponentRequest> requiredComponents) {
         ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
         if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
-
             System.out.println("вызван метод закупки");
             deficitService.addToCard(contractNumber, taskId, userId, response.getBody());
         }
         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
-
             System.out.println("компоненты есть");
         }
         return response;

@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.services;
 
+import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.models.Account;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.repositories.AccountRepository;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
-
+    @LogMethod
     public boolean saveUser(Account user) {
         Optional<Account> userFromDB = accountRepository.findById(user.getName());
         System.out.println(user);
@@ -37,7 +38,7 @@ public class AccountService implements UserDetailsService {
         return true;
 
     }
-
+    @LogMethod
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Account account = accountRepository.findByName(username);
@@ -57,7 +58,7 @@ public class AccountService implements UserDetailsService {
     public Account findUserById(String name) {
         return accountRepository.findById(name).orElse(null);
     }
-
+@LogMethod
     public ResponseEntity<?> getTaskByOwner(String userId, String description) {
         Optional<Task> taskOptional = accountRepository.findById(userId).get().getTasks().stream()
                 .filter(task -> task.getDescription().equals(description)).findFirst();
@@ -79,6 +80,7 @@ public class AccountService implements UserDetailsService {
     /**
      * Получение всех задач от владельцев.
      */
+    @LogMethod
     public List<Task> getAllTasks() {
         return getAllAccounts().stream().flatMap(account -> account.getTasks().stream()).filter(Objects::nonNull).collect(Collectors.toList());
     }

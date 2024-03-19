@@ -8,21 +8,19 @@ import com.artsemrogovenko.diplom.accountapp.services.AccountService;
 import com.artsemrogovenko.diplom.accountapp.services.TaskService;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.net.ConnectException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,15 +63,13 @@ public class WebController {
             responseEntity = taskService.takeTask(taskId, userid);
             confirm = responseEntity.getBody();
             System.out.println(confirm);
-        } catch (feign.FeignException.InternalServerError ex) {
+        } catch (FeignException.InternalServerError ex) {
             responseMessage = responseEntity.getBody();
             System.out.println(responseMessage);
-            System.out.println(ex.getMessage());
+            System.out.println(ex.contentUTF8());
 
-        } catch (feign.FeignException.NotFound ex) {
-            responseMessage = responseEntity.getBody();
-            System.out.println(responseMessage);
-            System.out.println(ex.getMessage());
+        } catch (FeignException.NotFound ex) {
+            responseMessage = ex.contentUTF8();
         }
 //        if (responseEntity.getStatusCode().is2xxSuccessful()) {
 //            confirm = responseEntity.getBody();

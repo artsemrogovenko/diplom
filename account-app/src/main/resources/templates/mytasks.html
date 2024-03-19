@@ -33,7 +33,7 @@
     </thead>
     <tbody>
     <!--        th:if="${task.reserved}"-->
-    <tr th:each="task: ${tasks}" th:if="${task.reserved}">
+    <tr th:each="task: ${tasks}" >
         <div class="card-deck">
 
         <td class="table-light" th:text="${task.description}"></td>

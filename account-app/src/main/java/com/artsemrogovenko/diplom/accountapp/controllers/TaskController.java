@@ -34,6 +34,7 @@ public class TaskController {
 
     @PostMapping("/assignTask/{id}")
     public ResponseEntity<String> assignTask(@RequestBody TaskForUser task, @RequestParam String userId) {
+        System.out.println(task);
         return taskService.assign(userId, task);
     }
 }

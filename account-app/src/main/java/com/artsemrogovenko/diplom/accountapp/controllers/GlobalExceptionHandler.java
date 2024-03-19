@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @LogMethod
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ModelAndView handleMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-        ModelAndView modelAndView = new ModelAndView("/errorPage"); // Перенаправление на главную страницу
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
         modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getBody());
         return modelAndView;
     }
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @LogMethod
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView handleNoResourceFoundException(NoHandlerFoundException ex) {
-        ModelAndView modelAndView = new ModelAndView("/errorPage"); // Перенаправление на главную страницу
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
         modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getBody());
         return modelAndView;
     }
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     @LogMethod
     @ExceptionHandler(value = EntityNotFoundException.class)
     public ModelAndView errorPage(EntityNotFoundException ex) {
-        ModelAndView modelAndView = new ModelAndView("/errorPage"); // Перенаправление на главную страницу
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
         modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getCause());
         return modelAndView;
     }
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     @LogMethod
     @ExceptionHandler(value = NoResourceFoundException.class)
     public ModelAndView errorPage(NoResourceFoundException ex) {
-        ModelAndView modelAndView = new ModelAndView("/errorPage"); // Перенаправление на главную страницу
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
         modelAndView.addObject("message", "404 Not Found");
         modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getBody());
         return modelAndView;
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     @LogMethod
     @ExceptionHandler(value = FeignException.MethodNotAllowed.class)
     public ModelAndView notsupported(FeignException ex) {
-        ModelAndView modelAndView = new ModelAndView("/errorPage"); // Перенаправление на главную страницу
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
         modelAndView.addObject("errorInfo", ex.getMessage()+ ex.contentUTF8());
         return modelAndView;
     }

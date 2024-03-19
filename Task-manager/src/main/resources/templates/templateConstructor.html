@@ -52,8 +52,10 @@
                 Служба модулей временно недоступна
             </div>
         </div>
-        <a href="/constructTempate" th:if="${specificationservice !='503 SERVICE_UNAVAILABLE'}"  class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-            <div class="fs-5 fw-semibold">Список модулей <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span></div>
+        <a href="/constructTempate" th:if="${specificationservice !='503 SERVICE_UNAVAILABLE'}"
+           class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+            <div class="fs-5 fw-semibold">Список модулей <span class="countdown" id="countdown" th:text="${timer}"
+                                                               style="font-size: 12px; text-align: right;"></span></div>
         </a>
 
         <div class="list-group list-group-flush border-bottom scrollarea">
@@ -63,9 +65,13 @@
                 th:data-name="|Элемент ${module.id}|">
             <span class="d-flex w-100 align-items-center justify-content-between">
                 <span class="mb-1" th:text="${module.getName()}">List group item heading</span>
-                <span class="text-body-secondary" th:text="${module.model}">Tues</span>
+                <span class="mb-1" th:text="${module.model}">Tues</span>
+                <span class="mb-1" th:text="${module.description}">Tues</span>
             </span>
-                <span class="col-10 mb-1 small" th:text="${module.description}">Some placeholder content in a paragraph below the heading and date.</span>
+<!--                <span class="col-10 mb-1 small" th:text="${module.description}">Some placeholder content in a paragraph below the heading and date.</span>-->
+                <div class="col-10 mb-1 small" th:each="component : ${module.componentResponses}" th:text="${component.name}"  th:if="${!#strings.isEmpty(component.name)}">
+                   <span th:if="${not #object.isEmpty(component)}">,</span>
+                  </div>
             </li>
 
         </div>
@@ -135,7 +141,7 @@
         var minutes = Math.floor(countdown / 60);
         var seconds = countdown % 60;
         var formattedTime = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
-        countdownElement.innerText = 'можно обновить через : '+ formattedTime;
+        countdownElement.innerText = 'можно обновить через : ' + formattedTime;
         countdown--;
         if (countdown < 0) {
             clearInterval(interval);

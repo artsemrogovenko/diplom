@@ -61,12 +61,11 @@ public class ProductService {
             }
             //добавляю дополнительные компоненты
             List<Task> additional = formulaService.additionalTask(newProduct);
-//            taskRepository.saveAll(additional);
             newProduct.getTasks().addAll(additional);
 
+            System.out.println(newProduct.getTasks());
             saveProduct(newProduct);
-
-            System.out.println(    productRepository.findById(newProduct.getContractNumber()));
+            System.out.println(productRepository.findById(newProduct.getContractNumber()));
 
             return new ResponseEntity<>("Продукт принят в производство", HttpStatus.CREATED);
         } catch (JsonProcessingException e) {

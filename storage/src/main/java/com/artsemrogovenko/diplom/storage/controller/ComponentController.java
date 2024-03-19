@@ -3,7 +3,6 @@ package com.artsemrogovenko.diplom.storage.controller;
 import com.artsemrogovenko.diplom.storage.aspect.LogMethod;
 import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
-import com.artsemrogovenko.diplom.storage.model.Component;
 import com.artsemrogovenko.diplom.storage.service.ComponentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

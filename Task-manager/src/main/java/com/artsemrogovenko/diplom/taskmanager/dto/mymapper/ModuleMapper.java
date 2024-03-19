@@ -25,7 +25,9 @@ public class ModuleMapper {
         if (data.getQuantity() != null) {
             module.setQuantity(data.getQuantity());
         }
-        module.setUnit(data.getUnit().trim());
+        if (module.getUnit() != null) {
+            module.setUnit(data.getUnit().trim());
+        }
         if (data.getDescription() != null) {
             module.setDescription(data.getDescription().trim());
         }
@@ -48,9 +50,11 @@ public class ModuleMapper {
         if (data instanceof ModuleResponse) {
             ModuleResponse moduleResponse = (ModuleResponse) data;
             module.setId(moduleResponse.getId());
-            for (ComponentResponse componentResponse : moduleResponse.getComponentResponses()) {
-                Component component = ComponentMapper.mapToComponent(componentResponse);
-                components.add(component);
+            if (moduleResponse.getComponentResponses() != null) {
+                for (ComponentResponse componentResponse : moduleResponse.getComponentResponses()) {
+                    Component component = ComponentMapper.mapToComponent(componentResponse);
+                    components.add(component);
+                }
             }
         }
 

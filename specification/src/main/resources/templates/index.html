@@ -86,7 +86,7 @@
                                                th:field="${newModule.circuitVersion}"
                                                placeholder="Версия схемы"/></div>
                 <div class="createnewModule_button">
-                    <button type="submit">Создать элемент</button>
+                    <button type="submit">Сохранить</button>
                 </div>
 
 
@@ -355,7 +355,7 @@
                                 <li>Описание: <span th:text="${element.getDescription()}"></span></li>
                                 <li><a th:href="${element.getCircuitFile()}" target="_blank">Cхема</a></li>
                             </ul>
-                            <button type="submit" class="w-100 btn btn-lg btn-outline-primary">Edit</button>
+                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">Edit</button>
                         </div>
                     </form>
                 </div>

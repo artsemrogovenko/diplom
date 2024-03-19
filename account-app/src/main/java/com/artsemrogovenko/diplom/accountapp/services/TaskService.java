@@ -2,6 +2,7 @@ package com.artsemrogovenko.diplom.accountapp.services;
 
 
 import com.artsemrogovenko.diplom.accountapp.api.TaskApi;
+import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskMapper;
 import com.artsemrogovenko.diplom.accountapp.httprequest.MyRequest;
@@ -67,7 +68,7 @@ public class TaskService {
         return tasks;
     }
 
-
+    @LogMethod
     public List<Task> pullTasks() throws FeignException.ServiceUnavailable, feign.RetryableException {
         ResponseEntity<List<Task>> taskList = taskApi.getTasks();
         if (taskList.hasBody()) {
@@ -77,7 +78,7 @@ public class TaskService {
         return tasks;
     }
 
-
+    @LogMethod
     public ResponseEntity<?> rollbackTask(String user, Long taskid) {
         Task rollbackTask = taskRepository.findById(taskid).get();
         List<Component> components = MyRequest.componentsFromAllModules(rollbackTask);
@@ -85,15 +86,15 @@ public class TaskService {
         return MyRequest.rollbackComponents(calculated);
     }
 
-
+    @LogMethod
     public ResponseEntity<String> assign(String userId, TaskForUser assignTask) {
         try {
             Task newTask = TaskMapper.mapToTask(assignTask);
             Account recieverAccount = accountRepository.findByName(userId);
             if (recieverAccount == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("пользо");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("пользователь не найден");
             }
-            // очень сложная проверка)
+            // проверка на дубликат такой задачи
             if (recieverAccount.getTasks().stream()
                     .anyMatch(task -> task.getId().equals(newTask.getId())
                             && task.getContractNumber().equals(newTask.getContractNumber()))) {
@@ -115,10 +116,12 @@ public class TaskService {
 
     }
 
+    @LogMethod
     public ResponseEntity<String> takeTask(Long taskId, String userid) {
         return taskApi.reserveAmount(taskId, userid);
     }
 
+    @LogMethod
     public List<Task> showMyTasks(String userId) {
         return accountRepository.findById(userId).get().getTasks();
     }

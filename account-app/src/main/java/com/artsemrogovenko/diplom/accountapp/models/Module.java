@@ -40,8 +40,10 @@ public class Module {
     private Set<Component> components = new HashSet<>();   // список компонентов
     private String circutFile;  // схема сборки
 
+    @ManyToMany
+    private List<Task> tasks = new ArrayList<>();
 
-     public Module(Long id) {
+    public Module(Long id) {
         this.id = id;
     }
 
