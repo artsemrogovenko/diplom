@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ComponentRepository extends JpaRepository<Component, Long> {
 
+  Optional<Component>  findByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name,String unit,String description);
 
   Optional<Component>  findByFactoryNumberAndModelAndNameAndDescription(String factoryNumber, String model, String name, String description);
 }

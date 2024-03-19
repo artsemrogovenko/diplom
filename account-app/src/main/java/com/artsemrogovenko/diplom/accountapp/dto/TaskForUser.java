@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskForUser {
+public class TaskForUser implements TaskData{
     private Long id;
     private String name;   //имя
     private String description; // описание

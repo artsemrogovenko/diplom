@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
+
     @LogMethod
     public boolean saveUser(Account user) {
         Optional<Account> userFromDB = accountRepository.findById(user.getName());
@@ -38,6 +39,7 @@ public class AccountService implements UserDetailsService {
         return true;
 
     }
+
     @LogMethod
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -58,7 +60,8 @@ public class AccountService implements UserDetailsService {
     public Account findUserById(String name) {
         return accountRepository.findById(name).orElse(null);
     }
-@LogMethod
+
+    @LogMethod
     public ResponseEntity<?> getTaskByOwner(String userId, String description) {
         Optional<Task> taskOptional = accountRepository.findById(userId).get().getTasks().stream()
                 .filter(task -> task.getDescription().equals(description)).findFirst();

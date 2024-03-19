@@ -5,6 +5,7 @@ import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ResourceNotFoundException;
 import com.artsemrogovenko.diplom.taskmanager.services.TaskService;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -61,8 +62,12 @@ public class TaskController {
     @TrackUserAction
     @PostMapping("{id}/reserve")
     public ResponseEntity<String> reserveAmount(@PathVariable("id") Long id, @RequestBody String userId) {
-//        try {
+        try {
             return taskService.reservedTask(id, userId);
+        } catch (FeignException.InternalServerError e) {
+            System.out.println(e.contentUTF8());
+            return new ResponseEntity<>(e.contentUTF8(), HttpStatus.BAD_REQUEST);
+        }
 //        } catch (ResourceNotFoundException ex) {
 //            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 //        }

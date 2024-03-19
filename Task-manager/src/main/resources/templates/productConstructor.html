@@ -53,7 +53,7 @@
                 <span class="mb-1" th:text="${template.getName()}">List group item heading</span>
                 <span class="text-body-secondary" th:text="${template.getDescription()}">Tues</span>
             </span>
-                <span class="col-10 mb-1 small" th:text="${template.getModules().size()}">Some placeholder content in a paragraph below the heading and date.</span>
+                <span class="col-10 mb-1 small" th:text="'Количество модулей: ' + ${template.getModules().size()}">Some placeholder content</span>
             </li>
 
         </div>

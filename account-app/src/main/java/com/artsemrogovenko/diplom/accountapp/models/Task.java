@@ -1,4 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.models;
+
+import com.artsemrogovenko.diplom.accountapp.dto.TaskData;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus;
 import com.artsemrogovenko.diplom.accountapp.models.Module;
 import jakarta.persistence.*;
@@ -11,7 +13,7 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor
-public class Task {
+public class Task implements TaskData {
     @Id
     private Long id;
     private String name;   //имя
@@ -25,7 +27,10 @@ public class Task {
     @ManyToOne
     private Account account;
 
-
+    @Override
+    public TaskStatus getTaskStatus() {
+        return status;
+    }
 
 
 }

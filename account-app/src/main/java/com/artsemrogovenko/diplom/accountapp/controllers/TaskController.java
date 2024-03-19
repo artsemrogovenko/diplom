@@ -32,7 +32,7 @@ public class TaskController {
     }
 
 
-    @PostMapping("/assignTask/{id}")
+    @PostMapping("/assignTask")
     public ResponseEntity<String> assignTask(@RequestBody TaskForUser task, @RequestParam String userId) {
         System.out.println(task);
         return taskService.assign(userId, task);

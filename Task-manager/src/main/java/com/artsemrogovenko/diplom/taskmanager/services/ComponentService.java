@@ -8,6 +8,7 @@ import com.artsemrogovenko.diplom.taskmanager.repository.ComponentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -59,29 +60,46 @@ public class ComponentService {
     }
 
     public List<Component> saveAll(Set<Component> components) {
+        List<Component> resultList = new ArrayList<>();
         if (components != null && !components.isEmpty()) {
             List<Component> nonDuplicates = components.stream()
                     .filter(component -> !component.fieldsIsNull())
                     .filter(component -> notExist(component)).toList();
-            nonDuplicates.size();
+
+            for (Component nonDuplicate : nonDuplicates) {
+                if (notExist(nonDuplicate)) {
+                    resultList.add(componentRepository.save(nonDuplicate));
+                } else {
+                    resultList.add(search(nonDuplicate));
+                }
+            }
             // Сохранить все отфильтрованные компоненты
-            return componentRepository.saveAll(nonDuplicates);
+//            return componentRepository.saveAll(nonDuplicates);
         }
-        return null;
+        return resultList;
     }
 
     public boolean notExist(Component component) {
-        String factoryNumber = component.getFactoryNumber();
-        String model = component.getModel();
-        String name = component.getName();
-//        String unit = component.getUnit();
-        String description = component.getDescription();
         try {
-            Component existingComponent = componentRepository.findByFactoryNumberAndModelAndNameAndDescription(factoryNumber, model, name, description).get();
+            Component existingComponent = search(component);
+            if (existingComponent.getQuantity() == component.getQuantity()) {
+                return false;
+            }
         } catch (NoSuchElementException e) {
 //            System.out.println("no element");
             return true;
         }
         return false;
     }
+
+    private Component search(Component component) throws NoSuchElementException {
+        String factoryNumber = component.getFactoryNumber();
+        String model = component.getModel();
+        String name = component.getName();
+        String unit = component.getUnit();
+        String description = component.getDescription();
+        return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(
+                factoryNumber, model, name, unit, description).get();
+    }
+
 }

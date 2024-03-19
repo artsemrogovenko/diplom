@@ -64,8 +64,13 @@ public class DeficitService {
                     // увеличиваю на необходимое значение
                     int quantitySet = verify.get().getQuantity();
                     verify.get().setQuantity(quantitySet + (componentQuantity * (-1)));
-                }
 
+                    ContractNumber number = new ContractNumber(contractNumber);
+                    if (!contractNumberRepository.existsById(contractNumber)) {
+                        contractNumberRepository.save(number);
+                    }
+                    verify.get().getContractNumbers().add(contractNumberRepository.getReferenceById(contractNumber));
+                }
 
             } else {
                 ContractNumber number = new ContractNumber(contractNumber);

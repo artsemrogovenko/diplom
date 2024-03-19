@@ -89,17 +89,18 @@
     <div class="row mt-4">
 
         <div class="col-md-4 mb-4" th:each="task: ${tasks}">
-            <div class="card" th:if="${task.owner} == 'kanban'">
+<!--            <div class="card" th:if="${task.owner} == 'kanban'">-->
+            <div class="card" >
                 <div class="card-body">
                     <!--                    <h1>User ID: <span th:text="${userid}"></span></h1>-->
                     <h5 class="card-title text-center" th:text="${task.name}"></h5>
                     <span th:text="'Для договора ' + ${task.contractNumber}"> </span>&emsp;
                     <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно'"> </span>
+                    <span>Модули:</span>
+                    <span th:each="module : ${task.modules}">
+    <span th:text="${module.name}"></span>
+</span>
 
-                    <span th:each="module : ${task.modules}" th:text="${module.name}"
-                          th:if="${!#strings.isEmpty(module.name)}">
-                                      <span th:if="${not #object.isEmpty(module)}">, </span>
-                                  </span>
                     <form th:action="@{/take/{id}(id=${task.id})}" method="post" class="d-flex"
                           enctype="application/x-www-form-urlencoded">
                         <input type="hidden" name="userid" th:value="${username}"/>

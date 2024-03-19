@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +32,11 @@ public class ProductService {
     public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, List<Template> templateList) {
         // Преобразование JSON в список идентификаторов выбранных модулей
         List<String> selectedTemplateIds = null;
+        if (isExist(product)) {
+            return new ResponseEntity<>("Такой экземпляр уже есть", HttpStatus.CONFLICT);
+        }
         Product newProduct = product;
+        newProduct.setDone(false);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             selectedTemplateIds = objectMapper.readValue(selectedTemplatesJson, new TypeReference<List<String>>() {
@@ -61,9 +66,12 @@ public class ProductService {
             }
             //добавляю дополнительные компоненты
             List<Task> additional = formulaService.additionalTask(newProduct);
+            for (Task task : additional) {
+                taskRepository.save(task);
+            }
             newProduct.getTasks().addAll(additional);
 
-            System.out.println(newProduct.getTasks());
+
             saveProduct(newProduct);
             System.out.println(productRepository.findById(newProduct.getContractNumber()));
 
@@ -76,12 +84,20 @@ public class ProductService {
 
 
     void saveProduct(Product product) {
-        if (product.getTasks() != null && !product.getTasks().isEmpty()) {
-            taskRepository.saveAll(product.getTasks());
-        }
+//        if (product.getTasks() != null && !product.getTasks().isEmpty()) {
+//            taskRepository.saveAll(product.getTasks());
+//        }
         productRepository.save(product);
     }
 
+    private boolean isExist(Product product) {
+        Optional<Product> exiting = productRepository.findByContractNumberAndTypeAndLoadAndColorAndFloors(
+                product.getContractNumber(), product.getType(), product.getLoad(), product.getColor(), product.getFloors());
+        if (exiting.isPresent()) {
+            return true;
+        }
+        return false;
+    }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();

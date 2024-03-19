@@ -59,7 +59,7 @@
                   id="uploadForm" enctype="multipart/form-data">
                 <h4>Добавить схему для сборки</h4>
                 <label for="moduleName">Название элемента</label>
-                <input list="naming-options" id="moduleName" name="moduleName"/>
+                <input list="naming-options" id="moduleName" name="moduleName" required=""/>
                 <datalist id="naming-options">
                     <option value="">--Please choose an option--</option>
                     <th:block th:each="element: ${elements}">
@@ -69,15 +69,15 @@
                 <br/>
 
                 <label for="modification">Исполнение</label>
-                <input type="text" id="modification" name="modification"/>
+                <input type="text" id="modification" name="modification" required=""/>
                 <br/>
 
                 <label for="versionAssembly">Версия схемы</label>
-                <input type="text" id="versionAssembly" name="versionAssembly"/>
+                <input type="number" id="versionAssembly" name="versionAssembly" required=""/>
                 <br/>
 
                 <label for="contractNumber">Для какого договора</label>
-                <input type="text" id="contractNumber" name="contractNumber"/>
+                <input type="text" id="contractNumber" name="contractNumber" required=""/>
 
                 <input id="hidden-file-content" type="file" name="fileContent"/>
 

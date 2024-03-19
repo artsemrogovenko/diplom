@@ -22,6 +22,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -73,33 +74,35 @@ public class TemplateService {
     }
 
     public ResponseEntity<String> prepareData(TemplateRequest rawTemplate, String selectedModulesJson, List<ModuleResponse> list) {
-        // Преобразование JSON в список идентификаторов выбранных модулей
         List<String> selectedModuleIds = null;
         TemplateRequest temp = rawTemplate;
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            selectedModuleIds = objectMapper.readValue(selectedModulesJson, new TypeReference<List<String>>() {
-            });
-            // Создание списка модулей на основе идентификаторов
-
-            if (selectedModuleIds != null && !selectedModuleIds.isEmpty()) {
-                for (String position : selectedModuleIds) {
-
-                    try {
-                        temp.addModule(list.get(Integer.parseInt(position)));
-                    } catch (NullPointerException | IndexOutOfBoundsException ex) {
-                        return new ResponseEntity<>("Список доступных модулей устарел, повторите попытку", HttpStatus.BAD_REQUEST);
-                    }
-
-                }
-            }
-            saveTemplate(TemplateMapper.mapToTemplate(temp));
-//            System.out.println(templateRepository.findLastTemplate());
-            return new ResponseEntity<>("Шаблон сохранен", HttpStatus.CREATED);
-        } catch (JsonProcessingException e) {
-            System.out.println(e.getMessage());
+        if (isExist(rawTemplate.getName(), rawTemplate.getDescription())){
+            return new ResponseEntity<>("Шаблон с таким именем уже есть", HttpStatus.CONFLICT);
         }
+        // Преобразование JSON в список идентификаторов выбранных модулей
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                selectedModuleIds = objectMapper.readValue(selectedModulesJson, new TypeReference<List<String>>() {
+                });
+                // Создание списка модулей на основе идентификаторов
+
+                if (selectedModuleIds != null && !selectedModuleIds.isEmpty()) {
+                    for (String position : selectedModuleIds) {
+
+                        try {
+                            temp.addModule(list.get(Integer.parseInt(position)));
+                        } catch (NullPointerException | IndexOutOfBoundsException ex) {
+                            return new ResponseEntity<>("Список доступных модулей устарел, повторите попытку", HttpStatus.BAD_REQUEST);
+                        }
+
+                    }
+                }
+                saveTemplate(TemplateMapper.mapToTemplate(temp));
+//            System.out.println(templateRepository.findLastTemplate());
+                return new ResponseEntity<>("Шаблон сохранен", HttpStatus.CREATED);
+            } catch (JsonProcessingException e) {
+                System.out.println(e.getMessage());
+            }
 //        System.out.println(temp);
         return new ResponseEntity<>("Ошибка выполнения", HttpStatus.BAD_REQUEST);
     }
@@ -108,6 +111,14 @@ public class TemplateService {
     void saveTemplate(Template template) {
         template.getModules().forEach(module -> moduleService.createModule(module));
         templateRepository.save(template);
+    }
+
+    private boolean isExist(String name, String description) {
+        Optional<Template> ex = templateRepository.findByNameAndDescription(name,description);
+        if (ex.isPresent()) {
+            return true;
+        }
+        return false;
     }
 
     public List<Template> getAllTemplates() {

@@ -30,9 +30,10 @@ public class ComponentController {
         return new ResponseEntity<>(componentService.createComponent(componentRequest), HttpStatus.CREATED);
     }
 
+    @LogMethod
     @PostMapping("/megaImport")
-    public ResponseEntity<?> saveComponents(@RequestBody List<ComponentRequest> components) {
-        return new ResponseEntity<>(componentService.increaseComponents(components), HttpStatus.ACCEPTED);
+    public ResponseEntity<String> saveComponents(@RequestBody List<ComponentRequest> components) {
+        return new ResponseEntity<>(componentService.increaseComponents(components), HttpStatus.OK);
     }
 
     /**
@@ -41,7 +42,7 @@ public class ComponentController {
      * @param components детали которые он взял
      */
     @PostMapping("/rollbackTask")
-    public ResponseEntity<?> rollbackComponents(@RequestBody List<ComponentRequest> components) {
+    public ResponseEntity<String> rollbackComponents(@RequestBody List<ComponentRequest> components) {
         return saveComponents(components);
     }
 

@@ -76,7 +76,7 @@ public class TaskService {
     @TrackUserAction
     @Transactional
 //    public ResponseEntity<String> reservedTask(Long taskId, String userId) throws ExcessAmountException,ResourceNotFoundException {
-    public ResponseEntity<String> reservedTask(Long taskId, String userId) {
+    public ResponseEntity<String> reservedTask(Long taskId, String userId) throws FeignException.InternalServerError {
         Task work = new Task();
         try{
             work=  getTaskById(taskId);
@@ -84,7 +84,8 @@ public class TaskService {
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.isReserved()) {
-            throw new ExcessAmountException("задача уже выполняется");
+//            throw new ExcessAmountException("задача уже выполняется");
+            return new ResponseEntity<>("Задача уже выполняется", HttpStatus.NOT_FOUND);
         }
         work.setReserved(true);
         work.setOwner(userId);
@@ -130,7 +131,9 @@ public class TaskService {
 
             } catch (FeignException.FeignClientException ex) {
                 rollbackReservedTask(taskId, userId);//отмена резерва задачи
-                MyRequest.rollbackComponents(calculatedComponents); // возвращаю компоненты на склад
+               storageApi.saveComponents(calculatedComponents);
+                return new ResponseEntity<>(ex.contentUTF8(), HttpStatus.NOT_FOUND);
+//                MyRequest.rollbackComponents(calculatedComponents); // возвращаю компоненты на склад
             }
 
 //            accountApi.assignTask(forUser, userId);

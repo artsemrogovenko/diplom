@@ -82,7 +82,7 @@
                     <input hidden="hidden" id="componentRequestsInput" th:value="${newModule.componentRequests}"/>
                 </div>
 
-                <div class="add_circut"><input type="text" id="request_circutFile"
+                <div class="add_circut"><input type="number" id="request_circutFile"
                                                th:field="${newModule.circuitVersion}"
                                                placeholder="Версия схемы"/></div>
                 <div class="createnewModule_button">
@@ -308,13 +308,16 @@
                             isValid = false;
                             return;
                         }
+                        if (/^\s*$/.test(inputValue)) {
+                            alert("Поле не должно содержать только пробелы или табуляции!");
+                            return false;
+                        }
                     });
                     if (!isValid) {
                         toastr.warning('Заполните все поля');
                     }
                     return isValid;
                 }
-
 
             </script>
 

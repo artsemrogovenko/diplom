@@ -29,7 +29,7 @@ public class WebSecurityConfig {
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/registration/**").hasRole("ADMIN")
-                        .requestMatchers("/", "/myTasks/**", "/take/**").authenticated()
+//                        .requestMatchers("/", "/myTasks/**", "/take/**").authenticated()
                         .requestMatchers("/webjars/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().permitAll()
                 )

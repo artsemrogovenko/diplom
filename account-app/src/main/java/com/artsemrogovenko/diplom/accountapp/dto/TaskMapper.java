@@ -2,7 +2,7 @@ package com.artsemrogovenko.diplom.accountapp.dto;
 
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 public class TaskMapper {
-    public static Task mapToTask(TaskForUser taskForUser) {
+    public static<T extends TaskData> Task mapToTask(T taskForUser) {
         Task task = new Task();
 
         task.setId(taskForUser.getId());

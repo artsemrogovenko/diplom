@@ -12,6 +12,7 @@ import com.artsemrogovenko.diplom.accountapp.models.Module;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -27,8 +28,8 @@ public class ModuleService {
     }
 
     public Module getModuleById(Long id) {
-        return  moduleRepository.findById(id)
-                        .orElseThrow(() -> new NoSuchElementException("Module not found with id: " + id));
+        return moduleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Module not found with id: " + id));
     }
 
     public Module updateModule(Module module) {
@@ -37,12 +38,13 @@ public class ModuleService {
         return moduleRepository.save(moduleById);
     }
 
+
     public ResponseEntity<Module> createModule(Module moduleRequest) {
         if (moduleRequest == null) {
             return new ResponseEntity<>(new Module(), HttpStatus.BAD_REQUEST);
         }
 
-       Module module=moduleRequest;
+        Module module = moduleRequest;
 
         if (notExist(module)) {
             if (module.getComponents() != null) {
@@ -57,18 +59,16 @@ public class ModuleService {
             System.out.println(moduleRepository.findLastModule());
             return new ResponseEntity<>(result, CREATED);
         }
-        return new ResponseEntity<>(new Module(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(searchModule(module), HttpStatus.CONFLICT);
     }
 
 
     public boolean notExist(Module module) {
-        String factoryNumber = module.getFactoryNumber();
-        String model = module.getModel();
-        String name = module.getName();
-        String unit = module.getUnit();
-        String description = module.getDescription();
         try {
-            Module existingModule = moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+            Module existingModule = searchModule(module);
+            if (existingModule.getQuantity().equals(module.getQuantity())) {
+                return false;
+            }
         } catch (NoSuchElementException e) {
             return true;
         }
@@ -79,5 +79,16 @@ public class ModuleService {
         moduleRepository.deleteById(id);
     }
 
+    private Module searchModule(Module module) throws NoSuchElementException {
+        String factoryNumber = module.getFactoryNumber();
+        String model = module.getModel();
+        String name = module.getName();
+        String unit = module.getUnit();
+        String description = module.getDescription();
+        String circutFile = module.getCircutFile();
+
+        return moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(
+                factoryNumber, model, name, unit, description, circutFile).get();
+    }
 
 }

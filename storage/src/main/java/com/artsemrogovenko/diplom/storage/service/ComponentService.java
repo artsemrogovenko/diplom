@@ -149,13 +149,6 @@ public class ComponentService {
 
             int requiredQuantity = request.getQuantity();
 
-            if (request.getUnit().toLowerCase().equals("м")) {
-                requiredQuantity *= 1000;
-            }
-            if (request.getUnit().toLowerCase().equals("км")) {
-                requiredQuantity *= 1000000;
-            }
-
             List<Component> list = new ArrayList<>();
             try {
                 list = findComponents(request);

@@ -3,6 +3,7 @@ package com.artsemrogovenko.diplom.taskmanager.api;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +13,8 @@ import java.util.List;
 
 @FeignClient(name = "storage-server")
 public interface StorageApi {
-
+    @PostMapping("/component/megaImport")
+    ResponseEntity<String> saveComponents(@RequestBody List<ComponentRequest> components);
     @PostMapping("/component/reserve")
     ResponseEntity<List<ComponentResponse>> reserve(
             @RequestBody List<ComponentRequest> requests, @RequestParam String user, @RequestParam String contractNumber, @RequestParam Long taskId);

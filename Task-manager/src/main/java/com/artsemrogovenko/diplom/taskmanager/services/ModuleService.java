@@ -72,17 +72,19 @@ public class ModuleService {
     }
 
     public <T extends SavedModule> ResponseEntity<ModuleResponse> createModule(T moduleRequest) {
-        if (moduleRequest == null) {
+          if (moduleRequest == null) {
             return new ResponseEntity<>(new ModuleResponse(), HttpStatus.BAD_REQUEST);
         }
         Module module = new Module();
-        if (moduleRequest instanceof Module) {
-            module = (Module) moduleRequest;
-        }
-        if (moduleRequest instanceof ModuleResponse) {
-            module = ModuleMapper.mapToModule((ModuleRequest) moduleRequest);
-        }
+
         if (notExist(module)) {
+            if (moduleRequest instanceof Module) {
+                module = (Module) moduleRequest;
+            }
+            if (moduleRequest instanceof ModuleResponse) {
+                module = ModuleMapper.mapToModule((ModuleRequest) moduleRequest);
+            }
+
             if (module.getComponents() != null) {
                 List<Component> componentList = componentService.saveAll(module.getComponents());
                 if (componentList != null) {
@@ -95,18 +97,15 @@ public class ModuleService {
             System.out.println(moduleRepository.findLastModule());
             return new ResponseEntity<>(result, CREATED);
         }
-        return new ResponseEntity<>(new ModuleResponse(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(ModuleMapper.mapModuleToModuleResponse(searchModule(module)), HttpStatus.CONFLICT);
     }
 
-
     public boolean notExist(Module module) {
-        String factoryNumber = module.getFactoryNumber();
-        String model = module.getModel();
-        String name = module.getName();
-        String unit = module.getUnit();
-        String description = module.getDescription();
         try {
-            Module existingModule = moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+            Module existingModule = searchModule(module);
+            if (existingModule.getQuantity().equals(module.getQuantity())) {
+                return false;
+            }
         } catch (NoSuchElementException e) {
             return true;
         }
@@ -115,6 +114,18 @@ public class ModuleService {
 
     public void deleteModule(Long id) {
         moduleRepository.deleteById(id);
+    }
+
+    private Module searchModule(Module module) throws NoSuchElementException {
+        String factoryNumber = module.getFactoryNumber();
+        String model = module.getModel();
+        String name = module.getName();
+        String unit = module.getUnit();
+        String description = module.getDescription();
+        String circutFile = module.getCircutFile();
+
+        return moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(
+                factoryNumber, model, name, unit, description, circutFile).get();
     }
 
 

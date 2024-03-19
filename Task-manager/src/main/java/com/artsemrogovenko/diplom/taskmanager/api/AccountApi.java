@@ -14,7 +14,7 @@ import java.util.List;
 
 @FeignClient(name = "account-service")
 public interface AccountApi {
-    @PostMapping("/task/assignTask/{id}")
+    @PostMapping("/task/assignTask")
     ResponseEntity<String> assignTask(@RequestBody TaskForUser task, @RequestParam String userId);
 
 }
