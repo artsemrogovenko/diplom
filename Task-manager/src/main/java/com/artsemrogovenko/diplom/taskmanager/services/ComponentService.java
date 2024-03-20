@@ -93,11 +93,11 @@ public class ComponentService {
     }
 
     private Component search(Component component) throws NoSuchElementException {
-        String factoryNumber = component.getFactoryNumber();
-        String model = component.getModel();
+        String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
+        String model = component.getModel() == "" ? null : component.getModel();
         String name = component.getName();
         String unit = component.getUnit();
-        String description = component.getDescription();
+        String description = component.getDescription() == "" ? null : component.getDescription();
         return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(
                 factoryNumber, model, name, unit, description).get();
     }

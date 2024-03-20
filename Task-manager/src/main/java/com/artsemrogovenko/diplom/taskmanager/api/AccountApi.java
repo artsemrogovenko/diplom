@@ -1,5 +1,7 @@
 package com.artsemrogovenko.diplom.taskmanager.api;
 
+import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
+import com.artsemrogovenko.diplom.taskmanager.config.WebClientConfig;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.TaskForUser;
@@ -12,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "account-service")
+@FeignClient(name = "account-service",configuration = WebClientConfig.class)
 public interface AccountApi {
+    @TrackUserAction
     @PostMapping("/task/assignTask")
     ResponseEntity<String> assignTask(@RequestBody TaskForUser task, @RequestParam String userId);
 

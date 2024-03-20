@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -27,4 +28,17 @@ public class ComponentResponse implements ComponentData {
         return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null && moduleResponses.isEmpty();
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ComponentResponse that = (ComponentResponse) o;
+        return Objects.equals(getFactoryNumber(), that.getFactoryNumber()) && Objects.equals(getModel(), that.getModel()) && Objects.equals(getName(), that.getName()) && Objects.equals(getUnit(), that.getUnit()) && Objects.equals(getDescription(), that.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFactoryNumber(), getModel(), getName(), getUnit(), getDescription());
+    }
 }

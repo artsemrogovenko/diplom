@@ -13,4 +13,6 @@ public interface ComponentRepository extends JpaRepository<Component, Long> {
 
 
   Optional<Component>  findByFactoryNumberAndModelAndNameAndDescription(String factoryNumber, String model, String name, String description);
+
+  Optional<Component> findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
 }

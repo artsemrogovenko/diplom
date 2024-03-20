@@ -4,7 +4,8 @@ package com.artsemrogovenko.diplom.accountapp.services;
 import com.artsemrogovenko.diplom.accountapp.api.TaskApi;
 import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
-import com.artsemrogovenko.diplom.accountapp.dto.TaskMapper;
+import com.artsemrogovenko.diplom.accountapp.dto.mymapper.TaskMapper;
+import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus;
 import com.artsemrogovenko.diplom.accountapp.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.accountapp.models.Module;
 import com.artsemrogovenko.diplom.accountapp.models.*;
@@ -79,17 +80,31 @@ public class TaskService {
         return MyRequest.rollbackComponents(calculated);
     }
 
+    @LogMethod
+    public String completeTask(String user, Long taskid) {
+        Task complete = taskRepository.findById(taskid).get();
+        if (complete.getOwner().equals(user)) {
+            complete.setStatus(TaskStatus.DONE);
+            return taskApi.completeTask(taskid, user).getBody();
+        }
+        return "Что-то пошло не так";
+    }
+
     private Task saveTask(Task task) {
         Task result = TaskMapper.mapToTask(task);
-        List<Module> modules = result.getModules();
+        result.setModules(new ArrayList<>());
+
+        List<Module> modules = new ArrayList<>();
         if (!modules.isEmpty() || modules != null) {
-            for (Module module : modules) {
-                if (module != null) {
-                    moduleService.createModule(module);
+            if (!task.getModules().isEmpty() && task.getModules() != null) {
+                for (Module module : task.getModules()) {
+                    if (module != null) {
+                        modules.add(moduleService.createModule(module).getBody());
+                    }
                 }
             }
         }
-        task.setModules(modules);
+        result.setModules(modules);
         return taskRepository.save(result);
     }
 
@@ -102,14 +117,16 @@ public class TaskService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("пользователь не найден");
             }
             // проверка на дубликат такой задачи
-            if (recieverAccount.getTasks().stream()
-                    .anyMatch(task -> task.getId().equals(newTask.getId())
-                            && task.getContractNumber().equals(newTask.getContractNumber()))) {
+//            if (recieverAccount.getTasks().stream()
+//                    .anyMatch(task -> task.getId().equals(assignTask.getId())
+//                            && task.getContractNumber().equals(assignTask.getContractNumber()))) {
+            if(false){
                 System.out.println("блок проверки");
                 throw new DuplicateExeption("такая задача в корзине есть");
             } else {
-                recieverAccount.getTasks().add(saveTask(newTask));
+                recieverAccount.addTask(saveTask(newTask));
                 accountRepository.save(recieverAccount);
+                System.out.println(accountRepository.getReferenceById(userId));
                 // Если ошибок нет, возвращаем успешный ответ
                 System.out.println("сохранил изменения " + LocalTime.now());
                 return ResponseEntity.status(HttpStatus.OK).body("Задача присвоена");
@@ -120,7 +137,6 @@ public class TaskService {
             // Возвращаем информацию об ошибке в теле ответа
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка: " + e.getMessage());
         }
-
     }
 
     @LogMethod
@@ -130,10 +146,16 @@ public class TaskService {
 
     @LogMethod
     public List<Task> showMyTasks(String userId) {
-        Optional<Account> myAccount = accountRepository.findById(userId);
-        if (myAccount.isPresent()){
-            return myAccount.get().getTasks();
-        }
+        Optional<List<Task>> result=  taskRepository.findAllByOwner(userId);
+      if (result.isPresent()){
+          return result.get();
+      }
         return new ArrayList<>();
+//        System.out.println(accountRepository.getReferenceById(userId));
+//        return accountRepository.getReferenceById(userId).getTasks();
+//        if (myAccount.isPresent()) {
+//            return myAccount.get().getTasks();
+//        }
+//        return new ArrayList<>();
     }
 }

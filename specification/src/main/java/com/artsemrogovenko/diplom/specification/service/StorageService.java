@@ -20,7 +20,7 @@ public class StorageService {
     private final StorageApi storageApi;
     private final ComponentService componentService;
 
-    private static LocalTime requiredTime = LocalTime.now().plusMinutes(2);
+    private static LocalTime requiredTime = LocalTime.now().plusSeconds(2);
     private static Set<ComponentResponse> components = new HashSet<>();
 
 
@@ -35,25 +35,26 @@ public class StorageService {
 
     public Set<ComponentResponse> availableComponents(LocalTime currentTime) {
         ResponseEntity<List<ComponentResponse>> listResponseEntity;
-
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
 
         if (currentTime.isAfter(requiredTime)) {
-            requiredTime = LocalTime.now().plusMinutes(2);
+            requiredTime = LocalTime.now().plusSeconds(2);
             try {
                 listResponseEntity = storageApi.getAll();
                 if (listResponseEntity.hasBody()) {
                     for (ComponentResponse componentResponse : listResponseEntity.getBody()) {
-                        if(!components.contains(componentResponse)){
-                            components.add(componentResponse);
-                        }
+                        components.add(componentResponse);
                     }
                 }
             } catch (FeignException ex) {
 
             }
+            for (ComponentResponse componentResponse : getlocalComponents()) {
+                if (componentResponse != null) {
+                    components.add(componentResponse);
+                }
+            }
         }
-        components.addAll(getlocalComponents());
         return components;
     }
 

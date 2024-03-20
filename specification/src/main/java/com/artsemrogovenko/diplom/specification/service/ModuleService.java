@@ -94,11 +94,11 @@ public class ModuleService {
 
 
     public boolean notExist(Module module) {
-        String factoryNumber = module.getFactoryNumber();
-        String model = module.getModel();
+        String factoryNumber = module.getFactoryNumber() == "" ? null : module.getFactoryNumber();
+        String model = module.getModel() == "" ? null : module.getModel();
         String name = module.getName();
         String unit = module.getUnit();
-        String description = module.getDescription();
+        String description = module.getDescription() == "" ? null : module.getDescription();
         try {
             Module existingModule = moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
         } catch (NoSuchElementException e) {
@@ -108,6 +108,7 @@ public class ModuleService {
     }
 
     public void deleteModule(Long id) {
+        System.out.println(moduleRepository.findById(id));
         moduleRepository.deleteById(id);
     }
 

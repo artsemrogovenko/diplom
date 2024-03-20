@@ -49,7 +49,7 @@ public class ComponentService {
                 if (notExist(nonDuplicate)) {
                     resultList.add(componentRepository.save(nonDuplicate));
                 } else {
-                    resultList.add(search(nonDuplicate));
+                    resultList.add(findDistinct(nonDuplicate));
                 }
             }
             // Сохранить все отфильтрованные компоненты
@@ -61,7 +61,7 @@ public class ComponentService {
     public boolean notExist(Component component) {
 
         try {
-            Component existingComponent = search(component);
+            Component existingComponent = findDistinct(component);
             if (existingComponent.getQuantity() == component.getQuantity()) {
                 return false;
             }
@@ -72,13 +72,14 @@ public class ComponentService {
         return false;
     }
 
-    private Component search(Component component) throws NoSuchElementException {
-        String factoryNumber = component.getFactoryNumber();
-        String model = component.getModel();
+    private  Component findDistinct(Component component) throws NoSuchElementException{
+        String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
+        String model = component.getModel() == "" ? null : component.getModel();
         String name = component.getName();
         String unit = component.getUnit();
-        String description = component.getDescription();
-        return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(
-                factoryNumber, model, name, unit, description).get();
+        String description = component.getDescription() == "" ? null : component.getDescription();
+
+        return componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+
     }
 }

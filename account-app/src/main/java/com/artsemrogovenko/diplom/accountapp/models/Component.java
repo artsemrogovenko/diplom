@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
+import com.artsemrogovenko.diplom.accountapp.dto.ComponentData;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,11 @@ import java.util.Set;
 @Data
 @Entity
 @NoArgsConstructor
-public class Component {
+public class Component implements ComponentData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //
-    @ManyToMany //один компонент может относится ко многим модулям
+    @ManyToMany(mappedBy = "components",fetch = FetchType.LAZY) //один компонент может относится ко многим модулям
     private Set<Module> modules = new HashSet<>();
     @Column(columnDefinition = "VARCHAR(100)")
     private String factoryNumber;       // заводской номер

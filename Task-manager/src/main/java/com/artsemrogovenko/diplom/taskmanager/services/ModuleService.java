@@ -103,8 +103,10 @@ public class ModuleService {
     public boolean notExist(Module module) {
         try {
             Module existingModule = searchModule(module);
-            if (existingModule.getQuantity().equals(module.getQuantity())) {
-                return false;
+            if (existingModule.getQuantity() != null) {
+                if (existingModule.getQuantity().equals(module.getQuantity())) {
+                    return false;
+                }
             }
         } catch (NoSuchElementException e) {
             return true;
@@ -117,12 +119,12 @@ public class ModuleService {
     }
 
     private Module searchModule(Module module) throws NoSuchElementException {
-        String factoryNumber = module.getFactoryNumber();
-        String model = module.getModel();
+        String factoryNumber = module.getFactoryNumber() == "" ? null : module.getFactoryNumber();
+        String model = module.getModel() == "" ? null : module.getModel();
         String name = module.getName();
         String unit = module.getUnit();
-        String description = module.getDescription();
-        String circutFile = module.getCircutFile();
+        String description = module.getDescription() == "" ? null : module.getDescription();
+        String circutFile = module.getCircutFile() == "" ? null : module.getCircutFile();
 
         return moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(
                 factoryNumber, model, name, unit, description, circutFile).get();

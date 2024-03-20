@@ -1,5 +1,6 @@
-package com.artsemrogovenko.diplom.accountapp.dto;
+package com.artsemrogovenko.diplom.accountapp.dto.mymapper;
 
+import com.artsemrogovenko.diplom.accountapp.dto.TaskData;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 public class TaskMapper {
     public static<T extends TaskData> Task mapToTask(T taskForUser) {

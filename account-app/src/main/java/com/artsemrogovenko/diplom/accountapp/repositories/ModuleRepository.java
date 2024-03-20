@@ -16,4 +16,5 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
     Module findLastModule();
 
 
+   Optional<Module>  findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(String factoryNumber, String model, String name, String unit, String description,String circuit);
 }

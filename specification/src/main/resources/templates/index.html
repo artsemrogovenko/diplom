@@ -340,6 +340,7 @@
                         <!-- Используем имя элемента в качестве ID -->
                         <h4 class="my-0 fw-normal" th:text="${element.getName()}">noname</h4>
                     </div>
+<!--                    <form th:action="@{/deleteModule/{id}(id=${element.getId()})}" method="post">-->
                     <form action="#">
                         <div class="card-body">
                             <h3 class="card-title pricing-card-title">
@@ -358,7 +359,7 @@
                                 <li>Описание: <span th:text="${element.getDescription()}"></span></li>
                                 <li><a th:href="${element.getCircuitFile()}" target="_blank">Cхема</a></li>
                             </ul>
-                            <button type="button" class="w-100 btn btn-lg btn-outline-primary">Edit</button>
+                            <button type="submit" class="w-100 btn btn-lg btn-outline-primary">Delete</button>
                         </div>
                     </form>
                 </div>

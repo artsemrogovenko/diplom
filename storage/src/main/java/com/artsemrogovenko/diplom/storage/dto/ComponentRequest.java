@@ -16,9 +16,9 @@ public class ComponentRequest implements ComponentData {
     private String factoryNumber;       // заводской номер
     private String model;       // модификация
     private String name;     // имя
-    private int quantity;    // какое количество компонента в модуле
+    private Integer quantity;    // какое количество компонента в модуле
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
-    private boolean refill;  // можно объединить?
+    private Boolean refill;  // можно объединить?
 
 }

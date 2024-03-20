@@ -54,7 +54,7 @@ public class DeficitService {
                     component.getName(),
                     unit,
                     component.getDescription(),
-                    component.isRefill()
+                    component.getRefill().booleanValue()
             );
             // если уже есть в базе такой компонент
             if (verify.isPresent()) {
@@ -90,7 +90,7 @@ public class DeficitService {
                 deficitComponent.setQuantity(componentQuantity * (-1));
                 deficitComponent.setUnit(unit);
                 deficitComponent.setDescription(component.getDescription());
-                deficitComponent.setRefill(component.isRefill());
+                deficitComponent.setRefill(component.getRefill());
 
                 deficitComponent.getAccountNames().add(accountRepository.getReferenceById(userId));
                 deficitComponent.getContractNumbers().add(contractNumberRepository.getReferenceById(contractNumber));
@@ -127,7 +127,7 @@ public class DeficitService {
                     component.getName(),
                     unit,
                     component.getDescription(),
-                    component.isRefill());
+                    component.getRefill());
             //если такой элемент есть
             if (verify.isPresent()) {
                 int quantity = verify.get().getQuantity();

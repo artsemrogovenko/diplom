@@ -37,10 +37,11 @@ public class ComponentController {
     }
 
     /**
-     * если пользователь решил сам отменить задачу
+     * Если пользователь решил сам отменить задачу
      *
      * @param components детали которые он взял
      */
+    @LogMethod
     @PostMapping("/rollbackTask")
     public ResponseEntity<String> rollbackComponents(@RequestBody List<ComponentRequest> components) {
         return saveComponents(components);
@@ -68,7 +69,7 @@ public class ComponentController {
         return ResponseEntity.ok().build();
     }
 
-
+    @LogMethod
     @GetMapping("/inventory")
     public ResponseEntity<List<ComponentResponse>> isInStock(@RequestBody List<ComponentRequest> requests) {
         return componentService.isInStock(requests);

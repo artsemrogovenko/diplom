@@ -3,6 +3,9 @@ package com.artsemrogovenko.diplom.accountapp.repositories;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TaskRepository extends JpaRepository<Task,Long> {
+import java.util.List;
+import java.util.Optional;
 
+public interface TaskRepository extends JpaRepository<Task,Long> {
+        Optional<List<Task>> findAllByOwner(String name);
 }

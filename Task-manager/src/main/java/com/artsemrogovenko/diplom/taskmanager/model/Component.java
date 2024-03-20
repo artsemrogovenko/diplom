@@ -30,6 +30,7 @@ public class Component implements ComponentData {
     @Column(columnDefinition = "VARCHAR(255)")
     private String description;  // тут можно указать например цвет
 
+
     public boolean fieldsIsNull() {
         return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null ;
     }

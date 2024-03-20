@@ -71,13 +71,14 @@ public class ComponentService {
     }
 
     public boolean notExist(Component component) {
-        String factoryNumber = component.getFactoryNumber();
-        String model = component.getModel();
+        String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
+        String model = component.getModel() == "" ? null : component.getModel();
         String name = component.getName();
-//        String unit = component.getUnit();
-        String description = component.getDescription();
+        String unit = component.getUnit();
+        String description = component.getDescription() == "" ? null : component.getDescription();
+
         try {
-            Component existingComponent = componentRepository.findByFactoryNumberAndModelAndNameAndDescription(factoryNumber, model, name, description).get();
+            Component existingComponent = componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
         } catch (NoSuchElementException e) {
             System.out.println("no element");
             return true;

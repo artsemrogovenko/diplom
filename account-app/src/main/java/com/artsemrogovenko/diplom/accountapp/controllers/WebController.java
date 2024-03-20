@@ -36,8 +36,6 @@ import java.util.List;
 public class WebController {
     private final TaskService taskService;
     private final AccountService accountService;
-    private final TaskApi taskApi;
-    private static List<Task> tasks = new ArrayList<>();
     private static String taskservice_StatusCode;
     private static String responseCode;
     private static String responseMessage;
@@ -106,15 +104,13 @@ public class WebController {
         String username = authentication.getName();
         // Добавляем имя пользователя в модель для передачи его в представление
         model.addAttribute("username", username);
+        List<Task> temp=new ArrayList<>();
         try {
             if (startView) {
-                tasks = taskService.pullTasks();
+                temp= taskService.pullTasks();
                 startView = false;
             } else {
-                List<Task> temp = taskService.getTasks(LocalTime.now());
-                if (temp != null && !temp.isEmpty()) {
-                    tasks = temp;
-                }
+                temp = taskService.getTasks(LocalTime.now());
             }
         } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException |
                  feign.RetryableException ex) {
@@ -129,7 +125,7 @@ public class WebController {
         responseMessage = null;
         taskservice_StatusCode = null;
         confirm = null;
-        model.addAttribute("tasks", tasks);
+        model.addAttribute("tasks", temp);
         model.addAttribute("timer", taskService.getSecondsDifference());
 //        System.out.println(modules);
         return "index.html";

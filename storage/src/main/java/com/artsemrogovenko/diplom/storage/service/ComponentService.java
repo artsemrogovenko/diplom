@@ -9,6 +9,7 @@ import com.artsemrogovenko.diplom.storage.model.Component;
 import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
 import com.artsemrogovenko.diplom.storage.repositories.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,22 +26,23 @@ public class ComponentService {
     private final AccountRepository accountRepository;
 
     public ComponentResponse createComponent(ComponentRequest newComponent) {
-        Component componentByFields;
+        Component dist = findDistinct(newComponent);
+        HashMap<Integer, String> units = convertUnits(newComponent);
         try {
-            componentByFields = findComponents(newComponent).stream().max(Comparator.comparingInt(Component::getQuantity)).get();
-            if (componentByFields.isRefill() && componentByFields != null) {
-
-                HashMap<Integer, String> units = convertUnits(newComponent);
-                componentByFields.setQuantity(componentByFields.getQuantity() + units.keySet().iterator().next());
-
-            } else {
-                componentByFields = ComponentMapper.mapToComponent(saveComponent(newComponent));
+            if (dist != null) {
+                // например гайки
+                if (dist.getRefill().booleanValue() == true) {
+                    dist.setQuantity(dist.getQuantity() + units.keySet().iterator().next());
+                    return ComponentMapper.mapToComponentResponse(componentRepository.save(dist));
+                    //например бухта кабеля
+                } else {
+                    newComponent.setRefill(dist.getRefill());
+                    return saveComponent(newComponent);
+                }
             }
-
         } catch (NoSuchElementException n) { // если такого элемента нет
-            componentByFields = ComponentMapper.mapToComponent(saveComponent(newComponent));
         }
-        return ComponentMapper.mapToComponentResponse(componentRepository.save(componentByFields));
+        return saveComponent(newComponent);
     }
 
     public String increaseComponents(List<ComponentRequest> newComponents) {
@@ -89,7 +91,9 @@ public class ComponentService {
     public ComponentResponse saveComponent(ComponentRequest componentRequest) {
         ComponentRequest temp = componentRequest;
         HashMap<Integer, String> units = convertUnits(componentRequest);
-
+        if (temp.getRefill() == null) {
+            temp.setRefill(false);
+        }
         temp.setQuantity(units.keySet().iterator().next());
         temp.setUnit(units.values().iterator().next());
 
@@ -119,16 +123,13 @@ public class ComponentService {
      * @throws NoSuchElementException
      */
     private List<Component> findComponents(ComponentRequest request) throws NoSuchElementException {
-        String factoryNumber = request.getFactoryNumber();
-        String model = request.getModel();
+        String factoryNumber = request.getFactoryNumber() == "" ? null : request.getFactoryNumber();
+        String model = request.getModel() == "" ? null : request.getModel();
         String name = request.getName();
         String unit = request.getUnit();
-        String description = request.getDescription();
+        String description = request.getDescription() == "" ? null : request.getDescription();
 
-        if (request.getUnit().toLowerCase() != "шт") {
-            unit = "мм";
-        }
-        List<Component> result= componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
+        List<Component> result = componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
         if (result.isEmpty() || result == null) {
             throw new NoSuchElementException();
         }
@@ -142,25 +143,45 @@ public class ComponentService {
      * @return
      */
     public ResponseEntity<List<ComponentResponse>> isInStock(List<ComponentRequest> requests) {
-//        System.out.println("isInStock");
         List<ComponentResponse> components = new ArrayList<>();
-//        List<ComponentResponse> responses = new ArrayList<>();
+
         for (ComponentRequest request : requests) {
 
             int requiredQuantity = request.getQuantity();
 
             List<Component> list = new ArrayList<>();
             try {
+
+
+                if (request.getUnit().toLowerCase().equals("м")) {
+                    request.setQuantity(request.getQuantity() * 1000);
+                    request.setUnit("мм");
+                }
+                if (request.getUnit().toLowerCase().equals("км")) {
+                    request.setQuantity(request.getQuantity() * 1000000);
+                    request.setUnit("мм");
+                }
+                //  Пробую получить свойство boolean. Если нет такого элемента в базе данных, перейду к списку закупок
+                if (request.getRefill() == null) {
+                    try {
+                        Component temp = findDistinct(request);
+                        request.setRefill(temp.getRefill());
+                    } catch (NullPointerException ex) {
+                        throw new NoSuchElementException();
+                    }
+                }
+
                 list = findComponents(request);
                 components.add(checkList(list, requiredQuantity));
-            } catch (NoSuchElementException e) { // если такого элемента совсем не существует
+            } catch (NoSuchElementException e) { // если такого элемента нет в базе данных
                 ComponentResponse newResponse = ComponentResponse.builder()
                         .factoryNumber(request.getFactoryNumber())
                         .model(request.getModel())
                         .name(request.getName())
                         .quantity(requiredQuantity * -1)
                         .unit(request.getUnit())
-                        .description(request.getDescription()).build();
+                        .description(request.getDescription())
+                        .refill(true).build(); // это список для закупок, поэтому лучше объединить повторы
                 components.add(newResponse);
             }
 
@@ -197,9 +218,13 @@ public class ComponentService {
         //если нет нужного количества отправлю объект с отрицательным значением
         if (NonSufficient) {
             ComponentResponse deficient = ComponentMapper.mapToComponentResponse(list.stream().max(Comparator.comparingInt(Component::getQuantity)).get());
+
+            if (deficient.getRefill() == null) {
+                deficient.setRefill(findDistinct(deficient).getRefill());
+            }
             if (deficient.getQuantity() < requiredQuantity) {
                 // Уведомить какое значение quantity необходимо
-                if (deficient.isRefill()) {
+                if (deficient.getRefill() == true) {
                     deficient.setQuantity((requiredQuantity - deficient.getQuantity()) * -1); // купить недостачу
                 } else {
                     deficient.setQuantity(requiredQuantity * -1); // купить сколько запрашивается
@@ -243,5 +268,15 @@ public class ComponentService {
         return response;
     }
 
+    private <T extends ComponentData> Component findDistinct(T component) {
+        String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
+        String model = component.getModel() == "" ? null : component.getModel();
+        String name = component.getName();
+        String unit = component.getUnit();
+        String description = component.getDescription() == "" ? null : component.getDescription();
+
+        return componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
+
+    }
 
 }

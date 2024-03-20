@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
+import com.artsemrogovenko.diplom.accountapp.dto.ComponentData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ComponentRequest {
+public class ComponentRequest implements ComponentData {
     private String factoryNumber;       // заводской номер
     private String model;       // модификация
     private String name;     // имя

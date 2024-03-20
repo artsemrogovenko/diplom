@@ -23,11 +23,17 @@ public class Component implements ComponentData {
     @Column(columnDefinition = "VARCHAR(100)", nullable = false)
     private String name;     // имя
     @Column(columnDefinition = "INT", nullable = false)
-    private int quantity;    // какое количество
+    private Integer quantity;    // какое количество
     @Column(columnDefinition = "VARCHAR(20)", nullable = false)
     private String unit;     // единица измерения
     @Column(columnDefinition = "VARCHAR(255)")
     private String description;  // тут можно указать например цвет
     @Column(columnDefinition = "BOOL", nullable = false)
     private boolean refill;  // можно обьединить?
+
+    @Override
+    public Boolean getRefill() {
+        return refill;
+    }
+
 }

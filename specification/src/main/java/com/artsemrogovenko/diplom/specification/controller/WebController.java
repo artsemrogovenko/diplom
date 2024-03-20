@@ -13,8 +13,7 @@ import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.apache.http.client.methods.HttpPost;
 
 import java.io.IOException;
@@ -65,6 +64,12 @@ public class WebController {
     public String update(ModuleResponse moduleResponse, Model model) {
 //        moduleService.updateModule(moduleResponse);
         System.out.println(moduleResponse.toString());
+        return "redirect:/";
+    }
+
+    @PostMapping("/deleteModule/{id}")
+    public String delete(@PathVariable("id") Long moduleId) {
+        moduleService.deleteModule(moduleId);
         return "redirect:/";
     }
 

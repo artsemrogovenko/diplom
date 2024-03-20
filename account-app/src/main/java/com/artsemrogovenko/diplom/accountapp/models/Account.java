@@ -1,6 +1,7 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +13,7 @@ import java.util.*;
  */
 @Data
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 public class Account {
     @Id
@@ -22,9 +24,8 @@ public class Account {
     private String password;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Task> tasks = new LinkedList<>();   // список задач
-
 
     public Account(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.name = username;
@@ -34,5 +35,7 @@ public class Account {
         }
     }
 
-
+    public void addTask(Task newTask) {
+        tasks.add(newTask);
+    }
 }

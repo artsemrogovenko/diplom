@@ -16,10 +16,20 @@
 <nav class="navbar navbar-light bg-light">
     <a class="navbar-brand" th:href="@{'/myTasks?userId=' + ${username}}">Мои задачи</a>
     <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
-    <form th:action="@{/logout}" method="post">
-        <input type="submit" value="Sign Out"/>
+    <form class="form-inline" th:action="@{/logout}" method="post">
+        <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit"/>Login page</button>
+    </form>
+    <form th:action="@{/registration}" method="get">
+        <button type="submit">Admin panel</button>
     </form>
 </nav>
+
+
+<!--<nav class="navbar navbar-light bg-light justify-content-between">-->
+<!--    <form class="form-inline" th:action="@{/registration}" method="get">-->
+<!--        <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit">Admin panel</button>-->
+<!--    </form>-->
+<!--</nav>-->
 
 
 <div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
@@ -79,18 +89,12 @@
         </button>
     </div>
 
-    <nav class="navbar navbar-light bg-light justify-content-between">
-        <form class="form-inline" th:action="@{/registration}" method="get">
-            <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit">Admin panel</button>
-        </form>
-    </nav>
-
 
     <div class="row mt-4">
 
         <div class="col-md-4 mb-4" th:each="task: ${tasks}">
-<!--            <div class="card" th:if="${task.owner} == 'kanban'">-->
-            <div class="card" >
+            <div class="card" th:if="${task.owner} == 'kanban'">
+                <!--            <div class="card" >-->
                 <div class="card-body">
                     <!--                    <h1>User ID: <span th:text="${userid}"></span></h1>-->
                     <h5 class="card-title text-center" th:text="${task.name}"></h5>

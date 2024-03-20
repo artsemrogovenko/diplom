@@ -3,6 +3,7 @@ package com.artsemrogovenko.diplom.accountapp.models;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskData;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus;
 import com.artsemrogovenko.diplom.accountapp.models.Module;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,11 +23,14 @@ public class Task implements TaskData {
     private String contractNumber; // номер договора
     private String owner; // у кого сейчас задача
     private boolean reserved;
-    @OneToMany // список модулей
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "module_tasks",
+            joinColumns = @JoinColumn(name = "module_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id"))
     private List<Module> modules = new ArrayList<>();
-    @ManyToOne
-    private Account account;
-
+@ManyToOne(fetch = FetchType.LAZY)
+private Account account;
     @Override
     public TaskStatus getTaskStatus() {
         return status;

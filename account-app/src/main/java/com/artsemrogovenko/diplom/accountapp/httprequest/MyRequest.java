@@ -1,8 +1,8 @@
 package com.artsemrogovenko.diplom.accountapp.httprequest;
 
 
+import com.artsemrogovenko.diplom.accountapp.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.accountapp.models.Component;
-import com.artsemrogovenko.diplom.accountapp.models.ComponentMapper;
 import com.artsemrogovenko.diplom.accountapp.models.ComponentRequest;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import org.springframework.http.*;

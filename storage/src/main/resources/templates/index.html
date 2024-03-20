@@ -64,13 +64,13 @@
                 </div>
                 <div class="modal-body">
                     <!--  форма для редактирования компонента -->
-                    <form th:action="@{/update}" th:object="${componentResponse}" method="post" onsubmit="return checkInput()">
+                    <form th:action="@{/update}" th:object="${componentResponse}" method="post">
                         <input type="hidden" id="comp_edit_id" className="form-control" th:field="*{id}">
                         <label for="comp_edit_id">Код изготовителя:</label>
                         <input type="text" id="comp_edit_factoryNumber" className="form-control"
                                th:field="*{factoryNumber}" required=""><br>
                         <label for="comp_edit_id">Модификация:</label>
-                        <input type="text" id="comp_edit_model" className="form-control" th:field="*{model}" required=""><br>
+                        <input type="text" id="comp_edit_model" className="form-control" th:field="*{model}" ><br>
                         <label for="comp_edit_name">Название:</label>
                         <input type="text" id="comp_edit_name" className="form-control" th:field="*{name}" required=""><br>
                         <label for="comp_edit_quantity">Количество:</label>
@@ -84,8 +84,8 @@
                         <br>
                         <label for="comp_edit_description">Описание:</label>
                         <input type="text" id="comp_edit_description" className="form-control"
-                               th:field="*{description}" required=""><br>
-                        <label for="comp_edit_refill">Обьединяется?</label>
+                               th:field="*{description}" ><br>
+                        <label for="comp_edit_refill">Объединяется?</label>
                         <input type="checkbox" id="comp_edit_refill" className="form-control" th:field="*{refill}">
                         <br>
                         <button type="submit" class="btn btn-success float-right">Сохранить</button>
@@ -93,25 +93,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function checkInput() {
-            var inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-            for (var i = 0; i < inputs.length; i++) {
-                var inputValue = inputs[i].value;
-                if (/^\s*$/.test(inputValue)) {
-                    alert("Поле не должно содержать только пробелы или табуляции!");
-                    return false;
-                }
-            }
-            return true;
-        }
-    </script>
 
     <form th:action="@{/createComponent}" th:object="${componentRequest}" method="post">
         <h4>Добавить элемент на склад</h4>
@@ -182,7 +168,7 @@
             <td class="table-light" th:if="${component.unit == 'шт'}"
                 th:text="${component.quantity} + ${component.unit}"></td>
             <td class="table-light">
-                <form method=" " class="d-inline">
+                <form action=" " class="d-inline">
                     <button type="button" class="btn btn-info float-right"
                             th:attr="c-id=${component.getId()},
                                         c-factoryNumber=${component.getFactoryNumber()},
@@ -190,7 +176,7 @@
                                         c-name=${component.getName()},
                                         c-quantity=${component.getQuantity()},
                                         c-description=${component.getDescription()},
-                                        c-refill=${component.isRefill()},
+                                        c-refill=${component.getRefill()},
                                         c-unit=${component.getUnit()}"
                             onclick="openModalEdit(this)">Edit
                     </button>
