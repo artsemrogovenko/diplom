@@ -13,9 +13,10 @@ import java.util.Optional;
 public interface ComponentRepository extends JpaRepository<Component, Long> {
     List<Component> findAllByName(String name);
 
-    List<Component> findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
+    Optional<List<Component>> findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
 
-    Component findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
+
+    Optional<Component> findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
 
 
 //    @Query("SELECT c FROM Component c WHERE c.factoryNumber = :factoryNumber " +

@@ -129,7 +129,7 @@ public class ComponentService {
         String unit = request.getUnit();
         String description = request.getDescription() == "" ? null : request.getDescription();
 
-        List<Component> result = componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
+        List<Component> result = componentRepository.findAllByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
         if (result.isEmpty() || result == null) {
             throw new NoSuchElementException();
         }
@@ -275,7 +275,12 @@ public class ComponentService {
         String unit = component.getUnit();
         String description = component.getDescription() == "" ? null : component.getDescription();
 
-        return componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
+        Component exiting = null;
+        try {
+            exiting = componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+        } catch (NoSuchElementException ex) {
+        }
+        return exiting;
 
     }
 

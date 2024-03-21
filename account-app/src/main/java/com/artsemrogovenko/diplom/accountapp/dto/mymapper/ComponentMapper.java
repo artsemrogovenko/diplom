@@ -13,7 +13,14 @@ import java.util.Set;
 public class ComponentMapper {
 
     public static <T extends ComponentData> Component mapToComponent(T componentData) {
-        Component component = new Component();
+        Component component;
+
+        if (componentData instanceof Component) {
+            component = new Component(((Component) componentData).getId());
+        } else {
+            component = new Component();
+        }
+
 
         if (componentData.getFactoryNumber() != null) {
             component.setFactoryNumber(componentData.getFactoryNumber().trim());
@@ -36,9 +43,9 @@ public class ComponentMapper {
 
 //        // Копирование модулей
 //        Set<Module> modules = new HashSet<>();
-//        if (componentData instanceof Component) {
-//            component.setId(((Component) componentData).getId());
-//        }
+        if (componentData instanceof Component) {
+            component.setId(((Component) componentData).getId());
+        }
 //        if (componentData instanceof ComponentRequest) {
 //            ComponentRequest moduleRequest = (ComponentRequest) componentData;
 //            if (moduleRequest.getModuleRequests() != null ) {

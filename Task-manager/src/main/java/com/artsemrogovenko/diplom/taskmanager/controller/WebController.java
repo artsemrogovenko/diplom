@@ -52,8 +52,8 @@ public class WebController {
     }
 
     @PostMapping("/createProduct")
-    public String createProduct(@ModelAttribute("product") Product product, @RequestParam("selectedTemplates") String selectedTemplatesJson) {
-        ResponseEntity<String> result = productService.prepareData(product, selectedTemplatesJson, templates);
+    public String createProduct(@ModelAttribute("product") Product product, @RequestParam("selectedTemplates") String selectedTemplatesJson ,@RequestParam("selectedModules")String selectedModulesJson ) {
+        ResponseEntity<String> result = productService.prepareData(product, selectedTemplatesJson,selectedModulesJson ,templates, modules);
         responseCode = result.getStatusCode().toString();
         if (result.getStatusCode().isSameCodeAs(HttpStatus.BAD_REQUEST)) {
             responseMessage = result.getBody();
@@ -63,6 +63,22 @@ public class WebController {
 
     @GetMapping("/constructProduct")
     public String constuctProduct(Model model, String message) {
+        try {
+            if (startView) {
+                modules = templateService.pullModules();
+                startView = false;
+            } else {
+                List<ModuleResponse> temp = templateService.getSpecifications(LocalTime.now());
+                if (temp != null && !temp.isEmpty()) {
+                    modules = temp;
+                }
+            }
+
+        } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException ex) {
+            specification_StatusCode = "503 SERVICE_UNAVAILABLE";
+        }
+        model.addAttribute("specificationservice", specification_StatusCode);
+        model.addAttribute("specifications", modules);
         templates = templateService.getAllTemplates();
         model.addAttribute("message", responseCode);
         model.addAttribute("errorInfo", responseMessage);

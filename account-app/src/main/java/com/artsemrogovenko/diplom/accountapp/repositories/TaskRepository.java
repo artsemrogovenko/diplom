@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task,Long> {
-        Optional<List<Task>> findAllByOwner(String name);
+        List<Task>  findAllByOwner(String name);
+
 }

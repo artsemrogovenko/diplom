@@ -11,7 +11,8 @@ public class ModuleMapper {
 
 
     public static Module mapToModule(Module data) {
-        Module module = new Module();
+        Module module = new Module(data.getId());
+
         if (data.getFactoryNumber() != null) {
             module.setFactoryNumber(data.getFactoryNumber().trim());
         }
@@ -33,13 +34,13 @@ public class ModuleMapper {
         if (data.getCircutFile() != null) {
             module.setCircutFile(data.getCircutFile().trim());
         }
-        // Копирование компонентов
-//        Set<Component> components = new HashSet<>();
-//
+//         Копирование компонентов
+        Set<Component> components = new HashSet<>();
+
         if (data.getComponents() != null && !data.getComponents().isEmpty()) {
             module.setComponents(data.getComponents());
         }
-//
+
         return module;
     }
 

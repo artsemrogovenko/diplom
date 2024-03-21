@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Информация по сборке</title>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+    <link th:rel="stylesheet" th:href="@{/webjars/toastr/2.1.4/build/toastr.min.css}"/>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+
+</head>
+
+
+<body>
+
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" th:href="@{'/myTasks?userid=' + ${username}}">Назад</a>
+    <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</nav>
+<span>Модули</span>
+<div class="row mt-4">
+    <!--    <div class="d-flex align-items-center">-->
+    <div class="col-md-4 mb-4">
+        <!--            <div class="card" >-->
+        <div class="card" style="width: 18rem;" th:each="module: ${modules}">
+
+            <!--                    <h1>User ID: <span th:text="${userid}"></span></h1>-->
+            <h5 class="card-title text-center" th:text="${module.name}"></h5>
+
+            <ul>
+                <li>Заводской номер: <span th:text="${module.factoryNumber}"></span></li>
+                <li>Исполнение: <span th:text="${module.model}"></span></li>
+                <li>Название: <span th:text="${module.name}"></span></li>
+                <li>Количество: <span th:text="${module.quantity}"></span></li>
+                <li th:text="${module.unit}"></li>
+
+                <li>Описание <span th:text="${module.description}"></span></li>
+                <a th:href="${module.circutFile}" class="btn btn-primary" th:target="_blank">Схема сборки</a>
+            </ul>
+            <div  class=" text-center"th:each="component : ${module.components}">
+                <span th:text="${component.factoryNumber}"></span>
+                <span th:text="${component.model}"></span>
+                <span class="card-title" th:text="${component.name}"></span>
+                <span th:text="${component.quantity}"></span>
+                <span th:text="${component.unit}"></span>
+                <span th:text="${component.description}"></span>
+            </div>
+
+
+            <!--            <form th:action="@{/take/{id}(id=${task.id})}" method="post" class="d-flex"-->
+            <!--                  enctype="application/x-www-form-urlencoded">-->
+            <!--                <input type="hidden" name="userid" th:value="${username}"/>-->
+            <!--                <button type="submit" class="btn btn-primary ms-2">Забрать</button>-->
+            <!--            </form>-->
+        </div>
+
+        <!--        </div>-->
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Редактирование компонента</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

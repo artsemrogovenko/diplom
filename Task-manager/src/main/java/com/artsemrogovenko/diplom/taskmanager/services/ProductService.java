@@ -1,10 +1,14 @@
 package com.artsemrogovenko.diplom.taskmanager.services;
 
 import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
+import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
+import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TemplateMapper;
 import com.artsemrogovenko.diplom.taskmanager.model.Product;
+import com.artsemrogovenko.diplom.taskmanager.model.Module;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
+import com.artsemrogovenko.diplom.taskmanager.repository.ModuleRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.ProductRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,14 +28,17 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ModuleService moduleService;
     private final TaskRepository taskRepository;
+    private final ModuleRepository moduleRepository;
 
     private final Formula formulaService;
 
 
-    public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, List<Template> templateList) {
+    public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, String selectedModulesJson, List<Template> templateList, List<ModuleResponse> moduleResponseList) {
         // Преобразование JSON в список идентификаторов выбранных модулей
         List<String> selectedTemplateIds = null;
+        List<String> selectedModulesIds = null;
         if (isExist(product)) {
             return new ResponseEntity<>("Такой экземпляр уже есть", HttpStatus.CONFLICT);
         }
@@ -41,8 +48,22 @@ public class ProductService {
             ObjectMapper objectMapper = new ObjectMapper();
             selectedTemplateIds = objectMapper.readValue(selectedTemplatesJson, new TypeReference<List<String>>() {
             });
+            selectedModulesIds = objectMapper.readValue(selectedModulesJson, new TypeReference<List<String>>() {
+            });
+
             // Создание списка модулей на основе идентификаторов
             List<Template> selectedTemplates = new ArrayList<>();
+            List<ModuleResponse> selectedModules = new ArrayList<>();
+
+            if (selectedModulesIds != null && !selectedModulesIds.isEmpty()) {
+                for (String position : selectedModulesIds) {
+                    try {
+                        selectedModules.add(moduleResponseList.get(Integer.parseInt(position)));
+                    } catch (NullPointerException | IndexOutOfBoundsException ex) {
+                        return new ResponseEntity<>("Список модулей устарел, повторите попытку", HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
 
             if (selectedTemplateIds != null && !selectedTemplateIds.isEmpty()) {
                 for (String position : selectedTemplateIds) {
@@ -64,11 +85,35 @@ public class ProductService {
 //                taskRepository.saveAll(taskList);
                 newProduct.getTasks().addAll(taskList);
             }
+
             //добавляю дополнительные компоненты
             List<Task> additional = formulaService.additionalTask(newProduct);
             for (Task task : additional) {
                 taskRepository.save(task);
             }
+/**
+ * Добавлены модули из формы задачи
+ */
+            if (!selectedModules.isEmpty()) {
+                List<ModuleResponse> moduleList = new ArrayList<>();
+                for (ModuleResponse selectedModule : selectedModules) {
+                    ModuleResponse response = moduleService.createModule(ModuleMapper.mapToModule(selectedModule)).getBody();
+                    moduleList.add(response);
+                }
+
+                moduleList.forEach(moduleResponse -> {
+                    if (moduleResponse != null) {
+                        Task newtask = new Task();
+                        newtask.setName(moduleResponse.getName());
+                        newtask.setDescription(moduleResponse.getDescription());
+                        newtask.addModule(moduleRepository.findById(moduleResponse.getId()).get());
+                        newtask.setContractNumber(product.getContractNumber());
+                        additional.add(taskRepository.save(newtask));
+                    }
+                });
+
+            }
+
             newProduct.getTasks().addAll(additional);
 
 
@@ -102,4 +147,6 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
+
+
 }

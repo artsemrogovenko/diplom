@@ -35,4 +35,16 @@ public class Component implements ComponentData {
         return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null ;
     }
 
+    @Override
+    public String toString() {
+        return "Component{" +
+                "id=" + id +
+                ", factoryNumber='" + factoryNumber + '\'' +
+                ", model='" + model + '\'' +
+                ", name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", unit='" + unit + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

@@ -1,7 +1,10 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
 import com.artsemrogovenko.diplom.accountapp.dto.ModuleData;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +17,7 @@ import java.util.Set;
 @Data
 @Entity
 @NoArgsConstructor
-public class Module  {
+public class Module {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //
@@ -38,15 +41,17 @@ public class Module  {
     private String circutFile;  // схема сборки
 
     //один модуль может содержать несколько компонентов
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();    // список компонентов
-//    @ManyToMany(mappedBy = "modules",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+
+    //    @ManyToMany(mappedBy = "modules",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 //    @JoinTable(name = "module_tasks", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
 //    private List<Task> tasks = new ArrayList<>();
-@JsonIgnore
-@ManyToMany(mappedBy = "modules", fetch = FetchType.LAZY)
-private List<Task> tasks = new ArrayList<>();
+    @JsonIgnore
+    @ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
+    private List<Task> tasks = new ArrayList<>();
+
 
 
     public Module(Long id) {
@@ -58,4 +63,18 @@ private List<Task> tasks = new ArrayList<>();
     }
 
 
+    @Override
+    public String toString() {
+        return "Module{" +
+                "id=" + id +
+                ", factoryNumber='" + factoryNumber + '\'' +
+                ", model='" + model + '\'' +
+                ", name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", unit='" + unit + '\'' +
+                ", description='" + description + '\'' +
+                ", circutFile='" + circutFile + '\'' +
+                ", components=" + components +
+                '}';
+    }
 }

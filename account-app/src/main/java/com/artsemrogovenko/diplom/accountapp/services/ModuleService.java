@@ -4,18 +4,17 @@ package com.artsemrogovenko.diplom.accountapp.services;
 import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.accountapp.models.Component;
+import com.artsemrogovenko.diplom.accountapp.models.Module;
 import com.artsemrogovenko.diplom.accountapp.repositories.ModuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.artsemrogovenko.diplom.accountapp.models.Module;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -58,12 +57,12 @@ public class ModuleService {
         Module module = ModuleMapper.mapToModule(moduleRequest);
 
         if (notExist(module)) {
-            if (module.getComponents() != null) {
+            if (module.getComponents() != null && !module.getComponents().isEmpty()) {
 
                 List<Component> componentList = componentService.saveAll(module.getComponents());
                 if (componentList != null) {
-                    module.setComponents(new HashSet<>());
-                    componentList.forEach(component -> module.addComponent(component));
+                    module.setComponents(new HashSet<>(componentList));
+//                    componentList.forEach(component -> module.addComponent(component));
                 }
             }
             Module result = moduleRepository.save(module);
@@ -71,14 +70,16 @@ public class ModuleService {
             System.out.println(moduleRepository.findLastModule());
             return new ResponseEntity<>(result, CREATED);
         }
-        return new ResponseEntity<>(searchModule(module), HttpStatus.CONFLICT);
+        Module savedModule = searchModule(module);
+//        moduleRepository.save(savedModule);
+        return new ResponseEntity<>(savedModule, HttpStatus.CONFLICT);
     }
 
 
     public boolean notExist(Module module) {
         try {
             Module existingModule = searchModule(module);
-            if(existingModule.getQuantity()!=null){
+            if (existingModule.getQuantity() != null) {
                 if (existingModule.getQuantity().equals(module.getQuantity())) {
                     return false;
                 }
@@ -106,7 +107,7 @@ public class ModuleService {
 //                factoryNumber, model, name, unit, description, circutFile).get();
 //    }
     @LogMethod
-    private Module searchModule(Module module)  throws NoSuchElementException{
+    private Module searchModule(Module module) throws NoSuchElementException {
         String factoryNumber = module.getFactoryNumber() == "" ? null : module.getFactoryNumber();
         String model = module.getModel() == "" ? null : module.getModel();
         String name = module.getName();
@@ -114,6 +115,28 @@ public class ModuleService {
         String description = module.getDescription() == "" ? null : module.getDescription();
         String circutFile = module.getCircutFile() == "" ? null : module.getCircutFile();
 
-        return moduleRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, unit, description, circutFile).get();
+        Optional<Module> find = moduleRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, unit, description, circutFile);
+
+        if (find.isPresent()) {
+            module = find.get();
+            module.setComponents(componentService.getComponentById(find.get().getId()));
+            System.out.println(module);
+        } else {
+            throw new NoSuchElementException();
+        }
+//        return moduleRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, unit, description, circutFile).get();
+        return module;
+    }
+
+    public List<Module> getModuleByTask(Long taskId) {
+        return moduleRepository.findAllByTasks_Id(taskId);
+    }
+
+    public Module findModuleById(Long id) {
+        try {
+            return moduleRepository.findById(id).get();
+        } catch (NoSuchElementException e) {
+        }
+        return null;
     }
 }

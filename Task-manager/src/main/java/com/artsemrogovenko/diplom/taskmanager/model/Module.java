@@ -67,4 +67,19 @@ public class Module implements SavedModule {
     public boolean fieldsIsNull() {
         return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && components.isEmpty() && circutFile == null;
     }
+
+    @Override
+    public String toString() {
+        return "Module{" +
+                "id=" + id +
+                ", factoryNumber='" + factoryNumber + '\'' +
+                ", model='" + model + '\'' +
+                ", name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", unit='" + unit + '\'' +
+                ", description='" + description + '\'' +
+                ", components=" + components +
+                ", circutFile='" + circutFile + '\'' +
+                '}';
+    }
 }

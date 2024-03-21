@@ -9,6 +9,7 @@
     <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
     <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
+    <!--    <script th:src="@{/static/script.js}"></script>-->
 
 </head>
 
@@ -16,12 +17,24 @@
 <body>
 
 <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}" >Главная</a>
+    <a class="navbar-brand" th:href="@{/}">Главная</a>
     <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
     <form th:action="@{/logout}" method="post">
         <input type="submit" value="Sign Out"/>
     </form>
 </nav>
+<!-- Проверяем наличие атрибута confirm в модели -->
+<div th:if="${confirm != null}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <span th:text="${confirm}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div th:if="${errorInfo != null}" class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Инфо: </strong> <span th:text="${errorInfo}"></span>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
 
 <table class="table table-hover">
     <thead>
@@ -30,27 +43,52 @@
             <h3>Мои задачи</h3>
         </th>
     </tr>
+    <tr>
+        <th>Статус</th>
+        <th>Id</th>
+        <th>заводской номер</th>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Информация</th>
+        <th></th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
     <!--        th:if="${task.reserved}"-->
-    <tr th:each="task: ${tasks}" >
-        <div class="card-deck">
+    <tr th:each="task: ${tasks}">
 
+        <!--        <td class="table-light" th:text="${task.taskStatus == 'DONE' ? 'display: none;' : ''}"></td>-->
+        <td class="table-light" th:text="${task.status}"></td>
+        <td class="table-light" th:text="${task.id}"></td>
+        <td class="table-light" th:text="${task.contractNumber}"></td>
+        <td class="table-light" th:text="${task.name}"></td>
         <td class="table-light" th:text="${task.description}"></td>
-        <td class="table-light"  th:text="${task.taskStatus == 'DONE' ? 'display: none;' : ''}">
-            <form th:action="@{/{id}/complete(id=${task.id})}" method="post" class="d-inline">
-                <input type="hidden" name="userid" th:value="${userid}"/>
-                <button type="submit" class="btn btn-success ">Success</button>
-            </form>
-            <form th:action="@{/{id}/rollback(id=${task.id})}" method="post" class="d-inline">
+        <td>
+            <form th:action="@{/myModules/{taskId}(taskId=${task.id})}" method="get" class="d-inline">
                 <input type="hidden" name="userid" th:value="${username}"/>
-                <button type="submit" class="btn btn-warning ">Cancel</button>
+                <button type="submit" class="btn btn-info">Info</button>
+            </form>
+        <td>
+            <!-- Форма для завершения задачи -->
+            <form th:action="@{'/complete/' + ${task.id}}" method="post" class="d-inline">
+                <input type="hidden" name="userid" th:value="${username}"/>
+                <button type="submit" class="btn btn-success">Complete</button>
+            </form>
+        </td>
+        <td>
+            <!-- Форма для отмены задачи -->
+            <form th:action="@{'/rollback/' + ${task.id}}" method="post" class="d-inline">
+                <input type="hidden" name="userid" th:value="${username}"/>
+                <button type="submit" class="btn btn-warning">Rollback</button>
             </form>
         </td>
 
-        </div>
     </tr>
     </tbody>
 </table>
+<!-- Popup Modal -->
+
+
 </body>
 </html>

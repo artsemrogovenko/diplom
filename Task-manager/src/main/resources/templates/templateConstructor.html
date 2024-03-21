@@ -34,7 +34,7 @@
 <script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: данные уже существуют');</script>
 <script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>
 
-<div class="d-flex align-items-center">
+<div class="d-flex align-items-baseline">
 
     <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
          style="width: 380px;max-height: 500px;" id="mainList">

@@ -18,7 +18,7 @@ public interface TaskApi {
     @PostMapping("/task/{id}/reserve")
     public ResponseEntity<String> reserveAmount(@PathVariable("id") Long id,@RequestBody String userId);
     @PostMapping("/task/{id}/complete")
-    public ResponseEntity<String> completeTask(@PathVariable Long id, @RequestBody String userId);
+    public ResponseEntity<String> completeTask(@PathVariable("id") Long id, @RequestBody String userId);
     @PostMapping("/task/{id}/reserve/rollback")
     ResponseEntity<String> rollbackReserveAmount(@PathVariable("id") Long id, @RequestBody String userId);
 

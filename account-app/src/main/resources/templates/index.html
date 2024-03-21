@@ -14,10 +14,11 @@
 <body>
 
 <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{'/myTasks?userId=' + ${username}}">Мои задачи</a>
+    <a class="navbar-brand" th:href="@{/myTasks(userid=${username})}">Мои задачи</a>
     <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
     <form class="form-inline" th:action="@{/logout}" method="post">
-        <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit"/>Login page</button>
+        <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit"/>
+        Login page</button>
     </form>
     <form th:action="@{/registration}" method="get">
         <button type="submit">Admin panel</button>
@@ -102,8 +103,8 @@
                     <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно'"> </span>
                     <span>Модули:</span>
                     <span th:each="module : ${task.modules}">
-    <span th:text="${module.name}"></span>
-</span>
+                        <span th:text="${module.name}"></span>
+                    </span>
 
                     <form th:action="@{/take/{id}(id=${task.id})}" method="post" class="d-flex"
                           enctype="application/x-www-form-urlencoded">

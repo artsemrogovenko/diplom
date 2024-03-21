@@ -27,7 +27,7 @@ public class TaskController {
 
 
     @PostMapping("/rollback/{id}")
-    public ResponseEntity<?> rollbackTransaction(@RequestBody String user, @PathVariable Long taskid) {
+    public ResponseEntity<String> rollbackTransaction(@RequestBody String user, @PathVariable Long taskid) {
         return taskService.rollbackTask(user, taskid);
     }
 

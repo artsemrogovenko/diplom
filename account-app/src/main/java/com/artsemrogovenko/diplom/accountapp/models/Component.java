@@ -1,6 +1,7 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
 import com.artsemrogovenko.diplom.accountapp.dto.ComponentData;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,8 @@ public class Component implements ComponentData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //
-    @ManyToMany(mappedBy = "components",fetch = FetchType.LAZY) //один компонент может относится ко многим модулям
+    @JsonIgnore
+    @ManyToMany(mappedBy = "components") //один компонент может относится ко многим модулям
     private Set<Module> modules = new HashSet<>();
     @Column(columnDefinition = "VARCHAR(100)")
     private String factoryNumber;       // заводской номер
@@ -30,8 +32,39 @@ public class Component implements ComponentData {
     @Column(columnDefinition = "VARCHAR(255)")
     private String description;  // тут можно указать например цвет
 
+    public Component(Long id) {
+        this.id = id;
+    }
+
     public boolean fieldsIsNull() {
         return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null;
     }
+
+    @Override
+    public String toString() {
+        return "Component{" +
+                "id=" + id +
+                ", factoryNumber='" + factoryNumber + '\'' +
+                ", model='" + model + '\'' +
+                ", name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", unit='" + unit + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
+    @Override
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = 1;
+        result = result * PRIME + (id == null ? 0 : id.hashCode());
+        result = result * PRIME + (factoryNumber == null ? 0 : factoryNumber.hashCode());
+        result = result * PRIME + (model == null ? 0 : model.hashCode());
+        result = result * PRIME + (name == null ? 0 : name.hashCode());
+        result = result * PRIME + (quantity == null ? 0 : quantity.hashCode());
+        result = result * PRIME + (unit == null ? 0 : unit.hashCode());
+        result = result * PRIME + (description == null ? 0 : description.hashCode());
+        return result;
+    }
+
 
 }

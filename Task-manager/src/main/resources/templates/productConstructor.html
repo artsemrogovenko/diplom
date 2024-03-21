@@ -33,7 +33,7 @@
 <script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: Такая задача уже есть');</script>
 <script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>
 
-<div class="d-flex align-items-center">
+<div class="d-flex align-items-baseline">
 
     <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
          style="width: 380px;max-height: 500px;" id="mainList">
@@ -140,11 +140,26 @@
                             <span class="fs-5 fw-semibold">Выбранные шаблоны</span>
                         </span>
                             <div class="list-group list-group-flush border-bottom scrollarea">
+                                <!-- Здесь будут отображаться заготовки -->
+                            </div>
+                        </div>
+                        <!-- Скрытое поле для передачи выбранных заготовок -->
+                        <input type="hidden" id="selectedTemplates" name="selectedTemplates"/>
+
+
+
+                        <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
+                             style="width: 380px;" id="selectedList_modules">
+                        <span class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+                            <span class="fs-5 fw-semibold">Выбранные модули</span>
+                        </span>
+                            <div class="list-group list-group-flush border-bottom scrollarea">
                                 <!-- Здесь будут отображаться выбранные модули -->
                             </div>
                         </div>
                         <!-- Скрытое поле для передачи выбранных модулей -->
-                        <input type="hidden" id="selectedTemplates" name="selectedTemplates"/>
+                        <input type="hidden" id="selectedModules" name="selectedModules"/>
+
                     </form>
                 </div>
             </div>
@@ -153,6 +168,46 @@
 
     <div class="b-example-divider b-example-vr"></div>
 
+    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
+         style="width: 380px;max-height: 500px;" id="mainList_module_list">
+        <div th:if="${specificationservice} == '503 SERVICE_UNAVAILABLE'">
+            <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+                </symbol>
+                <symbol id="info-fill" viewBox="0 0 16 16">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                </symbol>
+            </svg>
+            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Info:" style="max-height: 20px;">
+                    <use xlink:href="#info-fill"/>
+                </svg>
+                Служба модулей временно недоступна
+            </div>
+        </div>
+        <a href="/constructProduct" th:if="${specificationservice !='503 SERVICE_UNAVAILABLE'}"
+           class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
+            <div class="fs-5 fw-semibold">Список модулей <span class="countdown" id="countdown" th:text="${timer}"
+                                                               style="font-size: 12px; text-align: right;"></span></div>
+        </a>
+
+        <div class="list-group list-group-flush border-bottom scrollarea">
+
+            <li href="#" class="list-group-item list-group-item-action py-3 lh-sm"
+                th:each="module, iterStat : ${specifications}" th:data-id="${iterStat.index}"
+                th:data-name="|Элемент ${module.id}|">
+            <span class="d-flex w-100 align-items-center justify-content-between">
+                <span class="mb-1" th:text="${module.getName()}">List group item heading</span>
+                <span class="mb-1" th:text="${module.model}">Tues</span>
+                <span class="mb-1" th:text="${module.description}">Tues</span>
+            </span>
+                <!--                <span class="col-10 mb-1 small" th:text="${module.description}">Some placeholder content in a paragraph below the heading and date.</span>-->
+                <div class="col-10 mb-1 small" th:each="component : ${module.componentResponses}" th:text="${component.name}"  th:if="${!#strings.isEmpty(component.name)}">
+                    <span th:if="${not #object.isEmpty(component)}">,</span>
+                </div>
+            </li>
+
+        </div>
+    </div>
 
 </div>
 

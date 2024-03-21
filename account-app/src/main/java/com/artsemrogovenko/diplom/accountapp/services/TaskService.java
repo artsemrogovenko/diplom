@@ -1,11 +1,12 @@
 package com.artsemrogovenko.diplom.accountapp.services;
 
 
+import com.artsemrogovenko.diplom.accountapp.api.StorageApi;
 import com.artsemrogovenko.diplom.accountapp.api.TaskApi;
 import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
-import com.artsemrogovenko.diplom.accountapp.dto.mymapper.TaskMapper;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus;
+import com.artsemrogovenko.diplom.accountapp.dto.mymapper.TaskMapper;
 import com.artsemrogovenko.diplom.accountapp.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.accountapp.models.Module;
 import com.artsemrogovenko.diplom.accountapp.models.*;
@@ -14,6 +15,7 @@ import com.artsemrogovenko.diplom.accountapp.repositories.AccountRepository;
 import com.artsemrogovenko.diplom.accountapp.repositories.TaskRepository;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
+import org.hibernate.id.IdentifierGenerationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -31,9 +33,11 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class TaskService {
+    private final StorageApi storageApi;
     private final TaskApi taskApi;
     private final AccountRepository accountRepository;
     private final ModuleService moduleService;
+    private final ComponentService componentService;
     private final TaskRepository taskRepository;
     private static LocalTime requiredTime = LocalTime.now().plusSeconds(30);
     private static List<Task> tasks = new ArrayList<>();
@@ -73,11 +77,13 @@ public class TaskService {
     }
 
     @LogMethod
-    public ResponseEntity<?> rollbackTask(String user, Long taskid) {
+    public ResponseEntity<String> rollbackTask(String user, Long taskid) throws FeignException{
         Task rollbackTask = taskRepository.findById(taskid).get();
         List<Component> components = MyRequest.componentsFromAllModules(rollbackTask);
         List<ComponentRequest> calculated = MyRequest.totalizationComponents(components);
-        return MyRequest.rollbackComponents(calculated);
+        storageApi.saveComponents(calculated);
+        return taskApi.rollbackReserveAmount(taskid, user);
+//        return MyRequest.rollbackComponents(calculated);
     }
 
     @LogMethod
@@ -92,18 +98,21 @@ public class TaskService {
 
     private Task saveTask(Task task) {
         Task result = TaskMapper.mapToTask(task);
-        result.setModules(new ArrayList<>());
 
         List<Module> modules = new ArrayList<>();
-        if (!modules.isEmpty() || modules != null) {
-            if (!task.getModules().isEmpty() && task.getModules() != null) {
-                for (Module module : task.getModules()) {
-                    if (module != null) {
-                        modules.add(moduleService.createModule(module).getBody());
-                    }
+        if (!task.getModules().isEmpty() && task.getModules() != null) {
+            for (Module module : task.getModules()) {
+                Module existingModule = moduleService.findModuleById(module.getId());
+                if (existingModule != null) {
+                    modules.add(existingModule); // Если модуль уже существует, используем его
+                } else {
+                    // Если модуль не существует, сохраняем его в базе данных
+                    Module newModule = moduleService.createModule(module).getBody();
+                    modules.add(newModule);
                 }
             }
         }
+        System.out.println(modules);
         result.setModules(modules);
         return taskRepository.save(result);
     }
@@ -117,10 +126,9 @@ public class TaskService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("пользователь не найден");
             }
             // проверка на дубликат такой задачи
-//            if (recieverAccount.getTasks().stream()
-//                    .anyMatch(task -> task.getId().equals(assignTask.getId())
-//                            && task.getContractNumber().equals(assignTask.getContractNumber()))) {
-            if(false){
+            if (showMyTasks(userId).stream()
+                    .anyMatch(task -> task.getId().equals(assignTask.getId()) && task.getOwner().equals(userId)
+                            && task.getContractNumber().equals(assignTask.getContractNumber()))) {
                 System.out.println("блок проверки");
                 throw new DuplicateExeption("такая задача в корзине есть");
             } else {
@@ -146,16 +154,22 @@ public class TaskService {
 
     @LogMethod
     public List<Task> showMyTasks(String userId) {
-        Optional<List<Task>> result=  taskRepository.findAllByOwner(userId);
-      if (result.isPresent()){
-          return result.get();
-      }
+        System.out.println("блок вызван");
+        try {
+            List<Task> result = taskRepository.findAllByOwner(userId);
+//            result.forEach((task) -> {
+//                task.getModules().forEach((module) -> {
+//                    moduleService.getModuleById(module.getId()).setComponents(componentService.getComponentById(module.getId()));
+//                });
+//            });
+            return result;
+        } catch (NoSuchElementException ex) {
+
+        }
         return new ArrayList<>();
-//        System.out.println(accountRepository.getReferenceById(userId));
-//        return accountRepository.getReferenceById(userId).getTasks();
-//        if (myAccount.isPresent()) {
-//            return myAccount.get().getTasks();
-//        }
-//        return new ArrayList<>();
+    }
+
+    public List<Module> getModuleByTaskid(Long taskId) {
+        return moduleService.getModuleByTask(taskId);
     }
 }

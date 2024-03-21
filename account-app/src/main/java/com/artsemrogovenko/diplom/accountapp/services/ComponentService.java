@@ -21,8 +21,9 @@ public class ComponentService {
         return componentRepository.findAll();
     }
 
-    public Component getComponentById(Long id) {
-        return componentRepository.findById(id).get();
+    public Set<Component> getComponentById(Long id) {
+        Set<Component> components = Set.of(componentRepository.findById(id).get());
+        return components;
     }
 
     public Component createComponent(Component component) {
@@ -41,15 +42,15 @@ public class ComponentService {
     public List<Component> saveAll(Set<Component> components) {
         List<Component> resultList = new ArrayList<>();
         if (components != null && !components.isEmpty()) {
-            List<Component> nonDuplicates = components.stream()
-                    .filter(component -> !component.fieldsIsNull())
-                    .filter(component -> notExist(component)).toList();
+//            List<Component> nonDuplicates = components.stream()
+//                    .filter(component -> !component.fieldsIsNull())
+//                    .filter(component -> notExist(component)).toList();
 
-            for (Component nonDuplicate : nonDuplicates) {
-                if (notExist(nonDuplicate)) {
-                    resultList.add(componentRepository.save(nonDuplicate));
+            for (Component component : components) {
+                if (notExist(component)) {
+                    resultList.add(componentRepository.save(component));
                 } else {
-                    resultList.add(findDistinct(nonDuplicate));
+                    resultList.add(findDistinct(component));
                 }
             }
             // Сохранить все отфильтрованные компоненты
@@ -80,6 +81,9 @@ public class ComponentService {
         String description = component.getDescription() == "" ? null : component.getDescription();
 
         return componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+    }
 
+    public List<Component> findByModule(Long moduleid){
+        return componentRepository.findAllByModulesId(moduleid);
     }
 }

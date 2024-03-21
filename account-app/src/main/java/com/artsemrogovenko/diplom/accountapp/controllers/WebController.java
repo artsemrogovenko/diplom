@@ -1,25 +1,20 @@
 package com.artsemrogovenko.diplom.accountapp.controllers;
 
-import com.artsemrogovenko.diplom.accountapp.api.TaskApi;
 import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.models.Account;
+import com.artsemrogovenko.diplom.accountapp.models.Module;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.services.AccountService;
 import com.artsemrogovenko.diplom.accountapp.services.TaskService;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,8 +26,6 @@ import java.util.List;
 @Controller
 @AllArgsConstructor
 @RequestMapping("")
-@Secured({ "ROLE_USER", "ROLE_ADMIN" })
-//@PostAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 public class WebController {
     private final TaskService taskService;
     private final AccountService accountService;
@@ -41,6 +34,11 @@ public class WebController {
     private static String responseMessage;
     private static boolean startView = true;
     private static String confirm;
+
+    @PostMapping("/")
+    public String login() {
+        return "redirect:/";
+    }
 
     @GetMapping("/registration")
     public String registration(Model model) {
@@ -58,6 +56,26 @@ public class WebController {
         return "redirect:/";
     }
 
+    @PostMapping("/complete/{id}")
+    public String doneTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
+        try {
+            confirm = taskService.completeTask(userid, taskId);
+        } catch (FeignException.NotFound e) {
+            responseMessage = e.getMessage();
+        }
+        return "redirect:/myTasks?userid=" + userid;
+    }
+
+    @PostMapping("/rollback/{id}")
+    public String cancelTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid)  {
+        try {
+            confirm = taskService.rollbackTask(userid, taskId).getBody();
+        } catch (FeignException.NotFound e) {
+            responseMessage = e.getMessage();
+        }
+        return "redirect:/myTasks?userid=" + userid;
+    }
+
 
     @PostMapping("/take/{id}")
     public String takeMeTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
@@ -65,33 +83,43 @@ public class WebController {
         try {
             responseEntity = taskService.takeTask(taskId, userid);
             confirm = responseEntity.getBody();
-            System.out.println(confirm);
         } catch (FeignException.InternalServerError ex) {
             responseMessage = responseEntity.getBody();
-            System.out.println(responseMessage);
-            System.out.println(ex.contentUTF8());
-
         } catch (FeignException.NotFound ex) {
             responseMessage = ex.contentUTF8();
+        } catch (FeignException.BadRequest ex) {
+            responseMessage = ex.contentUTF8();
         }
-//        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-//            confirm = responseEntity.getBody();
-//        } else {
-//            responseMessage = responseEntity.getStatusCode().toString() + responseEntity.getBody();
-//        }
         return "redirect:/";
     }
 
-    @PostMapping("/")
-    public String login() {
-        return "redirect:/";
+    @LogMethod
+    @GetMapping("/myModules/{taskId}")
+    public String modules(@PathVariable("taskId") Long taskId, @RequestParam("userid") String userId, Model model) {
+        List<Module> modules = taskService.getModuleByTaskid(taskId);
+        System.out.println(modules);
+        model.addAttribute("confirm", confirm);
+        model.addAttribute("errorInfo", responseMessage);
+        responseMessage = null;
+        confirm = null;
+        model.addAttribute("username", userId);
+        model.addAttribute("modules", modules);
+        return "modules.html";
     }
 
+    @LogMethod
     @GetMapping("/myTasks")
-    public String myTasks(@RequestParam("userId") String userId, Model model) {
+    public String myTasks(@RequestParam("userid") String userId, Model model) {
         List<Task> my = taskService.showMyTasks(userId);
-        model.addAttribute("tasks", my);
         System.out.println(my);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Получаем имя пользователя из объекта аутентификации
+        String username = authentication.getName();
+        // Добавляем имя пользователя в модель для передачи его в представление
+        model.addAttribute("errorInfo", responseMessage);
+        responseMessage = null;
+        model.addAttribute("username", username);
+        model.addAttribute("tasks", my);
         return "mytasks.html";
     }
 
@@ -104,10 +132,10 @@ public class WebController {
         String username = authentication.getName();
         // Добавляем имя пользователя в модель для передачи его в представление
         model.addAttribute("username", username);
-        List<Task> temp=new ArrayList<>();
+        List<Task> temp = new ArrayList<>();
         try {
             if (startView) {
-                temp= taskService.pullTasks();
+                temp = taskService.pullTasks();
                 startView = false;
             } else {
                 temp = taskService.getTasks(LocalTime.now());
@@ -117,7 +145,7 @@ public class WebController {
             taskservice_StatusCode = "503 SERVICE_UNAVAILABLE";
         }
 //        tasks = taskApi.getTasks().getBody();
-
+        System.out.println(temp);
         model.addAttribute("message", responseCode);
         model.addAttribute("confirm", confirm);
         model.addAttribute("errorInfo", responseMessage);
