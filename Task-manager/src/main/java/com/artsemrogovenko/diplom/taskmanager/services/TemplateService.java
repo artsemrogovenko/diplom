@@ -31,7 +31,7 @@ public class TemplateService {
     private final WebClient.Builder webclientBuilder;
     private final TemplateRepository templateRepository;
     private final ModuleService moduleService;
-    private static LocalTime requiredTime = LocalTime.now().plusMinutes(2);
+    private static LocalTime requiredTime = LocalTime.now().plusSeconds(2);
     private static List<ModuleResponse> modules = new ArrayList<>();
 
 
@@ -54,7 +54,7 @@ public class TemplateService {
 //        System.out.println("current time = " + String.format("%02d:%02d:%02d", currentTime.getHour(), currentTime.getMinute(), currentTime.getSecond()));
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         if (currentTime.isAfter(requiredTime)) {
-            requiredTime = LocalTime.now().plusMinutes(2);
+            requiredTime = LocalTime.now().plusSeconds(2);
 //            secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
             modules = pullModules();
         }

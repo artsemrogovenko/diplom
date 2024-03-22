@@ -24,6 +24,7 @@ public class Formula {
 
     private final ComponentRepository componentRepository;
     private final ModuleService moduleService;
+    private final ComponentService componentService;
     private final WebClient.Builder webclientBuilder;
 
     public void requestComponent() {
@@ -40,12 +41,14 @@ public class Formula {
         equipment.setName("Комплектация");
         equipment.setContractNumber(product.getContractNumber());
 
+
         Module special = new Module();
         special.setName("коробка для договора " + product.getContractNumber());
         special.setQuantity(1);
 
-        MyCollection<Component> additionalComponents = new MyCollection<>(Component.class, additionalComponents(product));
-        special.setComponents(additionalComponents);
+        List<Component> additionalComponents =  additionalComponents(product);
+        special.setComponents(new HashSet<>(additionalComponents));
+
 
         Task metal = new Task();
         metal.setName("металл");
@@ -55,19 +58,18 @@ public class Formula {
         controlCabinet.setName("шкаф");
         controlCabinet.setUnit("шт");
         controlCabinet.setQuantity(1);
+
         controlCabinet.setModel(product.getType());
         controlCabinet.setDescription(product.getColor());
 
-        MyCollection<Component> controlCabinetComponents = new MyCollection<>(Component.class, controlCabinet(product));
-        controlCabinet.setComponents(controlCabinetComponents);
-
+        List<Component> controlCabinetComponents = controlCabinet(product);
+        controlCabinet.setComponents(new HashSet<>(controlCabinetComponents));
 
         Module first = ModuleMapper.mapToModule(moduleService.createModule(controlCabinet).getBody());
         Module second = ModuleMapper.mapToModule(moduleService.createModule(special).getBody());
 
         metal.addModule(first);
         equipment.addModule(second);
-
         return new LinkedList<>(List.of(equipment, metal));
     }
 

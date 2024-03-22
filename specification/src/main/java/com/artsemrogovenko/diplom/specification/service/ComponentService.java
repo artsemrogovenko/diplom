@@ -63,7 +63,6 @@ public class ComponentService {
             List<Component> nonDuplicates = components.stream()
                     .filter(component -> !component.fieldsIsNull())
                     .filter(component -> notExist(component)).toList();
-            nonDuplicates.size();
             // Сохранить все отфильтрованные компоненты
             return componentRepository.saveAll(nonDuplicates);
         }

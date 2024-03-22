@@ -64,12 +64,14 @@ public class WebController {
     public String update(ModuleResponse moduleResponse, Model model) {
 //        moduleService.updateModule(moduleResponse);
         System.out.println(moduleResponse.toString());
+        pullList();
         return "redirect:/";
     }
 
     @PostMapping("/deleteModule/{id}")
     public String delete(@PathVariable("id") Long moduleId) {
         moduleService.deleteModule(moduleId);
+        pullList();
         return "redirect:/";
     }
 

@@ -34,7 +34,7 @@
 
             <ul>
                 <li>Заводской номер: <span th:text="${module.factoryNumber}"></span></li>
-                <li>Исполнение: <span th:text="${module.model}"></span></li>
+                <li>Модификация: <span th:text="${module.model}"></span></li>
                 <li>Название: <span th:text="${module.name}"></span></li>
                 <li>Количество: <span th:text="${module.quantity}"></span></li>
                 <li th:text="${module.unit}"></li>
@@ -45,7 +45,7 @@
             <div  class=" text-center"th:each="component : ${module.components}">
                 <span th:text="${component.factoryNumber}"></span>
                 <span th:text="${component.model}"></span>
-                <span class="card-title" th:text="${component.name}"></span>
+                <b> <span th:text="${component.name}+' :'"></span></b>
                 <span th:text="${component.quantity}"></span>
                 <span th:text="${component.unit}"></span>
                 <span th:text="${component.description}"></span>

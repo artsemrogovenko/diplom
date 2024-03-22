@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.specification.model;
 
+import com.artsemrogovenko.diplom.specification.dto.ModuleData;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.util.*;
 @Entity
 //@Table(name = "module_table")
 @NoArgsConstructor
-public class Module {
+public class Module implements ModuleData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

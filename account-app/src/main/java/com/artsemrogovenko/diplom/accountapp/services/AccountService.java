@@ -27,7 +27,7 @@ public class AccountService implements UserDetailsService {
 
     @LogMethod
     public boolean saveUser(Account user) {
-        Optional<Account> userFromDB = accountRepository.findById(user.getName());
+        Optional<Account> userFromDB = accountRepository.findById(user.getName().trim());
         System.out.println(user);
         if (userFromDB.isPresent()) {
             return false;

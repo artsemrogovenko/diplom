@@ -40,8 +40,9 @@
 
         <a href="#" th:if="${templateservice !='503 SERVICE_UNAVAILABLE'}"
            class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-            <span class="fs-5 fw-semibold">Доступные шаблоны изделий<span class="countdown" id="countdown" th:text="${timer}"
-                                                                   style="font-size: 12px; text-align: right;"></span></span>
+            <span class="fs-5 fw-semibold">Доступные шаблоны изделий<span class="countdown" id="countdown"
+                                                                          th:text="${timer}"
+                                                                          style="font-size: 12px; text-align: right;"></span></span>
         </a>
 
         <div class="list-group list-group-flush border-bottom scrollarea">
@@ -70,7 +71,7 @@
                         eveniet fugiat.</p>
                 </div>
                 <div class="col-md-7 col-lg-8">
-<!--                                    <h4 class="mb-3">Свойста</h4>-->
+                    <!--                                    <h4 class="mb-3">Свойста</h4>-->
                     <form th:action="@{/createProduct}" th:object="${product}" method="post" class="needs-validation"
                           onsubmit="return validateInputs()" id="productForm">
                         <div class="row g-3">
@@ -129,7 +130,6 @@
                             </div>
 
 
-
                         </div>
                         <hr class="my-4">
                         <button class="w-100 btn btn-primary btn-lg" type="submit">Создать задачу</button>
@@ -145,7 +145,6 @@
                         </div>
                         <!-- Скрытое поле для передачи выбранных заготовок -->
                         <input type="hidden" id="selectedTemplates" name="selectedTemplates"/>
-
 
 
                         <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
@@ -168,8 +167,8 @@
 
     <div class="b-example-divider b-example-vr"></div>
 
-    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary"
-         style="width: 380px;max-height: 500px;" id="mainList_module_list">
+    <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary "
+         style="width: 400px;max-height: 500px;" id="mainList_module_list">
         <div th:if="${specificationservice} == '503 SERVICE_UNAVAILABLE'">
             <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
                 </symbol>
@@ -190,20 +189,24 @@
                                                                style="font-size: 12px; text-align: right;"></span></div>
         </a>
 
-        <div class="list-group list-group-flush border-bottom scrollarea">
+        <div class="list-group list-group-flush border-bottom pre-scrollable" style="max-height: 500px;">
 
             <li href="#" class="list-group-item list-group-item-action py-3 lh-sm"
                 th:each="module, iterStat : ${specifications}" th:data-id="${iterStat.index}"
                 th:data-name="|Элемент ${module.id}|">
             <span class="d-flex w-100 align-items-center justify-content-between">
-                <span class="mb-1" th:text="${module.getName()}">List group item heading</span>
-                <span class="mb-1" th:text="${module.model}">Tues</span>
-                <span class="mb-1" th:text="${module.description}">Tues</span>
+                <span class="mb-1" th:text="${module.getName()}"/>
+                <span class="mb-1" th:text="${module.model}"/>
+                <span class="mb-1" th:text="${module.description}"/><br>
+
             </span>
-                <!--                <span class="col-10 mb-1 small" th:text="${module.description}">Some placeholder content in a paragraph below the heading and date.</span>-->
-                <div class="col-10 mb-1 small" th:each="component : ${module.componentResponses}" th:text="${component.name}"  th:if="${!#strings.isEmpty(component.name)}">
-                    <span th:if="${not #object.isEmpty(component)}">,</span>
-                </div>
+                <span class="text-body-secondary">
+                    <div class="col-10 mb-1 small" th:each="component : ${module.componentResponses}" th:text="${component.name}"  th:if="${!#strings.isEmpty(component.name)}">
+                   <span th:if="${not #object.isEmpty(component)}">,</span>
+                  </div>
+                </span>
+<!--                                <span class="col-10 mb-1 small" th:text="${module.description}">Some placeholder content in a paragraph below the heading and date.</span>-->
+
             </li>
 
         </div>

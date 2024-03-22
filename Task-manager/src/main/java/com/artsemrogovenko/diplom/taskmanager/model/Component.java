@@ -1,11 +1,13 @@
 package com.artsemrogovenko.diplom.taskmanager.model;
 
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentData;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -15,6 +17,7 @@ public class Component implements ComponentData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //
+    @JsonIgnore
     @ManyToMany //один компонент может относится ко многим модулям
     private Set<Module> modules = new HashSet<>();
     @Column(columnDefinition = "VARCHAR(100)")
@@ -46,5 +49,18 @@ public class Component implements ComponentData {
                 ", unit='" + unit + '\'' +
                 ", description='" + description + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Component component = (Component) o;
+        return Objects.equals(getFactoryNumber(), component.getFactoryNumber()) && Objects.equals(getModel(), component.getModel()) && Objects.equals(getName(), component.getName()) && Objects.equals(getQuantity(), component.getQuantity()) && Objects.equals(getUnit(), component.getUnit()) && Objects.equals(getDescription(), component.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFactoryNumber(), getModel(), getName(), getQuantity(), getUnit(), getDescription());
     }
 }

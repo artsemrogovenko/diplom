@@ -341,7 +341,7 @@
                         <h4 class="my-0 fw-normal" th:text="${element.getName()}">noname</h4>
                     </div>
 <!--                    <form th:action="@{/deleteModule/{id}(id=${element.getId()})}" method="post">-->
-                    <form action="#">
+                    <form th:action="@{/deleteModule/{id}(id=${element.id})}" method="post">
                         <div class="card-body">
                             <h3 class="card-title pricing-card-title">
                                 <span th:text="${element.getComponentResponses().size()}"></span>

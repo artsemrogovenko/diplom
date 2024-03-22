@@ -9,10 +9,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -53,7 +50,6 @@ public class Module {
     private List<Task> tasks = new ArrayList<>();
 
 
-
     public Module(Long id) {
         this.id = id;
     }
@@ -76,5 +72,18 @@ public class Module {
                 ", circutFile='" + circutFile + '\'' +
                 ", components=" + components +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Module module = (Module) o;
+        return Objects.equals(getFactoryNumber(), module.getFactoryNumber()) && Objects.equals(getModel(), module.getModel()) && Objects.equals(getName(), module.getName()) && Objects.equals(getQuantity(), module.getQuantity()) && Objects.equals(getUnit(), module.getUnit()) && Objects.equals(getDescription(), module.getDescription()) && Objects.equals(getCircutFile(), module.getCircutFile()) && Objects.equals(getComponents(), module.getComponents());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFactoryNumber(), getModel(), getName(), getQuantity(), getUnit(), getDescription(), getCircutFile(), getComponents());
     }
 }

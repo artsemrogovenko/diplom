@@ -27,7 +27,7 @@ public class ModuleRequest implements ModuleData {
 //            new ComponentRequest("a", "b", "c", 5, "d", "e"));
 
     //один модуль может содержать несколько компонентов
-    private MyCollection componentRequests;
+    private MyCollection componentRequests=new MyCollection();
     private String circuitVersion;  // схема сборки
 
     public void addComponent(ComponentRequest c) {

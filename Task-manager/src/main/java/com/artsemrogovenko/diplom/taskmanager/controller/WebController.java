@@ -77,9 +77,10 @@ public class WebController {
         } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException ex) {
             specification_StatusCode = "503 SERVICE_UNAVAILABLE";
         }
-        model.addAttribute("specificationservice", specification_StatusCode);
-        model.addAttribute("specifications", modules);
         templates = templateService.getAllTemplates();
+        model.addAttribute("specificationservice", specification_StatusCode);
+         specification_StatusCode=null;
+        model.addAttribute("specifications", modules);
         model.addAttribute("message", responseCode);
         model.addAttribute("errorInfo", responseMessage);
         responseCode=null;

@@ -32,6 +32,7 @@ import java.util.NoSuchElementException;
 @Service
 @AllArgsConstructor
 public class TaskService {
+    private final ProductService productService;
     /**
      * Объект репозитория.
      */
@@ -60,7 +61,7 @@ public class TaskService {
      * @throws ResourceNotFoundException исключение при отсутствии задачи.
      */
     @TrackUserAction
-    public Task getTaskById(Long id) throws NoSuchElementException{
+    public Task getTaskById(Long id) throws NoSuchElementException {
         return taskRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("задача " + id + " не найдена!"));
 //        return taskRepository.findById(id).get();
@@ -78,9 +79,10 @@ public class TaskService {
 //    public ResponseEntity<String> reservedTask(Long taskId, String userId) throws ExcessAmountException,ResourceNotFoundException {
     public ResponseEntity<String> reservedTask(Long taskId, String userId) throws FeignException.InternalServerError {
         Task work = new Task();
-        try{
-            work=  getTaskById(taskId);
-        }catch (NoSuchElementException ex){
+        try {
+            work = getTaskById(taskId);
+            System.out.println(work);
+        } catch (NoSuchElementException ex) {
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.isReserved()) {
@@ -111,7 +113,11 @@ public class TaskService {
 
         } catch (FeignException.FeignClientException ex) {
             if (ex.getMessage().contains("[418] during [POST]")) {
-                rollbackReservedTask(taskId, userId);
+//                rollbackReservedTask(taskId, userId);
+                work.setReserved(false);
+                work.setOwner("kanban"); // сделать владельцем общее хранилище
+                work.setStatus(Task.Status.TO_DO);
+                taskRepository.save(work);
                 return new ResponseEntity<>("Недостаточно материалов для выполнения", HttpStatus.NOT_FOUND);
 
             }
@@ -130,8 +136,12 @@ public class TaskService {
                 accountApi.assignTask(forUser, userId);
 
             } catch (FeignException.FeignClientException ex) {
-                rollbackReservedTask(taskId, userId);//отмена резерва задачи
-               storageApi.saveComponents(calculatedComponents);
+//                rollbackReservedTask(taskId, userId);//отмена резерва задачи
+                work.setReserved(false);
+                work.setOwner("kanban"); // сделать владельцем общее хранилище
+                work.setStatus(Task.Status.TO_DO);
+                taskRepository.save(work);
+                storageApi.saveComponents(calculatedComponents);
                 return new ResponseEntity<>(ex.contentUTF8(), HttpStatus.NOT_FOUND);
 //                MyRequest.rollbackComponents(calculatedComponents); // возвращаю компоненты на склад
             }
@@ -155,9 +165,10 @@ public class TaskService {
     @Transactional
     public ResponseEntity<String> rollbackReservedTask(Long taskId, String ownerId) {
         Task work = new Task();
-        try{
-            work=  getTaskById(taskId);
-        }catch (NoSuchElementException ex){
+        try {
+            work = getTaskById(taskId);
+            System.out.println(work);
+        } catch (NoSuchElementException ex) {
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.getOwner().equals(ownerId)) {
@@ -174,9 +185,9 @@ public class TaskService {
     @Transactional
     public ResponseEntity<String> completedTask(Long taskId, String ownerId) {
         Task work = new Task();
-        try{
-            work=  getTaskById(taskId);
-        }catch (NoSuchElementException ex){
+        try {
+            work = getTaskById(taskId);
+        } catch (NoSuchElementException ex) {
             return new ResponseEntity<>("Нет такой задачи", HttpStatus.NOT_FOUND);
         }
         if (work.getOwner().equals(ownerId)) {
@@ -184,12 +195,12 @@ public class TaskService {
 //            System.out.println(work);
             taskRepository.save(work);
             System.out.println("Блок complete применился");
+            productService.changeProductStatus(work.getContractNumber());
             return new ResponseEntity<>("Поздравляю", HttpStatus.OK);
         }
         System.out.println("Блок complete не применился");
         return new ResponseEntity<>("Такой задачи нет, или вы не владелец", HttpStatus.BAD_REQUEST);
     }
-
 
 
 }

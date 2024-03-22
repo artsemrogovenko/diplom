@@ -147,20 +147,19 @@ public class ComponentService {
 
         for (ComponentRequest request : requests) {
 
-            int requiredQuantity = request.getQuantity();
 
             List<Component> list = new ArrayList<>();
+            int requiredQuantity = request.getQuantity();
+
             try {
-
-
-                if (request.getUnit().toLowerCase().equals("м")) {
-                    request.setQuantity(request.getQuantity() * 1000);
-                    request.setUnit("мм");
-                }
-                if (request.getUnit().toLowerCase().equals("км")) {
-                    request.setQuantity(request.getQuantity() * 1000000);
-                    request.setUnit("мм");
-                }
+            if (request.getUnit().toLowerCase().equals("м")) {
+                requiredQuantity=(request.getQuantity() * 1000);
+                request.setUnit("мм");
+            }
+            if (request.getUnit().toLowerCase().equals("км")) {
+                requiredQuantity=(request.getQuantity() * 1000000);
+                request.setUnit("мм");
+            }
                 //  Пробую получить свойство boolean. Если нет такого элемента в базе данных, перейду к списку закупок
                 if (request.getRefill() == null) {
                     try {
@@ -178,7 +177,7 @@ public class ComponentService {
                         .factoryNumber(request.getFactoryNumber())
                         .model(request.getModel())
                         .name(request.getName())
-                        .quantity(requiredQuantity * -1)
+                        .quantity(requiredQuantity * (-1))
                         .unit(request.getUnit())
                         .description(request.getDescription())
                         .refill(true).build(); // это список для закупок, поэтому лучше объединить повторы
@@ -277,7 +276,7 @@ public class ComponentService {
 
         Component exiting = null;
         try {
-            exiting = componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+            exiting = componentRepository.findFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description);
         } catch (NoSuchElementException ex) {
         }
         return exiting;

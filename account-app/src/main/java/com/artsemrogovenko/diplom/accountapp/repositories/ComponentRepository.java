@@ -15,5 +15,5 @@ public interface ComponentRepository extends JpaRepository<Component, Long> {
 
   List<Component> findAllByModulesId(Long moduleId);
 
-  Optional<Component>  findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(String factoryNumber, String model, String name, String unit, String description);
+  Component  findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescription(String factoryNumber, String model, String name, Integer quantity, String unit, String description);
 }

@@ -1,10 +1,12 @@
 package com.artsemrogovenko.diplom.specification.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -15,6 +17,7 @@ public class Component {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @JsonIgnore
     @ManyToMany //один компонент может относится ко многим модулям
     private Set<Module> modules = new HashSet<>();
     @Column(columnDefinition = "VARCHAR(100)")
@@ -33,4 +36,5 @@ public class Component {
     public boolean fieldsIsNull() {
         return id==null && factoryNumber == null && model == null && name==null&&quantity==null && unit==null && description==null;
     }
+
 }

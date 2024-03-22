@@ -57,6 +57,8 @@ public class ModuleService {
         Module module = ModuleMapper.mapToModule(moduleRequest);
 
         if (notExist(module)) {
+
+
             if (module.getComponents() != null && !module.getComponents().isEmpty()) {
 
                 List<Component> componentList = componentService.saveAll(module.getComponents());
@@ -111,11 +113,12 @@ public class ModuleService {
         String factoryNumber = module.getFactoryNumber() == "" ? null : module.getFactoryNumber();
         String model = module.getModel() == "" ? null : module.getModel();
         String name = module.getName();
+        Integer quantity = module.getQuantity();
         String unit = module.getUnit();
         String description = module.getDescription() == "" ? null : module.getDescription();
         String circutFile = module.getCircutFile() == "" ? null : module.getCircutFile();
 
-        Optional<Module> find = moduleRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, unit, description, circutFile);
+        Optional<Module> find = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name,quantity, unit, description, circutFile);
 
         if (find.isPresent()) {
             module = find.get();

@@ -42,16 +42,23 @@ public class ComponentService {
     public List<Component> saveAll(Set<Component> components) {
         List<Component> resultList = new ArrayList<>();
         if (components != null && !components.isEmpty()) {
-//            List<Component> nonDuplicates = components.stream()
-//                    .filter(component -> !component.fieldsIsNull())
+            List<Component> nonDuplicates = components.stream()
+                    .filter(component -> !component.fieldsIsNull()).toList();
 //                    .filter(component -> notExist(component)).toList();
 
             for (Component component : components) {
-                if (notExist(component)) {
-                    resultList.add(componentRepository.save(component));
+                Component dist = findDistinct(component);
+                if (dist != null) {
+                    resultList.add(dist);
                 } else {
-                    resultList.add(findDistinct(component));
+                    resultList.add(componentRepository.save(component));
                 }
+
+//                if (notExist(component)) {
+//                    resultList.add(componentRepository.save(component));
+//                } else {
+//                    resultList.add(findDistinct(component));
+//                }
             }
             // Сохранить все отфильтрованные компоненты
 //            return componentRepository.saveAll(nonDuplicates);
@@ -63,8 +70,10 @@ public class ComponentService {
 
         try {
             Component existingComponent = findDistinct(component);
-            if (existingComponent.getQuantity() == component.getQuantity()) {
-                return false;
+            if (existingComponent != null) {
+                if (existingComponent.getQuantity() == component.getQuantity()) {
+                    return false;
+                }
             }
         } catch (NoSuchElementException e) {
 //            System.out.println("no element");
@@ -73,17 +82,18 @@ public class ComponentService {
         return false;
     }
 
-    private  Component findDistinct(Component component) throws NoSuchElementException{
+    private Component findDistinct(Component component) throws NoSuchElementException {
         String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
         String model = component.getModel() == "" ? null : component.getModel();
         String name = component.getName();
+        Integer quantity = component.getQuantity();
         String unit = component.getUnit();
         String description = component.getDescription() == "" ? null : component.getDescription();
 
-        return componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+        return componentRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescription(factoryNumber, model, name, quantity, unit, description);
     }
 
-    public List<Component> findByModule(Long moduleid){
+    public List<Component> findByModule(Long moduleid) {
         return componentRepository.findAllByModulesId(moduleid);
     }
 }

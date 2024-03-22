@@ -16,7 +16,7 @@ public class Template implements TemplateData {
     private Long id;
     private String name;   //имя
     private String description; // описание
-    @ManyToMany //один компонент может относится ко многим модулям
+    @ManyToMany //один компонент может относиться ко многим модулям
     private List<Module> modules = new ArrayList<>();
     public void addModule(Module module) {
         modules.add(module);

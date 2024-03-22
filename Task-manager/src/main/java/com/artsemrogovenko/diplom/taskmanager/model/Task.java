@@ -40,6 +40,8 @@ public class Task implements TemplateData {
     void onCreate() {
         if (this.status == null) {
             this.status = status.TO_DO;
+        }
+        if (this.owner == null) {
             this.owner = "kanban";
         }
     }

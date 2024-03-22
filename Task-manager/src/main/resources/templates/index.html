@@ -18,31 +18,37 @@
 </head>
 <body>
 
-<div>
-    <table class="rotate-table">
-        <tr>
-            <th>Номер договора</th>
-            <th>Размещение станции</th>
-            <th>Грузоподъесность</th>
-            <th>Цвет шкафа</th>
-            <th>Остановки</th>
-            <th>Статус изготовления</th>
-            <!-- Добавьте другие заголовки, если необходимо -->
-        </tr>
-        <tr th:if="${products.empty}">
-            <td colspan="2"> No Job Available </td>
-        </tr>
-        <tr th:each="product : ${products}">
-            <td><span th:text="${product.getContractNumber()}"> номер </span></td>
-            <td><span th:text="${product.getType()}"> тип </span></td>
-            <td><span th:text="${product.getLoad()}"> грузоподъемность </span></td>
-            <td><span th:text="${product.getColor()}"> цвет шкафа </span></td>
-            <td><span th:text="${product.getFloors()}"> оставновок </span></td>
-            <td> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></td>
-        </tr>
-    </table>
-</div>
 
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/">Страничка добавления задач</a>
+    <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Sign Out"/>
+    </form>
+</nav>
+
+<div class="border-bottom" >
+    <div class="table">
+        <div  class="product-fields">
+            <div class="field">Номер договора</div>
+            <div class="field">Размещение станции</div>
+            <div class="field">Грузоподъесность</div>
+            <div class="field">Цвет шкафа</div>
+            <div class="field">Остановки</div>
+            <div class="field">Статус изготовления</div>
+        </div>
+        <div class="products-list">
+            <div class="product-item" th:each="product : ${products}">
+                <div class="product-field"><span th:text="${product.getContractNumber()}"> номер </span></div>
+                <div class="product-field"><span th:text="${product.getType()}"> тип </span></div>
+                <div class="product-field"><span th:text="${product.getLoad()}"> грузоподъемность </span></div>
+                <div class="product-field"><span th:text="${product.getColor()}"> цвет шкафа </span></div>
+                <div class="product-field"><span th:text="${product.getFloors()}"> оставновок </span></div>
+                <div class="product-field"> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></div>
+            </div>
+        </div><!-- product--list -->
+    </div>
+</div>
 
 
 <div class="container py-3">

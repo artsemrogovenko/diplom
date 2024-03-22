@@ -2,6 +2,7 @@ package com.artsemrogovenko.diplom.accountapp.controllers;
 
 import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import feign.FeignException;
+import feign.RetryableException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -60,5 +61,16 @@ public class GlobalExceptionHandler {
         modelAndView.addObject("errorInfo", ex.getMessage()+ ex.contentUTF8());
         return modelAndView;
     }
+
+
+    @LogMethod
+    @ExceptionHandler(value = feign.RetryableException.class)
+    public ModelAndView notsupported(RetryableException ex) {
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
+        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.contentUTF8());
+        return modelAndView;
+    }
+
+
 
 }

@@ -100,7 +100,7 @@ public class ModuleService {
         String unit = module.getUnit();
         String description = module.getDescription() == "" ? null : module.getDescription();
         try {
-            Module existingModule = moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
+            Module existingModule = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
         } catch (NoSuchElementException e) {
             return true;
         }

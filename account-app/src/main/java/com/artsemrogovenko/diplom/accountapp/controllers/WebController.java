@@ -7,6 +7,7 @@ import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.services.AccountService;
 import com.artsemrogovenko.diplom.accountapp.services.TaskService;
 import feign.FeignException;
+import feign.RetryableException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -60,26 +61,39 @@ public class WebController {
     public String doneTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
         try {
             confirm = taskService.completeTask(userid, taskId);
-        } catch (FeignException.NotFound e) {
+            Task deleting = taskService.findTaskById(taskId, userid);
+            if (deleting != null) {
+                taskService.deleteTask(taskId);
+            }
+        } catch (FeignException.NotFound | FeignException.BadRequest | RetryableException e) {
             responseMessage = e.getMessage();
         }
         return "redirect:/myTasks?userid=" + userid;
     }
 
     @PostMapping("/rollback/{id}")
-    public String cancelTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid)  {
+    public String cancelTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
         try {
             confirm = taskService.rollbackTask(userid, taskId).getBody();
-        } catch (FeignException.NotFound e) {
+            Task deleting = taskService.findTaskById(taskId, userid);
+            if (deleting != null) {
+                taskService.deleteTask(taskId);
+            }
+        } catch (FeignException.NotFound | FeignException.BadRequest |  RetryableException e) {
             responseMessage = e.getMessage();
         }
-        return "redirect:/myTasks?userid=" + userid;
+
+        return "redirect:/myTasks?userid="+ userid;
     }
 
 
     @PostMapping("/take/{id}")
     public String takeMeTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body(null);
+        if(accountService.findUserById(userid)==null){
+            responseMessage="вы должны зарегистрироваться";
+            return "redirect:/";
+        }
         try {
             responseEntity = taskService.takeTask(taskId, userid);
             confirm = responseEntity.getBody();
@@ -116,7 +130,9 @@ public class WebController {
         // Получаем имя пользователя из объекта аутентификации
         String username = authentication.getName();
         // Добавляем имя пользователя в модель для передачи его в представление
+        model.addAttribute("confirm", confirm);
         model.addAttribute("errorInfo", responseMessage);
+        confirm = null;
         responseMessage = null;
         model.addAttribute("username", username);
         model.addAttribute("tasks", my);

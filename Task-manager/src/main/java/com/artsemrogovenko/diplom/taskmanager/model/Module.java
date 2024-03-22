@@ -1,19 +1,18 @@
 package com.artsemrogovenko.diplom.taskmanager.model;
 
+import com.artsemrogovenko.diplom.taskmanager.dto.ModuleData;
 import com.artsemrogovenko.diplom.taskmanager.dto.SavedModule;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
 @NoArgsConstructor
-public class Module implements SavedModule {
+public class Module implements SavedModule, ModuleData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //
@@ -40,15 +39,16 @@ public class Module implements SavedModule {
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();   // список компонентов
     private String circutFile;  // схема сборки
-
+    @JsonIgnore
     @ManyToMany
     private List<Template> templates = new ArrayList<>();
+    @JsonIgnore
     @ManyToMany
-    private List<Task> tasks= new ArrayList<>();
+    private List<Task> tasks = new ArrayList<>();
 
-    public Module(Long id) {
-        this.id = id;
-    }
+//    public Module(Long id) {
+//        this.id = id;
+//    }
 
     @PrePersist
     void onCreate() {
@@ -82,4 +82,17 @@ public class Module implements SavedModule {
                 ", circutFile='" + circutFile + '\'' +
                 '}';
     }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Module module = (Module) o;
+//        return Objects.equals(getFactoryNumber(), module.getFactoryNumber()) && Objects.equals(getModel(), module.getModel()) && Objects.equals(getName(), module.getName()) && Objects.equals(getQuantity(), module.getQuantity()) && Objects.equals(getUnit(), module.getUnit()) && Objects.equals(getDescription(), module.getDescription()) && Objects.equals(getComponents(), module.getComponents()) && Objects.equals(getCircutFile(), module.getCircutFile());
+//    }
+
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(getFactoryNumber(), getModel(), getName(), getQuantity(), getUnit(), getDescription(), getComponents(), getCircutFile());
+//    }
 }

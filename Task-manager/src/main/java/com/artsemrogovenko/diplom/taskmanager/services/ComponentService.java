@@ -23,6 +23,8 @@ public class ComponentService {
         return componentRepository.findAll().stream().map(ComponentMapper::mapToComponentResponse).toList();
     }
 
+
+
     public ComponentResponse getComponentById(Long id) {
         return ComponentMapper.mapToComponentResponse(componentRepository.findById(id).get());
     }
@@ -61,10 +63,11 @@ public class ComponentService {
 
     public List<Component> saveAll(Set<Component> components) {
         List<Component> resultList = new ArrayList<>();
+
         if (components != null && !components.isEmpty()) {
             List<Component> nonDuplicates = components.stream()
-                    .filter(component -> !component.fieldsIsNull())
-                    .filter(component -> notExist(component)).toList();
+                    .filter(component -> !component.fieldsIsNull()).toList();
+//                    .filter(component -> notExist(component)).toList();
 
             for (Component nonDuplicate : nonDuplicates) {
                 if (notExist(nonDuplicate)) {
@@ -82,24 +85,28 @@ public class ComponentService {
     public boolean notExist(Component component) {
         try {
             Component existingComponent = search(component);
-            if (existingComponent.getQuantity() == component.getQuantity()) {
-                return false;
+            if (existingComponent != null) {
+                if (existingComponent.getQuantity() == component.getQuantity()) {
+                    return false;
+                }
             }
         } catch (NoSuchElementException e) {
 //            System.out.println("no element");
             return true;
         }
-        return false;
+        return true;
     }
 
-    private Component search(Component component) throws NoSuchElementException {
+    public Component search(Component component) throws NoSuchElementException {
         String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
         String model = component.getModel() == "" ? null : component.getModel();
         String name = component.getName();
         String unit = component.getUnit();
         String description = component.getDescription() == "" ? null : component.getDescription();
-        return componentRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescription(
-                factoryNumber, model, name, unit, description).get();
+
+        Component find = componentRepository.findFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(
+                factoryNumber, model, name, unit, description);
+        return find;
     }
 
 }
