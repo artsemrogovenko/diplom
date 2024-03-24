@@ -25,7 +25,7 @@ public class Account {
     private String password;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account",  cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<Task> tasks = new LinkedList<>();   // список задач
 
     public Account(String username, String password, Collection<? extends GrantedAuthority> authorities) {

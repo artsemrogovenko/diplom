@@ -7,7 +7,7 @@ spring:
       client:
         config:
           task-server:
-            url: http://localhost:8080/
+            url: http://localhost:8085/
 
   #  jpa:
   #    generate-ddl: true
@@ -15,11 +15,12 @@ spring:
   #      ddl-auto: update
 
 
+
   datasource:
-    url: jdbc:postgresql://192.168.100.130:32769/sa
+#    url: jdbc:postgresql://192.168.100.130:32769/sa
     username: sa
     password: sa
-    driver-class-name: org.postgresql.Driver
+#    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update # или update, если вы хотите, чтобы JPA обновил существующую схему
@@ -31,8 +32,8 @@ spring:
     show-sql: on
 
 #  datasource:
-#    url: jdbc:h2:mem:accounts;DB_CLOSE_ON_EXIT=FALSE
-#    driverClassName: org.h2.Driver
+    url: jdbc:h2:file:./databases/accounts;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
 #
 #    username: sa
 #    password: sa
@@ -52,3 +53,4 @@ logging:
 
       springframework:
         security: DEBUG
+

@@ -9,13 +9,14 @@ import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.TaskForUser;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TaskMapper;
-import com.artsemrogovenko.diplom.taskmanager.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.taskmanager.model.Component;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
-import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ExcessAmountException;
 import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ResourceNotFoundException;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
 import feign.FeignException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Metrics;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 public class TaskService {
     private final ProductService productService;
+
     /**
      * Объект репозитория.
      */
@@ -89,6 +91,7 @@ public class TaskService {
 //            throw new ExcessAmountException("задача уже выполняется");
             return new ResponseEntity<>("Задача уже выполняется", HttpStatus.NOT_FOUND);
         }
+
         work.setReserved(true);
         work.setOwner(userId);
         work.setStatus(Task.Status.IN_PROGRESS);
@@ -114,6 +117,7 @@ public class TaskService {
         } catch (FeignException.FeignClientException ex) {
             if (ex.getMessage().contains("[418] during [POST]")) {
 //                rollbackReservedTask(taskId, userId);
+
                 work.setReserved(false);
                 work.setOwner("kanban"); // сделать владельцем общее хранилище
                 work.setStatus(Task.Status.TO_DO);

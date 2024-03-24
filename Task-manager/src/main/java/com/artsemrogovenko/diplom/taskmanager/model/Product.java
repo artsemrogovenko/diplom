@@ -22,7 +22,7 @@ public class Product {
     private String color; // цвет
     private Integer floors;  // остановок
     private Boolean done; // готовность
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "product_task", // Имя таблицы для связи между Product и Template
             joinColumns = @JoinColumn(name = "product_contractNumber"), // Столбец для связи с Product

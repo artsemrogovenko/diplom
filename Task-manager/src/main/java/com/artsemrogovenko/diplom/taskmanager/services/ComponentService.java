@@ -24,7 +24,6 @@ public class ComponentService {
     }
 
 
-
     public ComponentResponse getComponentById(Long id) {
         return ComponentMapper.mapToComponentResponse(componentRepository.findById(id).get());
     }
@@ -78,6 +77,7 @@ public class ComponentService {
             }
             // Сохранить все отфильтрованные компоненты
 //            return componentRepository.saveAll(nonDuplicates);
+//            resultList=resultList.stream().map(ComponentMapper::mapToComponent).toList();
         }
         return resultList;
     }
@@ -86,7 +86,7 @@ public class ComponentService {
         try {
             Component existingComponent = search(component);
             if (existingComponent != null) {
-                if (existingComponent.getQuantity() == component.getQuantity()) {
+                if (existingComponent.getQuantity().equals(component.getQuantity())) {
                     return false;
                 }
             }

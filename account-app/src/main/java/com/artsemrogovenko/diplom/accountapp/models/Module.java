@@ -29,7 +29,6 @@ public class Module {
 
     @Column(columnDefinition = "INT", nullable = true)
     private Integer quantity;    // какое количество
-
     @Column(columnDefinition = "VARCHAR(20)")
     private String unit;     // единица измерения
 

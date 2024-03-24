@@ -8,9 +8,11 @@ import com.artsemrogovenko.diplom.accountapp.services.AccountService;
 import com.artsemrogovenko.diplom.accountapp.services.TaskService;
 import feign.FeignException;
 import feign.RetryableException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Metrics;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -35,6 +37,16 @@ public class WebController {
     private static String responseMessage;
     private static boolean startView = true;
     private static String confirm;
+    private final Counter assignTaskCounter = Metrics.counter("Получить задачу");
+
+    private final Counter rollback = Metrics.counter("Отказ от задачи");
+
+
+    private final Gauge percentGauge = Gauge.builder("рейтинг", () -> {
+        double assignTaskCount =  assignTaskCounter.count();
+        double rollbackCount =  rollback.count();
+        return rollbackCount != 0 ? (double) assignTaskCount / rollbackCount : 0;
+    }).register(Metrics.globalRegistry);
 
     @PostMapping("/")
     public String login() {
@@ -79,6 +91,7 @@ public class WebController {
             if (deleting != null) {
                 taskService.deleteTask(taskId);
             }
+            rollback.increment();
         } catch (FeignException.NotFound | FeignException.BadRequest |  RetryableException e) {
             responseMessage = e.getMessage();
         }
@@ -97,6 +110,7 @@ public class WebController {
         try {
             responseEntity = taskService.takeTask(taskId, userid);
             confirm = responseEntity.getBody();
+            assignTaskCounter.increment();
         } catch (FeignException.InternalServerError ex) {
             responseMessage = responseEntity.getBody();
         } catch (FeignException.NotFound ex) {

@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.controllers;
 
+import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
 import com.artsemrogovenko.diplom.accountapp.models.Account;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
@@ -25,13 +26,13 @@ public class TaskController {
         return ResponseEntity.ok().body(accountService.getAllTasks());
     }
 
-
+    @LogMethod
     @PostMapping("/rollback/{id}")
     public ResponseEntity<String> rollbackTransaction(@RequestBody String user, @PathVariable Long taskid) {
         return taskService.rollbackTask(user, taskid);
     }
 
-
+    @LogMethod
     @PostMapping("/assignTask")
     public ResponseEntity<String> assignTask(@RequestBody TaskForUser task, @RequestParam String userId) {
         System.out.println(task);

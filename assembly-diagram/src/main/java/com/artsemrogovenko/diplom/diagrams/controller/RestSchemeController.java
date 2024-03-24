@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.diagrams.controller;
 
+import com.artsemrogovenko.diplom.diagrams.aspect.LogMethod;
 import com.artsemrogovenko.diplom.diagrams.dto.DiagramDto;
 import com.artsemrogovenko.diplom.diagrams.model.DiagramDescription;
 import com.artsemrogovenko.diplom.diagrams.service.DiagramService;
@@ -16,7 +17,7 @@ import java.nio.file.Path;
 @RequestMapping("/rest")
 @RequiredArgsConstructor
 public class RestSchemeController {
-private final DiagramService diagramService;
+    private final DiagramService diagramService;
 //    @PostMapping
 //    public void requestFile(DiagramDescription description, String contractNumber) {
 //        String fileHash = FileHashCalculator.calculateHash( file);
@@ -31,9 +32,10 @@ private final DiagramService diagramService;
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Path> requestFile(@RequestBody DiagramDto diagramDto) {
         log.info("Received  request for scheme: {}", diagramDto.toString());
-        return diagramService.getScheme(diagramDto.getModuleName(),diagramDto.getModification(),diagramDto.getVersionAssembly(), diagramDto.getContractNumber());
+        return diagramService.getScheme(diagramDto.getModuleName(), diagramDto.getModification(), diagramDto.getVersionAssembly(), diagramDto.getContractNumber());
     }
 
+    @LogMethod
     @PostMapping("/getUrlsheme")
     public ResponseEntity<String> requestSheme(@RequestBody DiagramDescription diagramDescription) {
         return diagramService.getUrlsheme(diagramDescription);

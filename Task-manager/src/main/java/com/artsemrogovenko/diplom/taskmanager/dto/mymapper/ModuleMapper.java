@@ -27,7 +27,7 @@ public class ModuleMapper {
         if (data.getQuantity() != null) {
             module.setQuantity(data.getQuantity());
         }
-        if (module.getUnit() != null) {
+        if (data.getUnit() != null) {
             module.setUnit(data.getUnit().trim());
         }
         if (data.getDescription() != null) {

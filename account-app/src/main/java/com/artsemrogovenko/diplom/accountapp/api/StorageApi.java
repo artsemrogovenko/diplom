@@ -1,6 +1,8 @@
 package com.artsemrogovenko.diplom.accountapp.api;
 
 import com.artsemrogovenko.diplom.accountapp.models.ComponentRequest ;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

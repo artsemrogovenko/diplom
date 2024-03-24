@@ -21,21 +21,4 @@ public class WebClientConfig {
         return WebClient.builder();
     }
 
-
-    @Bean
-    public Request.Options options() {
-        return new Request.Options(50000, 50000); // Установите таймауты в миллисекундах
-    }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate(clientHttpRequestFactory());
-    }
-
-    private ClientHttpRequestFactory clientHttpRequestFactory() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(50000);
-        factory.setReadTimeout(50000);
-        return factory;
-    }
 }

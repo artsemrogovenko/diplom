@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "storage-server",configuration = WebClientConfig.class)
+@FeignClient(name = "storage-server")
 public interface StorageApi {
     @TrackUserAction
     @PostMapping("/component/megaImport")

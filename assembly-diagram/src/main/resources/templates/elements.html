@@ -60,11 +60,11 @@
         <div class="character-card">
 
             <h3 th:text="${sheme_for_module.getModuleName()}"></h3>
-            <ul>
-                <li th:text="'Исполнение' + ${sheme_for_module.getModification()}"></li>
-                <li th:text="'Версия' + ${sheme_for_module.getVersionAssembly()}"></li>
+            <div>
+                <span th:text="${sheme_for_module.getModification()}"></span>
+                <span th:text="'Версия: ' + ${sheme_for_module.getVersionAssembly()}"></span>
                 <a th:href="${sheme_for_module.getFilePath()}">схема</a>
-            </ul>
+            </div>
 
         </div>
     </div>

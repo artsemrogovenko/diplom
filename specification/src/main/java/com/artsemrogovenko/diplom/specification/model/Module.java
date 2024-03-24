@@ -34,7 +34,7 @@ public class Module implements ModuleData {
     private String description;  // тут можно указать например цвет
 
     //один модуль может содержать несколько компонентов
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();   // список компонентов
     private String circuitFile;  // схема сборки

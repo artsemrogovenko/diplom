@@ -8,6 +8,7 @@ import com.artsemrogovenko.diplom.specification.repositories.ComponentRepository
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -58,30 +59,53 @@ public class ComponentService {
         componentRepository.deleteById(id);
     }
 
+
     public List<Component> saveAll(Set<Component> components) {
+        List<Component> resultList = new ArrayList<>();
+
         if (components != null && !components.isEmpty()) {
             List<Component> nonDuplicates = components.stream()
-                    .filter(component -> !component.fieldsIsNull())
-                    .filter(component -> notExist(component)).toList();
+                    .filter(component -> !component.fieldsIsNull()).toList();
+//                    .filter(component -> notExist(component)).toList();
+
+            for (Component nonDuplicate : nonDuplicates) {
+                if (notExist(nonDuplicate)) {
+                    resultList.add(componentRepository.save(nonDuplicate));
+                } else {
+                    resultList.add(search(nonDuplicate));
+                }
+            }
             // Сохранить все отфильтрованные компоненты
-            return componentRepository.saveAll(nonDuplicates);
+//            return componentRepository.saveAll(nonDuplicates);
+//            resultList=resultList.stream().map(ComponentMapper::mapToComponent).toList();
         }
-        return null;
+        return resultList;
     }
 
     public boolean notExist(Component component) {
+        try {
+            Component existingComponent = search(component);
+            if (existingComponent != null) {
+                if (existingComponent.getQuantity().equals(component.getQuantity())) {
+                    return false;
+                }
+            }
+        } catch (NoSuchElementException e) {
+//            System.out.println("no element");
+            return true;
+        }
+        return true;
+    }
+
+    public Component search(Component component) throws NoSuchElementException {
         String factoryNumber = component.getFactoryNumber() == "" ? null : component.getFactoryNumber();
         String model = component.getModel() == "" ? null : component.getModel();
         String name = component.getName();
         String unit = component.getUnit();
         String description = component.getDescription() == "" ? null : component.getDescription();
 
-        try {
-            Component existingComponent = componentRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(factoryNumber, model, name, unit, description).get();
-        } catch (NoSuchElementException e) {
-            System.out.println("no element");
-            return true;
-        }
-        return false;
+        Component find = componentRepository.findFirstByFactoryNumberAndModelAndNameAndUnitAndDescription(
+                factoryNumber, model, name, unit, description);
+        return find;
     }
 }

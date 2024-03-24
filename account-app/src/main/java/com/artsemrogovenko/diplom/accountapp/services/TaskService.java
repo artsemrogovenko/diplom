@@ -127,8 +127,8 @@ public class TaskService {
             }
             // проверка на дубликат такой задачи
             if (showMyTasks(userId).stream()
-                    .anyMatch(task -> task.getId().equals(assignTask.getId()) && task.getOwner().equals(userId)
-                            && task.getContractNumber().equals(assignTask.getContractNumber()))) {
+                    .anyMatch(task -> task.getId().equals(newTask.getId()) && task.getOwner().equals(userId)
+                            && task.getContractNumber().equals(newTask.getContractNumber()))) {
                 System.out.println("блок проверки");
                 throw new DuplicateExeption("такая задача в корзине есть");
             } else {

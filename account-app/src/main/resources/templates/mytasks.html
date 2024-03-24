@@ -55,11 +55,9 @@
     </tr>
     </thead>
     <tbody>
-    <!--        th:if="${task.reserved}"-->
     <tr th:each="task: ${tasks}">
 
-        <!--        <td class="table-light" th:text="${task.taskStatus == 'DONE' ? 'display: none;' : ''}"></td>-->
-        <td class="table-light" th:text="${task.status}"></td>
+        <td class="table-light" th:text="${task.status == 'DONE' ? 'display: none;' : ''}"></td>
         <td class="table-light" th:text="${task.id}"></td>
         <td class="table-light" th:text="${task.contractNumber}"></td>
         <td class="table-light" th:text="${task.name}"></td>

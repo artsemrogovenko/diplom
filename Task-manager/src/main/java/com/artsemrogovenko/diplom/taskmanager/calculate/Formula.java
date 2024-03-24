@@ -43,7 +43,7 @@ public class Formula {
 
 
         Module special = new Module();
-        special.setName("коробка для договора " + product.getContractNumber());
+        special.setName("комплектация");
         special.setQuantity(1);
 
         List<Component> additionalComponents =  additionalComponents(product);

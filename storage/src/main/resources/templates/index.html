@@ -85,7 +85,7 @@
                         <label for="comp_edit_description">Описание:</label>
                         <input type="text" id="comp_edit_description" className="form-control"
                                th:field="*{description}" ><br>
-                        <label for="comp_edit_refill">Объединяется?</label>
+                        <label for="comp_edit_refill">Штучное?</label>
                         <input type="checkbox" id="comp_edit_refill" className="form-control" th:field="*{refill}">
                         <br>
                         <button type="submit" class="btn btn-success float-right">Сохранить</button>
@@ -128,7 +128,7 @@
         <input type="text" id="description" th:field="*{description}" required=""/>
         <br/>
 
-        <label for="refill">Объединяется?</label>
+        <label for="refill">Штучное?</label>
         <input type="checkbox" id="refill" th:field="*{refill}"/>
         <br/>
 

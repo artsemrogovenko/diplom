@@ -10,12 +10,36 @@ public class ComponentMapper {
     public static <T extends ComponentData> Component mapToComponent(T componentData) {
         Component component = new Component();
 
-        component.setFactoryNumber(componentData.getFactoryNumber());
-        component.setModel(componentData.getModel());
-        component.setName(componentData.getName());
-        component.setQuantity(componentData.getQuantity());
-        component.setUnit(componentData.getUnit());
-        component.setDescription(componentData.getDescription());
+        if (componentData.getFactoryNumber() != null) {
+            if (componentData.getFactoryNumber().trim() == "") {
+                component.setFactoryNumber(null);
+            } else {
+                component.setFactoryNumber(componentData.getFactoryNumber().trim());
+            }
+        }
+        if (componentData.getModel() != null) {
+            if (componentData.getModel().trim() == "") {
+                component.setModel(null);
+            } else {
+                component.setModel(componentData.getModel().trim());
+            }
+        }
+        if (componentData.getName() != null) {
+            component.setName(componentData.getName().trim());
+        }
+        if (componentData.getQuantity() != null) {
+            component.setQuantity(componentData.getQuantity());
+        }
+        if (componentData.getUnit() != null) {
+            component.setUnit(componentData.getUnit().trim());
+        }
+        if (componentData.getDescription() != null) {
+            if (componentData.getDescription().trim() == "") {
+                component.setDescription(null);
+            } else {
+                component.setDescription(componentData.getDescription().trim());
+            }
+        }
 
         if (componentData instanceof ComponentResponse) {
             ComponentResponse moduleResponse = (ComponentResponse) componentData;

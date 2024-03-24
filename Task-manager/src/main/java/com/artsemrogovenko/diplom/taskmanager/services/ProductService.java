@@ -4,6 +4,7 @@ import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TemplateMapper;
+import com.artsemrogovenko.diplom.taskmanager.model.Module;
 import com.artsemrogovenko.diplom.taskmanager.model.Product;
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
@@ -13,6 +14,8 @@ import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +33,9 @@ public class ProductService {
     private final ModuleService moduleService;
     private final TaskRepository taskRepository;
     private final ModuleRepository moduleRepository;
-
     private final Formula formulaService;
 
+    private final Counter subtask = Metrics.counter("Подзадач создано");
 
     public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, String selectedModulesJson, List<Template> templateList, List<ModuleResponse> moduleResponseList) {
         // Преобразование JSON в список идентификаторов выбранных модулей
@@ -97,31 +100,31 @@ public class ProductService {
  * Добавлены модули из формы задачи
  */
             if (!selectedModules.isEmpty()) {
-                List<ModuleResponse> moduleList = new ArrayList<>();
+                List<Module> moduleList = new ArrayList<>();
                 for (ModuleResponse selectedModule : selectedModules) {
-                    ModuleResponse response = new ModuleResponse();
-                    response.setFactoryNumber(product.getContractNumber());
-                    response = moduleService.createModule(ModuleMapper.mapToModule(selectedModule)).getBody();
-                    moduleList.add(response);
+                    ModuleResponse response = moduleService.createModule(ModuleMapper.mapToModule(selectedModule)).getBody();
+                    Module module = ModuleMapper.mapToModule(response);
+                    module.setFactoryNumber(product.getContractNumber());
+
+                    moduleList.add(module);
                 }
                 moduleList.forEach(moduleResponse -> {
                     if (moduleResponse != null) {
                         Task newtask = new Task();
+                        newtask.setContractNumber(product.getContractNumber());
                         newtask.setName(moduleResponse.getName());
                         newtask.setDescription(moduleResponse.getDescription());
                         newtask.addModule(moduleRepository.findById(moduleResponse.getId()).get());
-                        newtask.setContractNumber(product.getContractNumber());
-                        newtask = taskRepository.save(newtask);
-                        newProduct.getTasks().add(newtask);
+                        newProduct.getTasks().add(taskRepository.save(newtask));
                     }
                 });
-
             }
 
 //            newProduct.setTasks();
 
 
             saveProduct(newProduct);
+
             System.out.println(productRepository.findById(newProduct.getContractNumber()));
 
             return new ResponseEntity<>("Продукт принят в производство", HttpStatus.CREATED);
@@ -137,6 +140,7 @@ public class ProductService {
 //            taskRepository.saveAll(product.getTasks());
 //        }
         productRepository.save(product);
+       product.getTasks().forEach(task ->  subtask.increment(task.getModules().size()));
     }
 
     private boolean isExist(Product product) {

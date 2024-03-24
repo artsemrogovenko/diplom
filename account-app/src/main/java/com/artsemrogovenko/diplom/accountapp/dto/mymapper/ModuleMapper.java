@@ -12,6 +12,7 @@ public class ModuleMapper {
 
     public static Module mapToModule(Module data) {
         Module module = new Module(data.getId());
+//        Module module = new Module();
 
         if (data.getFactoryNumber() != null) {
             module.setFactoryNumber(data.getFactoryNumber().trim());
@@ -25,7 +26,7 @@ public class ModuleMapper {
         if (data.getQuantity() != null) {
             module.setQuantity(data.getQuantity());
         }
-        if (module.getUnit() != null) {
+        if (data.getUnit() != null) {
             module.setUnit(data.getUnit().trim());
         }
         if (data.getDescription() != null) {

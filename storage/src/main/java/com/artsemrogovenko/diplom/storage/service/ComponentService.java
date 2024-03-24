@@ -8,6 +8,9 @@ import com.artsemrogovenko.diplom.storage.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.storage.model.Component;
 import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
 import com.artsemrogovenko.diplom.storage.repositories.AccountRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Metrics;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,15 @@ public class ComponentService {
     private final DeficitService deficitService;
     private final ComponentRepository componentRepository;
     private final AccountRepository accountRepository;
+
+    private final Counter subtask = Metrics.counter("Подзадач запрошено");
+    private final Counter noResource = Metrics.counter("Отказ и-за нехватки");
+
+    private final Gauge percentGauge = Gauge.builder("Процент успеха склада", () -> 1.0 / percent)
+            .register(Metrics.globalRegistry);
+
+
+    private static double percent = 1;
 
     public ComponentResponse createComponent(ComponentRequest newComponent) {
         Component dist = findDistinct(newComponent);
@@ -152,14 +164,14 @@ public class ComponentService {
             int requiredQuantity = request.getQuantity();
 
             try {
-            if (request.getUnit().toLowerCase().equals("м")) {
-                requiredQuantity=(request.getQuantity() * 1000);
-                request.setUnit("мм");
-            }
-            if (request.getUnit().toLowerCase().equals("км")) {
-                requiredQuantity=(request.getQuantity() * 1000000);
-                request.setUnit("мм");
-            }
+                if (request.getUnit().toLowerCase().equals("м")) {
+                    requiredQuantity = (request.getQuantity() * 1000);
+                    request.setUnit("мм");
+                }
+                if (request.getUnit().toLowerCase().equals("км")) {
+                    requiredQuantity = (request.getQuantity() * 1000000);
+                    request.setUnit("мм");
+                }
                 //  Пробую получить свойство boolean. Если нет такого элемента в базе данных, перейду к списку закупок
                 if (request.getRefill() == null) {
                     try {
@@ -257,8 +269,10 @@ public class ComponentService {
     @LogMethod
     public ResponseEntity<List<ComponentResponse>> reserveComponents(String contractNumber, Long taskId, String userId, List<ComponentRequest> requiredComponents) {
         ResponseEntity<List<ComponentResponse>> response = isInStock(requiredComponents);
+        subtask.increment();
         if (response.getStatusCode().isSameCodeAs(HttpStatus.I_AM_A_TEAPOT)) {
             System.out.println("вызван метод закупки");
+            noResource.increment();
             deficitService.addToCard(contractNumber, taskId, userId, response.getBody());
         }
         if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {

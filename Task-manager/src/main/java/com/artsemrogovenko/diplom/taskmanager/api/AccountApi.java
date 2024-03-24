@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "account-service",configuration = WebClientConfig.class)
+@FeignClient(name = "account-service")
 public interface AccountApi {
     @TrackUserAction
     @PostMapping("/task/assignTask")
