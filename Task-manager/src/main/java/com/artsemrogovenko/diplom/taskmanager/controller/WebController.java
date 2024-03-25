@@ -6,6 +6,7 @@ import com.artsemrogovenko.diplom.taskmanager.model.Template;
 import com.artsemrogovenko.diplom.taskmanager.model.TemplateRequest;
 import com.artsemrogovenko.diplom.taskmanager.services.ProductService;
 import com.artsemrogovenko.diplom.taskmanager.services.TemplateService;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +75,7 @@ public class WebController {
                 }
             }
 
-        } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException ex) {
+        } catch (FeignException.ServiceUnavailable| feign.RetryableException ex) {
             specification_StatusCode = "503 SERVICE_UNAVAILABLE";
         }
         templates = templateService.getAllTemplates();
@@ -103,7 +104,7 @@ public class WebController {
                 }
             }
 
-        } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException ex) {
+        } catch ( FeignException.ServiceUnavailable|feign.RetryableException ex) {
             specification_StatusCode = "503 SERVICE_UNAVAILABLE";
         }
         model.addAttribute("specificationservice", specification_StatusCode);

@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.specification.controller;
 
+import com.artsemrogovenko.diplom.specification.aspect.LogMethod;
 import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
 import com.artsemrogovenko.diplom.specification.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.specification.service.ModuleService;
@@ -18,6 +19,7 @@ public class ModuleController {
 
     private final ModuleService moduleService;
 
+    @LogMethod
     @GetMapping
     public ResponseEntity<List<ModuleResponse>> getAll() {
         return new ResponseEntity<>(moduleService.getAllModules(), HttpStatus.OK);
@@ -33,7 +35,7 @@ public class ModuleController {
         ModuleResponse module;
         try {
             module = moduleService.getModuleById(id);
-        } catch (NoSuchElementException  e) {
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ModuleResponse());
         }
         return new ResponseEntity<>(module, HttpStatus.OK);

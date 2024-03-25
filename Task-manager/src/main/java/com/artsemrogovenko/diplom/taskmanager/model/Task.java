@@ -16,7 +16,7 @@ public class Task implements TemplateData {
     private Long id;
     private String name;   //имя
     private String description; // описание
-    private Status status;
+    private TaskStatus status;
     private String contractNumber; // номер договора
     private String owner; // у кого сейчас задача
     private boolean reserved;
@@ -35,8 +35,9 @@ public class Task implements TemplateData {
         modules.add(module);
     }
 
+    // сработает при создании экземпляра сущности
+    // перед сохранением этой сущности в базу данных.
     @PrePersist
-//сработает при создании экземпляра сущности перед сохранением этой сущности в базу данных.
     void onCreate() {
         if (this.status == null) {
             this.status = status.TO_DO;
@@ -46,9 +47,4 @@ public class Task implements TemplateData {
         }
     }
 
-    public enum Status {
-        TO_DO,
-        DONE,
-        IN_PROGRESS,
-    }
 }

@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String> {
-
-    Optional<Product> findByContractNumberAndTypeAndLoadAndColorAndFloors(String number,String type,Integer load,String color,Integer floors);
+    Optional<Product> findByContractNumberAndTypeAndLoadAndColorAndFloors(String number, String type, Integer load, String color, Integer floors);
 }

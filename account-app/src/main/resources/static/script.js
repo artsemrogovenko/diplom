@@ -10,9 +10,9 @@ function openModalEdit(button) {
     var refill = button.getAttribute('c-refill');
 
 
-    if(refill === 'true'){
+    if (refill === 'true') {
         document.getElementById('comp_edit_refill').checked = true;
-    }else {
+    } else {
         document.getElementById('comp_edit_refill').checked = false;
     }
 

@@ -19,13 +19,6 @@ public class ModuleRequest implements ModuleData {
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
 
-//    private Set<ComponentRequest> componentRequests = Set.of(
-//            new ComponentRequest("a", "b", "c", 1, "d", "e"),
-//            new ComponentRequest("a", "b", "c", 2, "d", "e"),
-//            new ComponentRequest("a", "b", "c", 3, "d", "e"),
-//            new ComponentRequest("a", "b", "c", 4, "d", "e"),
-//            new ComponentRequest("a", "b", "c", 5, "d", "e"));
-
     //один модуль может содержать несколько компонентов
     private MyCollection componentRequests=new MyCollection();
     private String circuitVersion;  // схема сборки

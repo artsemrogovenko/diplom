@@ -1,13 +1,15 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Сущность аккаунта.
@@ -25,8 +27,8 @@ public class Account {
     private String password;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
-    @OneToMany(mappedBy = "account",  cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<Task> tasks = new LinkedList<>();   // список задач
+    @OneToMany(mappedBy = "account", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();   // список задач
 
     public Account(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         this.name = username;

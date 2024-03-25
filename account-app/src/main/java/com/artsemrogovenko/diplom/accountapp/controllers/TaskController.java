@@ -2,7 +2,6 @@ package com.artsemrogovenko.diplom.accountapp.controllers;
 
 import com.artsemrogovenko.diplom.accountapp.aspect.LogMethod;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskForUser;
-import com.artsemrogovenko.diplom.accountapp.models.Account;
 import com.artsemrogovenko.diplom.accountapp.models.Task;
 import com.artsemrogovenko.diplom.accountapp.services.AccountService;
 import com.artsemrogovenko.diplom.accountapp.services.TaskService;

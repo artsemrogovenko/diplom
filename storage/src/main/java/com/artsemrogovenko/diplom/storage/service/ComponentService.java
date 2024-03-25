@@ -66,9 +66,7 @@ public class ComponentService {
 
     public ComponentResponse decreaseComponent(ComponentResponse decreasing) {
         Component componentById = componentRepository.findById(decreasing.getId()).orElseThrow();
-//        if (componentById.isRefill()) {
         componentById.setQuantity(componentById.getQuantity() - decreasing.getQuantity());
-//        }
         componentRepository.save(componentById);
         return decreasing;
     }
@@ -87,16 +85,18 @@ public class ComponentService {
         return componentRepository.findAll().stream().map(component -> ComponentMapper.mapToComponentResponse(component)).toList();
     }
 
+    /**
+     * Конверсия единиц измерения. Не штучные компоненты лучше привести в одну систему измерения
+     * @return
+     * @param <T>
+     */
     private static <T extends ComponentData> HashMap<Integer, String> convertUnits(T component) {
-//        if(component.getUnit().toLowerCase()!="шт"){
         if (component.getUnit().toLowerCase().equals("м")) {
             return new HashMap<Integer, String>(Map.of(component.getQuantity() * 1000, "мм"));
         }
         if (component.getUnit().toLowerCase().equals("км")) {
             return new HashMap<Integer, String>(Map.of(component.getQuantity() * 1000000, "мм"));
         }
-//            return new HashMap<Integer, String>(Map.of(component.getQuantity(), component.getUnit()));
-//        }
         return new HashMap<Integer, String>(Map.of(component.getQuantity(), component.getUnit().toLowerCase()));
     }
 
@@ -109,12 +109,10 @@ public class ComponentService {
         temp.setQuantity(units.keySet().iterator().next());
         temp.setUnit(units.values().iterator().next());
 
-//        System.out.println(" item = " + temp.getQuantity() + temp.getUnit());
         return ComponentMapper.mapToComponentResponse(componentRepository.save(ComponentMapper.mapToComponent(temp)));
     }
 
     public ComponentResponse editComponent(ComponentResponse componentResponse) {
-
         Component componentById = componentRepository.findById(componentResponse.getId()).orElse(null);
         if (componentById != null) {
 
@@ -196,7 +194,6 @@ public class ComponentService {
                 components.add(newResponse);
             }
 
-//            components.addAll(list);
         }
         List<ComponentResponse> negativeQuantityComponents = components.stream()
                 .filter(component -> component.getQuantity() < 0).toList();

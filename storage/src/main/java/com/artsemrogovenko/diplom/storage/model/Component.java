@@ -10,7 +10,6 @@ import java.util.Set;
 
 @Data
 @Entity
-//@Table(name = "element_table")
 @NoArgsConstructor
 public class Component implements ComponentData {
     @Id
@@ -29,7 +28,7 @@ public class Component implements ComponentData {
     @Column(columnDefinition = "VARCHAR(255)")
     private String description;  // тут можно указать например цвет
     @Column(columnDefinition = "BOOL", nullable = false)
-    private boolean refill;  // можно обьединить?
+    private boolean refill;  // можно объединить?
 
     @Override
     public Boolean getRefill() {

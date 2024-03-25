@@ -1,18 +1,17 @@
 package com.artsemrogovenko.diplom.storage.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
 @Entity
 @NoArgsConstructor
 public class ContractNumber {
-
     @Id
     private String contractNumber;
     @ManyToMany(mappedBy = "contractNumbers")

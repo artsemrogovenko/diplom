@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -17,6 +18,7 @@ public class ContractNumber {
     @Id
     @Column(nullable = false, unique = true) // Указываем, что это первичный ключ и он не может быть пустым
     private String number;
+
     public ContractNumber(String number) {
         this.number = number;
     }

@@ -20,9 +20,8 @@ public class ComponentRequest implements ComponentData {
 
 
     public boolean fieldsIsNull() {
-        return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null;
+        return factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null;
     }
-
 
 
 }

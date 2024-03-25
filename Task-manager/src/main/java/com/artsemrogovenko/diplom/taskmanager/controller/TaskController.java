@@ -40,7 +40,7 @@ public class TaskController {
     }
 
     /**
-     * Получение определенной задачи.
+     * Просмотр определенной задачи.
      *
      * @param id идентификатор задачи.
      * @return ответ с задачей.
@@ -65,13 +65,8 @@ public class TaskController {
         try {
             return taskService.reservedTask(id, userId);
         } catch (FeignException.InternalServerError e) {
-            System.out.println(e.contentUTF8());
             return new ResponseEntity<>(e.contentUTF8(), HttpStatus.BAD_REQUEST);
         }
-//        } catch (ResourceNotFoundException ex) {
-//            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-//        return ResponseEntity.ok().body("Задача принята");
     }
 
     /**

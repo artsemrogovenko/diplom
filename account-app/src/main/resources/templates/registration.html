@@ -19,7 +19,8 @@
 
 <div class="card border-primary mb-3" style="max-width: 18rem;">
 
-    <form class="form-signin" method="post" id="registrationForm" th:object="${account}"  onsubmit="return validateInputs();">
+    <form class="form-signin" method="post" id="registrationForm" th:object="${account}"
+          onsubmit="return validateInputs();">
         <h2 class="form-signin-heading">Регистрация</h2>
         <div class="col-12">
             <label for="firstName" class="form-label">Имя</label>
@@ -40,7 +41,7 @@
         </div>
 
         <!-- Поле для имени пользователя -->
-        <input type="hidden" id="username" name="Username"  th:field="*{name}"/>
+        <input type="hidden" id="username" name="Username" th:field="*{name}"/>
         <br>
         <!-- Кнопка для отправки формы -->
         <button class="btn btn-lg btn-primary btn-block" type="submit" th:action="@{/registration}">

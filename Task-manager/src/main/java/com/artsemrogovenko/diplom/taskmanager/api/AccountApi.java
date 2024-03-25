@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+/**
+ * Клиент для сервиса исполнителя задач
+ */
 @FeignClient(name = "account-service")
 public interface AccountApi {
     @TrackUserAction

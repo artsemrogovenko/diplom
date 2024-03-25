@@ -1,6 +1,5 @@
 package com.artsemrogovenko.diplom.accountapp.dto.mymapper;
 
-import com.artsemrogovenko.diplom.accountapp.dto.ModuleData;
 import com.artsemrogovenko.diplom.accountapp.models.Component;
 import com.artsemrogovenko.diplom.accountapp.models.Module;
 
@@ -12,7 +11,6 @@ public class ModuleMapper {
 
     public static Module mapToModule(Module data) {
         Module module = new Module(data.getId());
-//        Module module = new Module();
 
         if (data.getFactoryNumber() != null) {
             module.setFactoryNumber(data.getFactoryNumber().trim());
@@ -35,8 +33,7 @@ public class ModuleMapper {
         if (data.getCircutFile() != null) {
             module.setCircutFile(data.getCircutFile().trim());
         }
-//         Копирование компонентов
-        Set<Component> components = new HashSet<>();
+
 
         if (data.getComponents() != null && !data.getComponents().isEmpty()) {
             module.setComponents(data.getComponents());

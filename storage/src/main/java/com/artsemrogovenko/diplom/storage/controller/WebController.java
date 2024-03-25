@@ -32,9 +32,7 @@ public class WebController {
 
     @PostMapping("/createComponent")
     public String createComponent(ComponentRequest componentRequest) {
-//        System.out.println(componentRequest.toString());
         componentService.createComponent(componentRequest);
-//        redirectAttributes.addAttribute("confirm", "компонент добавлен");
         return "redirect:/";
     }
 

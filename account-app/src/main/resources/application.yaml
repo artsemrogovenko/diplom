@@ -1,56 +1,28 @@
-spring:
-  application:
-    name: account-service
-
-  cloud:
-    openfeign:
-      client:
-        config:
-          task-server:
-            url: http://localhost:8085/
-
-  #  jpa:
-  #    generate-ddl: true
-  #    hibernate:
-  #      ddl-auto: update
-
-
-
-  datasource:
-#    url: jdbc:postgresql://192.168.100.130:32769/sa
-    username: sa
-    password: sa
-#    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update # или update, если вы хотите, чтобы JPA обновил существующую схему
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-
-
-    show-sql: on
-
-#  datasource:
-    url: jdbc:h2:file:./databases/accounts;DB_CLOSE_ON_EXIT=FALSE
-    driverClassName: org.h2.Driver
-#
-#    username: sa
-#    password: sa
-#
-#  h2:
-#    console:
-#      enabled: true
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+    enabled: true
 
 server:
   port: 8084
 
-logging:
-  level:
-    org:
-      thymeleaf: error
+spring:
+  application:
+    name: account-service
 
-      springframework:
-        security: DEBUG
-
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:file:./databases/accounts;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true

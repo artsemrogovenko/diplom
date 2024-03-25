@@ -22,6 +22,5 @@ public class ComponentRequest implements ComponentData {
         return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null;
     }
 
-//    private Set<ModuleRequest> moduleRequests = new HashSet<>();
 
 }

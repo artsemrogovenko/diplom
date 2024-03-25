@@ -38,8 +38,6 @@ public class ModuleService {
             return module;
         }
         return null;
-//        return moduleRepository.findById(id)
-//                .orElseThrow(() -> new NoSuchElementException("Module not found with id: " + id));
     }
 
     public Module updateModule(Module module) {
@@ -55,16 +53,12 @@ public class ModuleService {
         }
 
         Module module = ModuleMapper.mapToModule(moduleRequest);
-
         if (notExist(module)) {
-
-
             if (module.getComponents() != null && !module.getComponents().isEmpty()) {
 
                 List<Component> componentList = componentService.saveAll(module.getComponents());
                 if (componentList != null) {
                     module.setComponents(new HashSet<>(componentList));
-//                    componentList.forEach(component -> module.addComponent(component));
                 }
             }
             Module result = moduleRepository.save(module);
@@ -73,7 +67,6 @@ public class ModuleService {
             return new ResponseEntity<>(result, CREATED);
         }
         Module savedModule = searchModule(module);
-//        moduleRepository.save(savedModule);
         return new ResponseEntity<>(savedModule, HttpStatus.CONFLICT);
     }
 
@@ -96,18 +89,6 @@ public class ModuleService {
         moduleRepository.deleteById(id);
     }
 
-    //    @LogMethod
-//    private Module searchModule(Module module) throws NoSuchElementException {
-//        String factoryNumber = module.getFactoryNumber();
-//        String model = module.getModel();
-//        String name = module.getName();
-//        String unit = module.getUnit();
-//        String description = module.getDescription();
-//        String circutFile = module.getCircutFile();
-//
-//        return moduleRepository.findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(
-//                factoryNumber, model, name, unit, description, circutFile).get();
-//    }
     @LogMethod
     private Module searchModule(Module module) throws NoSuchElementException {
         String factoryNumber = module.getFactoryNumber() == "" ? null : module.getFactoryNumber();
@@ -118,7 +99,7 @@ public class ModuleService {
         String description = module.getDescription() == "" ? null : module.getDescription();
         String circutFile = module.getCircutFile() == "" ? null : module.getCircutFile();
 
-        Optional<Module> find = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name,quantity, unit, description, circutFile);
+        Optional<Module> find = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, quantity, unit, description, circutFile);
 
         if (find.isPresent()) {
             module = find.get();
@@ -127,7 +108,6 @@ public class ModuleService {
         } else {
             throw new NoSuchElementException();
         }
-//        return moduleRepository.findDistinctFirstByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, unit, description, circutFile).get();
         return module;
     }
 

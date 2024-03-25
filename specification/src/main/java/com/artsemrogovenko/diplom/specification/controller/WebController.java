@@ -29,7 +29,6 @@ public class WebController {
     private static boolean startView = true;
     private static String response;
     private static String storageResponse;
-    //    private static List<ComponentResponse> avaibleComponents;
     private static List<ModuleResponse> sessionList;
 
     @GetMapping("/")
@@ -62,7 +61,6 @@ public class WebController {
 
     @PostMapping("/updateModule")
     public String update(ModuleResponse moduleResponse, Model model) {
-//        moduleService.updateModule(moduleResponse);
         System.out.println(moduleResponse.toString());
         pullList();
         return "redirect:/";

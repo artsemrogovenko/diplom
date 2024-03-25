@@ -51,10 +51,10 @@
                 th:each="template, iterStat : ${templates}" th:data-id="${iterStat.index}"
                 th:data-name="|Элемент ${template.id}|">
             <span class="d-flex w-100 align-items-center justify-content-between">
-                <span class="mb-1" th:text="${template.getName()}">List group item heading</span>
-                <span class="text-body-secondary" th:text="${template.getDescription()}">Tues</span>
+                <span class="mb-1" th:text="${template.getName()}"></span>
+                <span class="text-body-secondary" th:text="${template.getDescription()}"></span>
             </span>
-                <span class="col-10 mb-1 small" th:text="'Количество модулей: ' + ${template.getModules().size()}">Some placeholder content</span>
+                <span class="col-10 mb-1 small" th:text="'Количество модулей: ' + ${template.getModules().size()}"></span>
             </li>
 
         </div>

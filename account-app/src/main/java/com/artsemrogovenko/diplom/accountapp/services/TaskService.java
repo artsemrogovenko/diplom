@@ -36,7 +36,6 @@ public class TaskService {
     private final TaskApi taskApi;
     private final AccountRepository accountRepository;
     private final ModuleService moduleService;
-    private final ComponentService componentService;
     private final TaskRepository taskRepository;
     private static LocalTime requiredTime = LocalTime.now().plusSeconds(30);
     private static List<Task> tasks = new ArrayList<>();
@@ -52,15 +51,14 @@ public class TaskService {
     }
 
     /**
-     * обновлять список modules не чаще чем раз в две минуты
+     * Обновлять список modules не чаще чем раз в две минуты
      *
      * @param currentTime время веб клиента
      */
     public List<Task> getTasks(LocalTime currentTime) throws FeignException.ServiceUnavailable, feign.RetryableException {
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         if (currentTime.isAfter(requiredTime)) {
-//            requiredTime = LocalTime.now().plusSeconds(30);
-            requiredTime = LocalTime.now();
+            requiredTime = LocalTime.now().plusSeconds(2);
             tasks = pullTasks();
         }
         return tasks;
@@ -70,14 +68,14 @@ public class TaskService {
     public List<Task> pullTasks() throws FeignException.ServiceUnavailable, feign.RetryableException {
         ResponseEntity<List<Task>> taskList = taskApi.getTasks();
         if (taskList.hasBody()) {
-            return taskList.getBody();
+            return taskList.getBody().stream().filter(task -> task.getStatus().equals(TaskStatus.TO_DO)).toList();
         }
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         return new ArrayList<>();
     }
 
     @LogMethod
-    public ResponseEntity<String> rollbackTask(String user, Long taskid) throws FeignException{
+    public ResponseEntity<String> rollbackTask(String user, Long taskid) throws FeignException {
         Task rollbackTask = taskRepository.findById(taskid).get();
         List<Component> components = MyRequest.componentsFromAllModules(rollbackTask);
         List<ComponentRequest> calculated = MyRequest.totalizationComponents(components);
@@ -155,23 +153,16 @@ public class TaskService {
 
     @LogMethod
     public Task findTaskById(Long taskId, String userid) {
-        Task find=taskRepository.findByIdAndOwner(taskId, userid);
+        Task find = taskRepository.findByIdAndOwner(taskId, userid);
         return find;
     }
 
     @LogMethod
     public List<Task> showMyTasks(String userId) {
-        System.out.println("блок вызван");
         try {
             List<Task> result = taskRepository.findAllByOwner(userId);
-//            result.forEach((task) -> {
-//                task.getModules().forEach((module) -> {
-//                    moduleService.getModuleById(module.getId()).setComponents(componentService.getComponentById(module.getId()));
-//                });
-//            });
             return result;
         } catch (NoSuchElementException ex) {
-
         }
         return new ArrayList<>();
     }

@@ -33,15 +33,6 @@ public class ComponentService {
 
         componentById = ComponentMapper.mapToComponent(componentResponse);
 
-//        componentById.setFactoryNumber(componentResponse.getFactoryNumber());
-//        componentById.setName(componentResponse.getName());
-//        componentById.setModules(componentResponse.getModuleResponses().stream().  map(moduleResponse -> ComponentMapper.mapToComponent(moduleResponse)).toList());
-//        componentById.setQuantity(componentResponse.getQuantity());
-//        componentById.setUnit(componentResponse.getUnit());
-//        componentById.setDescription(componentResponse.getDescription());
-//        componentById.setModel(componentResponse.getModel());
-
-//                componentRepository.save(componentById);
         return ComponentMapper.mapToComponentResponse(componentRepository.save(componentById));
     }
 
@@ -66,7 +57,6 @@ public class ComponentService {
         if (components != null && !components.isEmpty()) {
             List<Component> nonDuplicates = components.stream()
                     .filter(component -> !component.fieldsIsNull()).toList();
-//                    .filter(component -> notExist(component)).toList();
 
             for (Component nonDuplicate : nonDuplicates) {
                 if (notExist(nonDuplicate)) {
@@ -75,9 +65,6 @@ public class ComponentService {
                     resultList.add(search(nonDuplicate));
                 }
             }
-            // Сохранить все отфильтрованные компоненты
-//            return componentRepository.saveAll(nonDuplicates);
-//            resultList=resultList.stream().map(ComponentMapper::mapToComponent).toList();
         }
         return resultList;
     }

@@ -19,6 +19,6 @@ public class ComponentRequest implements ComponentData {
     private Integer quantity;    // какое количество компонента в модуле
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
-    private Boolean refill;  // можно объединить?
+    private Boolean refill;  //
 
 }

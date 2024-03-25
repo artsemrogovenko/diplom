@@ -11,12 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, Long> {
-    Optional<Module> findByFactoryNumberAndModelAndNameAndUnitAndDescriptionAndCircutFile(String factoryNumber, String model, String name, String unit, String description, String circutFile);
 
     @Query("SELECT e FROM Module e WHERE e.id = (SELECT MAX(ee.id) FROM Module ee)")
     Module findLastModule();
 
-   Optional<Module>  findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(String factoryNumber, String model, String name, Integer quantity, String unit, String description, String circuit);
+    Optional<Module> findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(String factoryNumber, String model, String name, Integer quantity, String unit, String description, String circuit);
 
     List<Module> findAllByTasks_Id(Long id);
 }

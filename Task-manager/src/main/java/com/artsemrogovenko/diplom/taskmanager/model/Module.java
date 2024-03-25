@@ -46,10 +46,6 @@ public class Module implements SavedModule, ModuleData {
     @ManyToMany
     private List<Task> tasks = new ArrayList<>();
 
-//    public Module(Long id) {
-//        this.id = id;
-//    }
-
     @PrePersist
     void onCreate() {
         if (this.unit == null) {

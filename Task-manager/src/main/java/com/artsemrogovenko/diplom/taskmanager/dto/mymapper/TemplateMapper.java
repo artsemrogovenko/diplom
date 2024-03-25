@@ -1,12 +1,13 @@
 package com.artsemrogovenko.diplom.taskmanager.dto.mymapper;
 
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
-import com.artsemrogovenko.diplom.taskmanager.model.Module;
-import com.artsemrogovenko.diplom.taskmanager.model.*;
+import com.artsemrogovenko.diplom.taskmanager.model.Task;
+import com.artsemrogovenko.diplom.taskmanager.model.Template;
+import com.artsemrogovenko.diplom.taskmanager.model.TemplateData;
+import com.artsemrogovenko.diplom.taskmanager.model.TemplateRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 public class TemplateMapper {
@@ -30,8 +31,6 @@ public class TemplateMapper {
         Task task = new Task();
         task.setName(data.getName().trim());
         task.setDescription(data.getDescription().trim());
-
-//        task.setStatus(TO_DO);
 
         if (data instanceof TemplateRequest) {
             TemplateRequest templateRequest = (TemplateRequest) data;

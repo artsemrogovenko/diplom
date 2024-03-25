@@ -11,14 +11,13 @@ import java.util.Set;
 
 @Data
 @Entity
-//@Table(name = "element_table")
 @NoArgsConstructor
 public class Component {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonIgnore
-    @ManyToMany //один компонент может относится ко многим модулям
+    @ManyToMany //один компонент может относиться ко многим модулям
     private Set<Module> modules = new HashSet<>();
     @Column(columnDefinition = "VARCHAR(100)")
     private String factoryNumber;       // заводской номер

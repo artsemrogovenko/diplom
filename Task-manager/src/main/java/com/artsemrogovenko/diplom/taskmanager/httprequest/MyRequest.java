@@ -20,7 +20,6 @@ import java.util.List;
 
 public class MyRequest {
 
-
     /**
      * @param request        метод Http запроса
      * @param serializedData тело запроса json

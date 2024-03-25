@@ -16,13 +16,7 @@ import java.util.Arrays;
 @Component
 public class myAspect {
     private static final Logger logger = LoggerFactory.getLogger(myAspect.class);
-//    @Around("@annotation(com.artsemrogovenko.diplom.storage.aspect.LogMethod)")
-//    public Object logMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-//        System.out.println("Вызван метод: " + joinPoint.getSignature().getName()
-//                + Arrays.toString(joinPoint.getArgs()));
-//        Object proceed = joinPoint.proceed();
-//        return proceed;
-//    }
+
     @Before("@annotation(com.artsemrogovenko.diplom.storage.aspect.LogMethod)")
     public void trackAction(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().toString();

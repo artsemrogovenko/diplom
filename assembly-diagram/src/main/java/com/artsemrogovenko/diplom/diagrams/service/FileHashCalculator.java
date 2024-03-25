@@ -10,9 +10,11 @@ import java.io.IOException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 @Component
 public class FileHashCalculator {
-    private String tempDirectory="./tempDiagrams/";
+    private final String tempDirectory = "./tempDiagrams/";
+
     public String calculateHash(File file) throws NoSuchAlgorithmException, IOException {
         MessageDigest digest = MessageDigest.getInstance("SHA-512");
 
@@ -43,6 +45,7 @@ public class FileHashCalculator {
 
         return hexString.toString();
     }
+
     public static String calculateHash(MultipartFile file) throws NoSuchAlgorithmException, IOException {
         MessageDigest digest = MessageDigest.getInstance("SHA-512");
         byte[] fileBytes = file.getBytes();
@@ -58,6 +61,7 @@ public class FileHashCalculator {
 
         return hexString.toString();
     }
+
     public static String getHash(File file) {
 
         try {
@@ -83,7 +87,7 @@ public class FileHashCalculator {
                     hexString.append(hex);
                 }
 
-                System.out.println("SHA-512 хэш файла: " + hexString.toString());
+                System.out.println("SHA-512 хэш файла: " + hexString);
                 return hexString.toString();
             }
         } catch (NoSuchAlgorithmException | IOException e) {

@@ -17,7 +17,7 @@ public class Component implements ComponentData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; //
     @JsonIgnore
-    @ManyToMany(mappedBy = "components") //один компонент может относится ко многим модулям
+    @ManyToMany(mappedBy = "components") //один компонент может относиться ко многим модулям
     private Set<Module> modules = new HashSet<>();
     @Column(columnDefinition = "VARCHAR(100)")
     private String factoryNumber;       // заводской номер
@@ -52,6 +52,7 @@ public class Component implements ComponentData {
                 ", description='" + description + '\'' +
                 '}';
     }
+
     @Override
     public int hashCode() {
         final int PRIME = 59;

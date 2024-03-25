@@ -26,11 +26,6 @@
 </nav>
 
 
-<!--<nav class="navbar navbar-light bg-light justify-content-between">-->
-<!--    <form class="form-inline" th:action="@{/registration}" method="get">-->
-<!--        <button class="btn btn-outline-success my-2 my-sm-0 float-right" type="submit">Admin panel</button>-->
-<!--    </form>-->
-<!--</nav>-->
 
 
 <div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
@@ -39,38 +34,9 @@
                                                                   style="font-size: 12px; text-align: right;"></span></a>
 </div>
 
-<!--<script th:if="${message} == '201 CREATED'">toastr.success('Шаблон добавлен');</script>-->
-<!--<script th:if="${message} == '409 CONFLICT'">toastr.error('Конфликт: данные уже существуют');</script>-->
-<!--<script th:if="${message} == '400 BAD_REQUEST'">toastr.error('Ошибка формы');</script>-->
 
 <div class="container mt-5">
     <h1 class="text-center">Выбери себе работу</h1>
-
-
-    <!--    <div>-->
-    <!--        <table class="rotate-table">-->
-    <!--            <tr>-->
-    <!--                <th>Номер договора</th>-->
-    <!--                <th>Размещение станции</th>-->
-    <!--                <th>Грузоподъесность</th>-->
-    <!--                <th>Цвет шкафа</th>-->
-    <!--                <th>Остановки</th>-->
-    <!--                <th>Статус изготовления</th>-->
-    <!--                &lt;!&ndash; Добавьте другие заголовки, если необходимо &ndash;&gt;-->
-    <!--            </tr>-->
-    <!--            <tr th:if="${products.empty}">-->
-    <!--                <td colspan="2"> No Job Available </td>-->
-    <!--            </tr>-->
-    <!--            <tr th:each="product : ${products}">-->
-    <!--                <td><span th:text="${product.getContractNumber()}"> номер </span></td>-->
-    <!--                <td><span th:text="${product.getType()}"> тип </span></td>-->
-    <!--                <td><span th:text="${product.getLoad()}"> грузоподъемность </span></td>-->
-    <!--                <td><span th:text="${product.getColor()}"> цвет шкафа </span></td>-->
-    <!--                <td><span th:text="${product.getFloors()}"> оставновок </span></td>-->
-    <!--                <td> <span th:text="${product.getDone() ? 'готово' : 'в процессе'}">Готовность</span></td>-->
-    <!--            </tr>-->
-    <!--        </table>-->
-    <!--    </div>-->
 
     <div th:if="${message != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <strong>Ошибка!</strong> <span th:text="${message}"></span>
@@ -94,10 +60,9 @@
     <div class="row mt-4">
 
         <div class="col-md-4 mb-4" th:each="task: ${tasks}">
-            <div class="card" th:if="${task.owner} == 'kanban'">
-                <!--            <div class="card" >-->
+<!--            <div class="card" th:if="${task.owner} == 'kanban'">-->
+                <div class="card" >
                 <div class="card-body">
-                    <!--                    <h1>User ID: <span th:text="${userid}"></span></h1>-->
                     <h5 class="card-title text-center" th:text="${task.name}"></h5>
                     <span th:text="'Для договора ' + ${task.contractNumber}"> </span>&emsp;
                     <span th:text="${task.status} == 'TO_DO' ?'Статус: В работе': 'Статус: Свободно'"> </span>

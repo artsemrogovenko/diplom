@@ -1,10 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.models;
 
-import com.artsemrogovenko.diplom.accountapp.dto.ModuleData;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,13 +33,10 @@ public class Module {
     private String circutFile;  // схема сборки
 
     //один модуль может содержать несколько компонентов
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();    // список компонентов
 
-    //    @ManyToMany(mappedBy = "modules",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-//    @JoinTable(name = "module_tasks", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
-//    private List<Task> tasks = new ArrayList<>();
     @JsonIgnore
     @ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
     private List<Task> tasks = new ArrayList<>();

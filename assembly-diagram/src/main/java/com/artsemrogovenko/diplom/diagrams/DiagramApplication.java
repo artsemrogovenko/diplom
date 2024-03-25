@@ -10,8 +10,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class DiagramApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DiagramApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DiagramApplication.class, args);
+    }
 
 }

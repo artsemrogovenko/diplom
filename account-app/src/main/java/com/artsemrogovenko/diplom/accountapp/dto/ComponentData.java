@@ -13,6 +13,7 @@ public interface ComponentData {
     String getUnit();
 
     String getDescription();
+
     boolean fieldsIsNull();
 
 }

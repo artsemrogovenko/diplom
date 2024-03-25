@@ -2,6 +2,7 @@ package com.artsemrogovenko.diplom.diagrams.aspect;
 
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
@@ -22,4 +23,11 @@ public class myAspect {
         logger.info("Пользователь  вызвал  " + methodName + " с аргументами: " + Arrays.toString(args));
     }
 
+    @AfterReturning(pointcut = "@annotation(com.artsemrogovenko.diplom.diagrams.aspect.LogMethod)")
+    public void methodReturn(JoinPoint joinPoint) {
+
+        String methodName = joinPoint.getSignature().toString();
+        Object[] args = joinPoint.getArgs();
+        logger.info("" + methodName + " вернул: " + Arrays.toString(args));
+    }
 }

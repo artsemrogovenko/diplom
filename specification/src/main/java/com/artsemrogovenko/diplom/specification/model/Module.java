@@ -9,13 +9,11 @@ import java.util.*;
 
 @Data
 @Entity
-//@Table(name = "module_table")
 @NoArgsConstructor
 public class Module implements ModuleData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(columnDefinition = "VARCHAR(100)")
     private String factoryNumber;       // заводской номер
 

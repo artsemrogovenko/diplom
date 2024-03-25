@@ -2,6 +2,7 @@ package com.artsemrogovenko.diplom.taskmanager.aop;
 
 import lombok.AllArgsConstructor;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
@@ -16,8 +17,7 @@ import java.util.Arrays;
 public class UserActionTrackingAspect {
     private static final Logger logger = LoggerFactory.getLogger(UserActionTrackingAspect.class);
 
-
-    // перед каждым вызовом функции будет работать этот метод
+    // перед вызовом функции будет работать этот метод
     @Before("@annotation(com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction)")
     public void trackUserAction(JoinPoint joinPoint) {
 
@@ -25,4 +25,5 @@ public class UserActionTrackingAspect {
         Object[] args = joinPoint.getArgs();
         logger.info("Пользователь  вызвал  " + methodName + " с аргументами: " + Arrays.toString(args));
     }
+
 }

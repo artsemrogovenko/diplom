@@ -38,14 +38,13 @@ public class WebController {
     private static boolean startView = true;
     private static String confirm;
     private final Counter assignTaskCounter = Metrics.counter("Получить задачу");
-
     private final Counter rollback = Metrics.counter("Отказ от задачи");
 
 
     private final Gauge percentGauge = Gauge.builder("рейтинг", () -> {
-        double assignTaskCount =  assignTaskCounter.count();
-        double rollbackCount =  rollback.count();
-        return rollbackCount != 0 ? (double) assignTaskCount / rollbackCount : 0;
+        double assignTaskCount = assignTaskCounter.count();
+        double rollbackCount = rollback.count();
+        return rollbackCount != 0 ? assignTaskCount / rollbackCount : 0;
     }).register(Metrics.globalRegistry);
 
     @PostMapping("/")
@@ -92,19 +91,19 @@ public class WebController {
                 taskService.deleteTask(taskId);
             }
             rollback.increment();
-        } catch (FeignException.NotFound | FeignException.BadRequest |  RetryableException e) {
+        } catch (FeignException.NotFound | FeignException.BadRequest | RetryableException e) {
             responseMessage = e.getMessage();
         }
 
-        return "redirect:/myTasks?userid="+ userid;
+        return "redirect:/myTasks?userid=" + userid;
     }
 
 
     @PostMapping("/take/{id}")
     public String takeMeTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
         ResponseEntity<String> responseEntity = ResponseEntity.ok().body(null);
-        if(accountService.findUserById(userid)==null){
-            responseMessage="вы должны зарегистрироваться";
+        if (accountService.findUserById(userid) == null) {
+            responseMessage = "вы должны зарегистрироваться";
             return "redirect:/";
         }
         try {
@@ -125,7 +124,7 @@ public class WebController {
     @GetMapping("/myModules/{taskId}")
     public String modules(@PathVariable("taskId") Long taskId, @RequestParam("userid") String userId, Model model) {
         List<Module> modules = taskService.getModuleByTaskid(taskId);
-        System.out.println(modules);
+//        System.out.println(modules);
         model.addAttribute("confirm", confirm);
         model.addAttribute("errorInfo", responseMessage);
         responseMessage = null;
@@ -139,7 +138,6 @@ public class WebController {
     @GetMapping("/myTasks")
     public String myTasks(@RequestParam("userid") String userId, Model model) {
         List<Task> my = taskService.showMyTasks(userId);
-        System.out.println(my);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Получаем имя пользователя из объекта аутентификации
         String username = authentication.getName();
@@ -170,12 +168,11 @@ public class WebController {
             } else {
                 temp = taskService.getTasks(LocalTime.now());
             }
-        } catch (WebClientResponseException.ServiceUnavailable | WebClientRequestException |
-                 feign.RetryableException ex) {
+        } catch (feign.FeignException.ServiceUnavailable | feign.RetryableException ex) {
             taskservice_StatusCode = "503 SERVICE_UNAVAILABLE";
+            responseMessage=ex.contentUTF8();
         }
-//        tasks = taskApi.getTasks().getBody();
-        System.out.println(temp);
+//        System.out.println(temp);
         model.addAttribute("message", responseCode);
         model.addAttribute("confirm", confirm);
         model.addAttribute("errorInfo", responseMessage);
@@ -184,7 +181,7 @@ public class WebController {
         taskservice_StatusCode = null;
         confirm = null;
         model.addAttribute("tasks", temp);
-        model.addAttribute("timer", taskService.getSecondsDifference());
+        model.addAttribute("timer", TaskService.getSecondsDifference());
 //        System.out.println(modules);
         return "index.html";
     }

@@ -54,17 +54,6 @@ public class ModuleService {
 
     public ModuleResponse updateModule(ModuleResponse module) {
         Module moduleById = ModuleMapper.mapToModule(getModuleById(module.getId()));
-//        moduleById.setId(module.getId());
-//        moduleById.setFactoryNumber(module.getFactoryNumber());
-//        moduleById.setModel(module.getModel());
-//        moduleById.setName(module.getName());
-//        moduleById.setQuantity(module.getQuantity());
-//        moduleById.setUnit(module.getUnit());
-//        moduleById.setDescription(module.getDescription());
-//
-//        moduleById.setComponents(module.getComponentResponses().stream()
-//                        .map(componentResponse -> ComponentMapper.mapToComponent(componentResponse))
-//                        .collect(Collectors.toSet())    );
 
         return ModuleMapper.mapModuleToModuleResponse(moduleRepository.save(moduleById));
     }

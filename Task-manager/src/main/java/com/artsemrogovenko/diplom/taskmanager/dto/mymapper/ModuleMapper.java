@@ -1,10 +1,8 @@
 package com.artsemrogovenko.diplom.taskmanager.dto.mymapper;
 
 import com.artsemrogovenko.diplom.taskmanager.dto.*;
-import com.artsemrogovenko.diplom.taskmanager.dto.SavedModule;
 import com.artsemrogovenko.diplom.taskmanager.model.Component;
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
-import com.artsemrogovenko.diplom.taskmanager.model.MyCollection;
 import com.artsemrogovenko.diplom.taskmanager.model.MyCollection;
 
 import java.util.HashSet;
@@ -51,14 +49,14 @@ public class ModuleMapper {
 
         if ( data instanceof Module){
 
-            Module module1= (Module) data;
-            if (module1.getId() != null) {
-                module.setId(module1.getId());
+            Module temporaryModule = (Module) data;
+            if (temporaryModule.getId() != null) {
+                module.setId(temporaryModule.getId());
             }
-            if (module1.getComponents() != null) {
-                for (Component component : module1.getComponents()) {
+            if (temporaryModule.getComponents() != null) {
+                for (Component component : temporaryModule.getComponents()) {
                     Component mapToComponent = ComponentMapper.mapToComponent(component);
-                    components.add(component);
+                    components.add(mapToComponent);
                 }
             }
         }

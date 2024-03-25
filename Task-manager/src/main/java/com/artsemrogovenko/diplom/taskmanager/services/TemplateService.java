@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.services;
 
+import com.artsemrogovenko.diplom.taskmanager.api.SpecificationApi;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TemplateMapper;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
@@ -8,13 +9,12 @@ import com.artsemrogovenko.diplom.taskmanager.repository.TemplateRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -27,8 +27,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class TemplateService {
-
-    private final WebClient.Builder webclientBuilder;
+    private final SpecificationApi specificationApi;
     private final TemplateRepository templateRepository;
     private final ModuleService moduleService;
     private static LocalTime requiredTime = LocalTime.now().plusSeconds(2);
@@ -49,26 +48,21 @@ public class TemplateService {
      *
      * @param currentTime время веб клиента
      */
-    public List<ModuleResponse> getSpecifications(LocalTime currentTime) throws WebClientResponseException.ServiceUnavailable, WebClientRequestException {
-//        System.out.println("rquired time = " + String.format("%02d:%02d:%02d", requiredTime.getHour(), requiredTime.getMinute(), requiredTime.getSecond()));
-//        System.out.println("current time = " + String.format("%02d:%02d:%02d", currentTime.getHour(), currentTime.getMinute(), currentTime.getSecond()));
+    public List<ModuleResponse> getSpecifications(LocalTime currentTime) throws feign.RetryableException {
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         if (currentTime.isAfter(requiredTime)) {
             requiredTime = LocalTime.now().plusSeconds(2);
-//            secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
             modules = pullModules();
         }
         return modules;
     }
 
 
-    public List<ModuleResponse> pullModules() throws WebClientResponseException.ServiceUnavailable, WebClientRequestException {
-        modules = webclientBuilder.build().get()
-                .uri("http://specification-server:8082/module")
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ModuleResponse>>() {
-                })
-                .block();
+    public List<ModuleResponse> pullModules() throws feign.RetryableException {
+        ResponseEntity<List<ModuleResponse>> modulesFromSpecification = specificationApi.getAll();
+        if (modulesFromSpecification.hasBody()) {
+            modules = modulesFromSpecification.getBody();
+        }
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         return modules;
     }
@@ -76,34 +70,31 @@ public class TemplateService {
     public ResponseEntity<String> prepareData(TemplateRequest rawTemplate, String selectedModulesJson, List<ModuleResponse> list) {
         List<String> selectedModuleIds = null;
         TemplateRequest temp = rawTemplate;
-        if (isExist(rawTemplate.getName(), rawTemplate.getDescription())){
+        if (isExist(rawTemplate.getName(), rawTemplate.getDescription())) {
             return new ResponseEntity<>("Шаблон с таким именем уже есть", HttpStatus.CONFLICT);
         }
         // Преобразование JSON в список идентификаторов выбранных модулей
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                selectedModuleIds = objectMapper.readValue(selectedModulesJson, new TypeReference<List<String>>() {
-                });
-                // Создание списка модулей на основе идентификаторов
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            selectedModuleIds = objectMapper.readValue(selectedModulesJson, new TypeReference<List<String>>() {
+            });
+            // Создание списка модулей на основе идентификаторов
+            if (selectedModuleIds != null && !selectedModuleIds.isEmpty()) {
+                for (String position : selectedModuleIds) {
 
-                if (selectedModuleIds != null && !selectedModuleIds.isEmpty()) {
-                    for (String position : selectedModuleIds) {
-
-                        try {
-                            temp.addModule(list.get(Integer.parseInt(position)));
-                        } catch (NullPointerException | IndexOutOfBoundsException ex) {
-                            return new ResponseEntity<>("Список доступных модулей устарел, повторите попытку", HttpStatus.BAD_REQUEST);
-                        }
-
+                    try {
+                        temp.addModule(list.get(Integer.parseInt(position)));
+                    } catch (NullPointerException | IndexOutOfBoundsException ex) {
+                        return new ResponseEntity<>("Список доступных модулей устарел, повторите попытку", HttpStatus.BAD_REQUEST);
                     }
+
                 }
-                saveTemplate(TemplateMapper.mapToTemplate(temp));
-//            System.out.println(templateRepository.findLastTemplate());
-                return new ResponseEntity<>("Шаблон сохранен", HttpStatus.CREATED);
-            } catch (JsonProcessingException e) {
-                System.out.println(e.getMessage());
             }
-//        System.out.println(temp);
+            saveTemplate(TemplateMapper.mapToTemplate(temp));
+            return new ResponseEntity<>("Шаблон сохранен", HttpStatus.CREATED);
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+        }
         return new ResponseEntity<>("Ошибка выполнения", HttpStatus.BAD_REQUEST);
     }
 
@@ -114,7 +105,7 @@ public class TemplateService {
     }
 
     private boolean isExist(String name, String description) {
-        Optional<Template> ex = templateRepository.findByNameAndDescription(name,description);
+        Optional<Template> ex = templateRepository.findByNameAndDescription(name, description);
         if (ex.isPresent()) {
             return true;
         }

@@ -30,18 +30,9 @@ public class ComponentMapper {
         if (componentData.getDescription() != null) {
             component.setDescription(componentData.getDescription().trim());
         }
-
         // Копирование модулей
         Set<Module> modules = new HashSet<>();
 
-//        if (componentData instanceof ComponentRequest) {
-//            ComponentRequest moduleRequest = (ComponentRequest) componentData;
-//            if (moduleRequest.getModuleRequests() != null ) {
-//                for (ModuleRequest moduleReq : moduleRequest.getModuleRequests()) {
-//                    modules.add(getModules(moduleReq));
-//                }
-//            }
-//        }
         if (componentData instanceof ComponentResponse) {
             ComponentResponse moduleResponse = (ComponentResponse) componentData;
             component.setId(moduleResponse.getId());
@@ -66,13 +57,7 @@ public class ComponentMapper {
         module.setDescription(moduleData.getDescription().trim());
         // Копирование компонентов
         Set<Component> components = new HashSet<>();
-//        if (moduleData instanceof ModuleRequest) {
-//            ModuleRequest moduleRequest = (ModuleRequest) moduleData;
-//            for (ComponentRequest componentRequest : moduleRequest.getComponentRequests()) {
-//                Component component = mapToComponent(componentRequest);
-//                components.add(component);
-//            }
-//        }
+
         if (moduleData instanceof ModuleResponse) {
             ModuleResponse moduleResponse = (ModuleResponse) moduleData;
             module.setId(moduleResponse.getId());

@@ -2,10 +2,7 @@ package com.artsemrogovenko.diplom.accountapp.models;
 
 import com.artsemrogovenko.diplom.accountapp.dto.TaskData;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus;
-import com.artsemrogovenko.diplom.accountapp.models.Module;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,25 +23,19 @@ public class Task implements TaskData {
     private String owner; // у кого сейчас задача
     private boolean reserved;
 
-    //    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER)
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "module_tasks",
             joinColumns = @JoinColumn(name = "module_id"),
             inverseJoinColumns = @JoinColumn(name = "task_id"))
     private List<Module> modules = new ArrayList<>();
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "account_tasks"  , joinColumns = @JoinColumn(name = "account_name"),
-            inverseJoinColumns = @JoinColumn(name = "task_id",columnDefinition = "VARCHAR(50)"))
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "account_tasks", joinColumns = @JoinColumn(name = "account_name"),
+            inverseJoinColumns = @JoinColumn(name = "task_id", columnDefinition = "VARCHAR(50)"))
     private Account account;
 
     public Task(Long id) {
         this.id = id;
-    }
-
-    @Override
-    public TaskStatus getTaskStatus() {
-        return status;
     }
 
 
@@ -61,4 +52,6 @@ public class Task implements TaskData {
                 ", modules=" + modules +
                 '}';
     }
+
+
 }

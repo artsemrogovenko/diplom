@@ -18,15 +18,6 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 public class RestSchemeController {
     private final DiagramService diagramService;
-//    @PostMapping
-//    public void requestFile(DiagramDescription description, String contractNumber) {
-//        String fileHash = FileHashCalculator.calculateHash( file);
-//        System.out.println(fileHash);
-//        model.addAttribute("fileHash", fileHash);
-//        file.transferTo(new File("./myDiagrams/"));
-//        log.info("uploaded file " + file.getOriginalFilename());
-////        return "redirect:/";
-//    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

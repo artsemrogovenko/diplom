@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ModelAndView handleMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
         ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
-        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getBody());
+        modelAndView.addObject("errorInfo", ex.getMessage() + ex.getBody());
         return modelAndView;
     }
 
@@ -25,23 +25,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView handleNoResourceFoundException(NoHandlerFoundException ex) {
         ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
-        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getBody());
+        modelAndView.addObject("errorInfo", ex.getMessage() + ex.getBody());
         return modelAndView;
     }
 
-//    @LogMethod
-//    @ExceptionHandler(value = FeignException.InternalServerError.class)
-//    public ModelAndView errorPage(FeignException ex) {
-//        ModelAndView modelAndView = new ModelAndView("/errorPage"); // Перенаправление на главную страницу
-//        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getCause());
-//        return modelAndView;
-//    }
+    @LogMethod
+    @ExceptionHandler(value = FeignException.InternalServerError.class)
+    public ModelAndView errorPage(FeignException ex) {
+        ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
+        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getCause());
+        return modelAndView;
+    }
 
     @LogMethod
     @ExceptionHandler(value = EntityNotFoundException.class)
     public ModelAndView errorPage(EntityNotFoundException ex) {
         ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
-        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getCause());
+        modelAndView.addObject("errorInfo", ex.getMessage() + ex.getCause());
         return modelAndView;
     }
 
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     public ModelAndView errorPage(NoResourceFoundException ex) {
         ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
         modelAndView.addObject("message", "404 Not Found");
-        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.getBody());
+        modelAndView.addObject("errorInfo", ex.getMessage() + ex.getBody());
         return modelAndView;
     }
 
@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = FeignException.MethodNotAllowed.class)
     public ModelAndView notsupported(FeignException ex) {
         ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
-        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.contentUTF8());
+        modelAndView.addObject("errorInfo", ex.getMessage() + ex.contentUTF8());
         return modelAndView;
     }
 
@@ -67,10 +67,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = feign.RetryableException.class)
     public ModelAndView notsupported(RetryableException ex) {
         ModelAndView modelAndView = new ModelAndView("errorPage"); // Перенаправление на главную страницу
-        modelAndView.addObject("errorInfo", ex.getMessage()+ ex.contentUTF8());
+        modelAndView.addObject("errorInfo", ex.getMessage() + ex.contentUTF8());
         return modelAndView;
     }
-
 
 
 }

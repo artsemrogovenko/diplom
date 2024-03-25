@@ -9,7 +9,6 @@ import java.util.Set;
 
 public class ModuleMapper {
 
-
     public static <T extends ModuleData> Module mapToModule(T data) {
         Module module = null;
         if (data instanceof ModuleResponse) {

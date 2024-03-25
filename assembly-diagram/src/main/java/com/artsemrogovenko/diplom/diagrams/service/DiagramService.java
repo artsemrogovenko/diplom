@@ -32,7 +32,7 @@ public class DiagramService {
     private final ContractNumberRepository contractNumberRepository;
     private final SchemeFileRepository schemeFileRepository;
     private final String FOLDER_PATH = "./myDiagrams/";
-    private String tempDirectory = "./tempDiagrams/";
+    private final String tempDirectory = "./tempDiagrams/";
 
     public ResponseEntity<SchemeForModule> saveToRepositiry(MultipartFile file, DiagramDescription description, String contractNumber) {
         return saveToRepositiry(writeMultipartFile(file), description, contractNumber);
@@ -128,25 +128,15 @@ public class DiagramService {
             // Вычисляем хэш файла
             String hashstring = fileHashCalculator.calculateHash(temp);
 
-//            String extension = "";
             String extension = getExtension(file.getName());
             int lastIndex = temp.getName().lastIndexOf('.');
 
-            // Проверяем, чтобы убедиться, что точка найдена и что она не находится в начале или в конце имени файла
-//            if (lastIndex != -1 && lastIndex != 0 && lastIndex != temp.getName().length() - 1) {
-//                // Извлекаем подстроку, начиная с индекса точки + 1 (чтобы исключить точку из результата)
-//                extension = temp.getName().substring(lastIndex);
-//                System.out.println("Расширение файла: " + extension);
-//            } else {
-//                System.out.println("Невозможно определить расширение файла.");
-//            }
 
             File renamedFile = new File(temp.getParentFile(), hashstring + extension);
             if (!fileSearcher(hashstring + extension, Path.of(file.getParent()))) {
                 // Переименовываем файл если нет такого в папке
                 temp.renameTo(renamedFile);
             } else {
-//                temp.delete();
                 file.delete();
             }
 
@@ -229,7 +219,6 @@ public class DiagramService {
             });
             for (Path path : foundFiles) {
                 if (String.valueOf(path.getFileName()).equals(filename)) {
-//                if (path.getFileName().equals(filename)) {
                     return true;
                 }
 
@@ -274,7 +263,7 @@ public class DiagramService {
                         diagramDescription.getVersionAssembly());
         //если результат найден
         if (urlresult.isPresent()) {
-           return new ResponseEntity<>(urlresult.get(), HttpStatus.OK);
+            return new ResponseEntity<>(urlresult.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>("", HttpStatus.OK);
     }

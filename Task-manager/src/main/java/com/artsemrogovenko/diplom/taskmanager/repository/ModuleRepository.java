@@ -16,9 +16,6 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
 
 Module findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(String factoryNumber, String model, String name, Integer quantity,String unit, String description, String circutFile);
 
-//  @Query("SELECT e FROM Module e ORDER BY e.id DESC")
-//  Module findLastModule();
-
   @Query("SELECT e FROM Module e WHERE e.id = (SELECT MAX(ee.id) FROM Module ee)")
   Module findLastModule();
 

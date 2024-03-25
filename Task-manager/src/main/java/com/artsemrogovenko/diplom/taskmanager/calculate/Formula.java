@@ -2,12 +2,12 @@ package com.artsemrogovenko.diplom.taskmanager.calculate;
 
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
-import com.artsemrogovenko.diplom.taskmanager.dto.ModuleRequest;
-import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
-import com.artsemrogovenko.diplom.taskmanager.model.*;
+import com.artsemrogovenko.diplom.taskmanager.model.Component;
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
+import com.artsemrogovenko.diplom.taskmanager.model.Product;
+import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.repository.ComponentRepository;
 import com.artsemrogovenko.diplom.taskmanager.services.ComponentService;
 import com.artsemrogovenko.diplom.taskmanager.services.ModuleService;
@@ -46,7 +46,7 @@ public class Formula {
         special.setName("комплектация");
         special.setQuantity(1);
 
-        List<Component> additionalComponents =  additionalComponents(product);
+        List<Component> additionalComponents = additionalComponents(product);
         special.setComponents(new HashSet<>(additionalComponents));
 
 
@@ -159,12 +159,6 @@ public class Formula {
         for (Module module : task.getModules()) {
             module.getComponents().forEach(components::add);
         }
-//        components.forEach(ComponentMapper::mapToComponent);
-
-//        List<Component> components = task.getModules().stream()
-//                .flatMap(module -> module.getComponents().stream())
-//                .toList();
-//        return components;
         return components;
     }
 }

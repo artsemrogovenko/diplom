@@ -1,6 +1,7 @@
 package com.artsemrogovenko.diplom.accountapp.dto;
 
 import com.artsemrogovenko.diplom.accountapp.models.Module;
+import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus ;
 
 import java.util.List;
 
@@ -11,13 +12,13 @@ public interface TaskData {
 
     String getDescription();
 
-    TaskStatus getTaskStatus();
+    TaskStatus getStatus();
 
     String getContractNumber();
 
     String getOwner();
-    boolean isReserved();
 
+    boolean isReserved();
 
     List<Module> getModules();
 }

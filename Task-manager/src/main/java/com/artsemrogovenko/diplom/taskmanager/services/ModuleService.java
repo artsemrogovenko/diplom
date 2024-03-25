@@ -1,13 +1,15 @@
 package com.artsemrogovenko.diplom.taskmanager.services;
 
-import com.artsemrogovenko.diplom.taskmanager.dto.*;
+import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.taskmanager.dto.ModuleRequest;
+import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
+import com.artsemrogovenko.diplom.taskmanager.dto.SavedModule;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.taskmanager.model.Component;
+import com.artsemrogovenko.diplom.taskmanager.model.Module;
 import com.artsemrogovenko.diplom.taskmanager.model.MyCollection;
 import com.artsemrogovenko.diplom.taskmanager.repository.ModuleRepository;
-import com.artsemrogovenko.diplom.taskmanager.model.Module;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -53,18 +54,6 @@ public class ModuleService {
 
     public ModuleResponse updateModule(ModuleResponse module) {
         Module moduleById = ModuleMapper.mapToModule(getModuleById(module.getId()));
-//        moduleById.setId(module.getId());
-//        moduleById.setFactoryNumber(module.getFactoryNumber());
-//        moduleById.setModel(module.getModel());
-//        moduleById.setName(module.getName());
-//        moduleById.setQuantity(module.getQuantity());
-//        moduleById.setUnit(module.getUnit());
-//        moduleById.setDescription(module.getDescription());
-//
-//        moduleById.setComponents(module.getComponentResponses().stream()
-//                        .map(componentResponse -> ComponentMapper.mapToComponent(componentResponse))
-//                        .collect(Collectors.toSet())    );
-
         return ModuleMapper.mapModuleToModuleResponse(moduleRepository.save(moduleById));
     }
 
@@ -80,12 +69,11 @@ public class ModuleService {
         if (moduleRequest instanceof ModuleResponse) {
             module = ModuleMapper.mapToModule((ModuleRequest) moduleRequest);
         }
-
+        module.setId(null);
         if (notExist(module)) {
             if (module.getComponents() != null) {
                 List<Component> componentList = componentService.saveAll(module.getComponents());
                 if (componentList != null) {
-//                    componentList.addAll(componentList);
                     module.setComponents(new HashSet<>(componentList));
                 }
             }

@@ -14,7 +14,7 @@
 <body>
 
 <nav class="navbar navbar-light bg-light">
-    <a class="navbar-brand" th:href="@{/}" >На главную</a>
+    <a class="navbar-brand" th:href="@{/}">На главную</a>
     <span class="navbar-brand mb-0 h1" th:text="${username}">Имя</span>
     <form th:action="@{/logout}" method="post">
         <input type="submit" value="Sign Out"/>
@@ -22,22 +22,21 @@
 </nav>
 
 <script th:inline="javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         var errorInfo = /*[[${errorInfo}]]*/ '';
         toastr.error(errorInfo);
     });
 </script>
 <div href="#" th:if="${taskservice !='503 SERVICE_UNAVAILABLE'}"
      class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom">
-   <span class="countdown" id="countdown" th:text="${timer}"                                                style="font-size: 12px; text-align: right;"></span>
+    <span class="countdown" id="countdown" th:text="${timer}" style="font-size: 12px; text-align: right;"></span>
 </div>
 
 
-    <div th:if="${errorInfo != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Ошибка!</strong> <span th:text="${message}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
+<div th:if="${errorInfo != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Ошибка!</strong> <span th:text="${message}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
 
 </body>

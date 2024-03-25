@@ -4,10 +4,8 @@ import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TemplateMapper;
+import com.artsemrogovenko.diplom.taskmanager.model.*;
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
-import com.artsemrogovenko.diplom.taskmanager.model.Product;
-import com.artsemrogovenko.diplom.taskmanager.model.Task;
-import com.artsemrogovenko.diplom.taskmanager.model.Template;
 import com.artsemrogovenko.diplom.taskmanager.repository.ModuleRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.ProductRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
@@ -119,10 +117,6 @@ public class ProductService {
                     }
                 });
             }
-
-//            newProduct.setTasks();
-
-
             saveProduct(newProduct);
 
             System.out.println(productRepository.findById(newProduct.getContractNumber()));
@@ -136,11 +130,8 @@ public class ProductService {
 
 
     void saveProduct(Product product) {
-//        if (product.getTasks() != null && !product.getTasks().isEmpty()) {
-//            taskRepository.saveAll(product.getTasks());
-//        }
         productRepository.save(product);
-       product.getTasks().forEach(task ->  subtask.increment(task.getModules().size()));
+        product.getTasks().forEach(task -> subtask.increment(task.getModules().size()));
     }
 
     private boolean isExist(Product product) {
@@ -158,7 +149,7 @@ public class ProductService {
 
     public void changeProductStatus(String contractnumber) {
         Product verifyProduct = productRepository.findById(contractnumber).get();
-        if (verifyProduct.getTasks().stream().allMatch(task -> task.getStatus() == Task.Status.DONE)) {
+        if (verifyProduct.getTasks().stream().allMatch(task -> task.getStatus().equals(TaskStatus.DONE))) {
             verifyProduct.setDone(true);
         }
 
