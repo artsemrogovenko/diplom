@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.controller;
 
+import com.artsemrogovenko.diplom.taskmanager.api.StorageApi;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.model.Product;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
@@ -40,6 +41,11 @@ public class WebController {
     public String main(Model model) {
         model.addAttribute("products", productService.getAllProducts());
         return "index";
+    }
+
+    @GetMapping("/specifications")
+    public String showModules(Model model) {
+     return "redirect:http://localhost:8082/";
     }
 
     @PostMapping("/createTemplate")

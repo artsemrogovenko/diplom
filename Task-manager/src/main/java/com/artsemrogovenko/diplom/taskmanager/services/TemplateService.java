@@ -44,7 +44,7 @@ public class TemplateService {
     }
 
     /**
-     * обновлять список modules не чаще чем раз в две минуты
+     * обновлять список modules c с задержкой
      *
      * @param currentTime время веб клиента
      */

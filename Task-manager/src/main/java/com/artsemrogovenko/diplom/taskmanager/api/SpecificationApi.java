@@ -14,4 +14,7 @@ public interface SpecificationApi {
 
     @GetMapping("/module")
     public ResponseEntity<List<ModuleResponse>> getAll();
+
+    @GetMapping("/")
+    public String main(Model model);
 }

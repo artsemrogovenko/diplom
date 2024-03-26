@@ -19,10 +19,10 @@ alerting:
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
 scrape_configs:
-#  - job_name: 'web-actuator'
-#    metrics_path: '/actuator/prometheus'
-#    static_configs:
-#      - targets: ['host.docker.internal:8080']
+  - job_name: 'task-actuator'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8085']
   - job_name: 'account-actuator'
     metrics_path: '/actuator/prometheus'
     static_configs:

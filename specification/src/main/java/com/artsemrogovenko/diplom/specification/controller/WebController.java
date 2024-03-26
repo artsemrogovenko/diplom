@@ -1,23 +1,16 @@
 package com.artsemrogovenko.diplom.specification.controller;
 
-import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
 import com.artsemrogovenko.diplom.specification.dto.ModuleResponse;
-import com.artsemrogovenko.diplom.specification.httprequest.MyRequest;
 import com.artsemrogovenko.diplom.specification.service.ModuleService;
 import com.artsemrogovenko.diplom.specification.service.StorageService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.apache.http.client.methods.HttpPost;
 
-import java.io.IOException;
-import java.net.ConnectException;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -28,9 +21,13 @@ public class WebController {
     private final StorageService storageService;
     private static boolean startView = true;
     private static String response;
-    private static String storageResponse;
+    private static String taskResponse;
     private static List<ModuleResponse> sessionList;
 
+    @GetMapping("/task")
+    public String taskSever() throws FeignException {
+        return "redirect:http://localhost:8085";
+    }
     @GetMapping("/")
     public String main(Model model) throws Exception {
 
@@ -41,8 +38,8 @@ public class WebController {
 
         model.addAttribute("components", storageService.availableComponents(LocalTime.now()));
         model.addAttribute("newModule", new ModuleRequest());
-//        model.addAttribute("errorInfo", storageResponse);
-        storageResponse = null;
+        model.addAttribute("errorInfo", taskResponse);
+        taskResponse = null;
         model.addAttribute("modules", sessionList);
         model.addAttribute("message", response);
         response = null;

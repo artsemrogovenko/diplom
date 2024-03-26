@@ -37,7 +37,7 @@ public class TaskService {
     private final AccountRepository accountRepository;
     private final ModuleService moduleService;
     private final TaskRepository taskRepository;
-    private static LocalTime requiredTime = LocalTime.now().plusSeconds(30);
+    private static LocalTime requiredTime = LocalTime.now().plusSeconds(3);
     private static List<Task> tasks = new ArrayList<>();
 
 
@@ -51,14 +51,14 @@ public class TaskService {
     }
 
     /**
-     * Обновлять список modules не чаще чем раз в две минуты
+     * Обновлять список task с задержкой
      *
      * @param currentTime время веб клиента
      */
     public List<Task> getTasks(LocalTime currentTime) throws FeignException.ServiceUnavailable, feign.RetryableException {
         secondsDifference = (int) LocalTime.now().until(requiredTime, ChronoUnit.SECONDS);
         if (currentTime.isAfter(requiredTime)) {
-            requiredTime = LocalTime.now().plusSeconds(2);
+            requiredTime = LocalTime.now().plusSeconds(3);
             tasks = pullTasks();
         }
         return tasks;
