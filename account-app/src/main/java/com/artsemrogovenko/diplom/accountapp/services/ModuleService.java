@@ -75,8 +75,8 @@ public class ModuleService {
         try {
             Module existingModule = searchModule(module);
             if (existingModule.getQuantity() != null) {
-                if (existingModule.getQuantity().equals(module.getQuantity())) {
-                    return false;
+                if (existingModule.getQuantity().equals(module.getQuantity()) && existingModule.getComponents().equals(module.getComponents())) {
+                    return true;
                 }
             }
         } catch (NoSuchElementException e) {
@@ -97,18 +97,17 @@ public class ModuleService {
         Integer quantity = module.getQuantity();
         String unit = module.getUnit();
         String description = module.getDescription() == "" ? null : module.getDescription();
-        String circutFile = module.getCircutFile() == "" ? null : module.getCircutFile();
+        String circutFile = module.getCircuitFile() == "" ? null : module.getCircuitFile();
 
-        Optional<Module> find = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(factoryNumber, model, name, quantity, unit, description, circutFile);
+        Optional<Module> find = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircuitFile(factoryNumber, model, name, quantity, unit, description, circutFile);
 
         if (find.isPresent()) {
-            module = find.get();
-            module.setComponents(componentService.getComponentById(find.get().getId()));
-            System.out.println(module);
-        } else {
+            return find.get();
+//            module.setComponents(componentService.getComponentById(find.get().getId()));
+        }else {
             throw new NoSuchElementException();
         }
-        return module;
+
     }
 
     public List<Module> getModuleByTask(Long taskId) {

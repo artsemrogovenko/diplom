@@ -4,8 +4,8 @@ import com.artsemrogovenko.diplom.taskmanager.calculate.Formula;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.taskmanager.dto.mymapper.TemplateMapper;
-import com.artsemrogovenko.diplom.taskmanager.model.*;
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
+import com.artsemrogovenko.diplom.taskmanager.model.*;
 import com.artsemrogovenko.diplom.taskmanager.repository.ModuleRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.ProductRepository;
 import com.artsemrogovenko.diplom.taskmanager.repository.TaskRepository;
@@ -33,7 +33,7 @@ public class ProductService {
     private final ModuleRepository moduleRepository;
     private final Formula formulaService;
 
-    private final Counter subtask = Metrics.counter("Подзадач создано");
+    private final Counter subtask = Metrics.counter("Subtasks created");
 
     public ResponseEntity<String> prepareData(Product product, String selectedTemplatesJson, String selectedModulesJson, List<Template> templateList, List<ModuleResponse> moduleResponseList) {
         // Преобразование JSON в список идентификаторов выбранных модулей
@@ -91,6 +91,7 @@ public class ProductService {
             //добавляю дополнительные компоненты
             List<Task> additional = formulaService.additionalTask(newProduct);
             for (Task task : additional) {
+                task.getModules();
                 taskRepository.save(task);
             }
             newProduct.getTasks().addAll(additional);
@@ -119,7 +120,7 @@ public class ProductService {
             }
             saveProduct(newProduct);
 
-            System.out.println(productRepository.findById(newProduct.getContractNumber()));
+//            System.out.println(productRepository.findById(newProduct.getContractNumber()));
 
             return new ResponseEntity<>("Продукт принят в производство", HttpStatus.CREATED);
         } catch (JsonProcessingException e) {
@@ -147,6 +148,10 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    /**
+     * Если все подзадачи сделаны, Product меняет статус
+     * @param contractnumber
+     */
     public void changeProductStatus(String contractnumber) {
         Product verifyProduct = productRepository.findById(contractnumber).get();
         if (verifyProduct.getTasks().stream().allMatch(task -> task.getStatus().equals(TaskStatus.DONE))) {

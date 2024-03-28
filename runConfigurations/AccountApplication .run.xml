@@ -1,9 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AccountApplication " type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="account-app" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="com.artsemrogovenko.diplom.accountapp.AccountApplication" />
-    <method v="2">
-      <option name="Make" enabled="true" />
-    </method>
-  </configuration>
-</component>

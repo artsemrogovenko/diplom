@@ -1,14 +1,11 @@
 package com.artsemrogovenko.diplom.taskmanager.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Entity
@@ -22,14 +19,14 @@ public class Product {
     private String color; // цвет
     private Integer floors;  // остановок
     private Boolean done; // готовность
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
-            name = "product_task", // Имя таблицы для связи между Product и Template
+            name = "product_task", // Имя таблицы для связи между Product и Task
             joinColumns = @JoinColumn(name = "product_contractNumber"), // Столбец для связи с Product
-            inverseJoinColumns = @JoinColumn(name = "task_id") // Столбец для связи с Template
+            inverseJoinColumns = @JoinColumn(name = "task_id") // Столбец для связи с Task
     )
     private List<Task> tasks = new ArrayList<>();
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Deficit> deficit = new ArrayList<>(); // что нехватает для изготовления
     @PrePersist
     void onCreate() {

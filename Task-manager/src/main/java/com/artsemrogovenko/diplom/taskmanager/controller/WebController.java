@@ -1,6 +1,5 @@
 package com.artsemrogovenko.diplom.taskmanager.controller;
 
-import com.artsemrogovenko.diplom.taskmanager.api.StorageApi;
 import com.artsemrogovenko.diplom.taskmanager.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.taskmanager.model.Product;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

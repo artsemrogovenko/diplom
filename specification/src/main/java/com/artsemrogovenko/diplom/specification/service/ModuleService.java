@@ -63,7 +63,7 @@ public class ModuleService {
             return new ResponseEntity<>(new ModuleResponse(), HttpStatus.BAD_REQUEST);
         }
         Module module = ModuleMapper.mapToModule(moduleRequest);
-        DiagramDescription diagramrequest = new DiagramDescription(module.getName(), module.getModel(), module.getCircuitFile().trim());
+        DiagramDescription diagramrequest = new DiagramDescription(module.getName(), module.getModel(), module.getCircuitFile());
         String circuit = assemblyApi.requestSheme(diagramrequest).getBody();
         module.setCircuitFile(circuit);
 

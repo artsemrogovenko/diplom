@@ -2,10 +2,8 @@ package com.artsemrogovenko.diplom.specification.controller;
 
 import com.artsemrogovenko.diplom.specification.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
-import com.artsemrogovenko.diplom.specification.model.Component;
 import com.artsemrogovenko.diplom.specification.service.ComponentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -9,7 +9,6 @@ import com.artsemrogovenko.diplom.accountapp.services.TaskService;
 import feign.FeignException;
 import feign.RetryableException;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalTime;
@@ -37,15 +34,8 @@ public class WebController {
     private static String responseMessage;
     private static boolean startView = true;
     private static String confirm;
-    private final Counter assignTaskCounter = Metrics.counter("Получить задачу");
-    private final Counter rollback = Metrics.counter("Отказ от задачи");
-
-
-    private final Gauge percentGauge = Gauge.builder("рейтинг", () -> {
-        double assignTaskCount = assignTaskCounter.count();
-        double rollbackCount = rollback.count();
-        return rollbackCount != 0 ? assignTaskCount / rollbackCount : 0;
-    }).register(Metrics.globalRegistry);
+    private final Counter assignTaskCounter = Metrics.counter("Get task");
+    private final Counter rollback = Metrics.counter("Discard task");
 
     @PostMapping("/")
     public String login() {
@@ -84,15 +74,20 @@ public class WebController {
 
     @PostMapping("/rollback/{id}")
     public String cancelTask(@PathVariable("id") Long taskId, @RequestParam("userid") String userid) {
+        Task deleting = taskService.findTaskById(taskId, userid);
         try {
             confirm = taskService.rollbackTask(userid, taskId).getBody();
-            Task deleting = taskService.findTaskById(taskId, userid);
             if (deleting != null) {
                 taskService.deleteTask(taskId);
             }
             rollback.increment();
         } catch (FeignException.NotFound | FeignException.BadRequest | RetryableException e) {
             responseMessage = e.getMessage();
+            if (responseMessage.contains("задачи")) {
+                if (deleting != null) {
+                    taskService.deleteTask(taskId);
+                }
+            }
         }
 
         return "redirect:/myTasks?userid=" + userid;
@@ -123,7 +118,7 @@ public class WebController {
     @LogMethod
     @GetMapping("/myModules/{taskId}")
     public String modules(@PathVariable("taskId") Long taskId, @RequestParam("userid") String userId, Model model) {
-        List<Module> modules = taskService.getModuleByTaskid(taskId);
+        List<Module> modules = taskService.findTaskById(taskId,userId).getModules();
 //        System.out.println(modules);
         model.addAttribute("confirm", confirm);
         model.addAttribute("errorInfo", responseMessage);
@@ -170,7 +165,7 @@ public class WebController {
             }
         } catch (feign.FeignException.ServiceUnavailable | feign.RetryableException ex) {
             taskservice_StatusCode = "503 SERVICE_UNAVAILABLE";
-            responseMessage=ex.contentUTF8();
+            responseMessage = ex.contentUTF8();
         }
 //        System.out.println(temp);
         model.addAttribute("message", responseCode);

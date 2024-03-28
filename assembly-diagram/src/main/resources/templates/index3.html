@@ -33,9 +33,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="elements">Elements</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                </li>
             </ul>
         </div>
     </div>
@@ -44,11 +41,6 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-8 mt-5">
-
-            <!--            <div th:if="${message}">-->
-            <!--                <h2 th:text="${message}"/>-->
-            <!--            </div>-->
-
 
             <div th:if="${message}" class="alert-success" th:text="${message}" style="display: none;"></div>
             <script th:if="${message} == '201 CREATED'">toastr.success('Cхема добавлена');</script>

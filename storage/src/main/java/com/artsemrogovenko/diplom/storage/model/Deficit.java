@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -27,21 +30,23 @@ public class Deficit {
     private String description;  // тут можно указать например цвет
     @Column(columnDefinition = "BOOL", nullable = false)
     private boolean refill;  // можно обьединить?
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "deficit_contract_numbers", // Имя связующей таблицы для Deficit и ContractNumber
             joinColumns = @JoinColumn(name = "deficit_id"), // Столбец с внешним ключом для Deficit
             inverseJoinColumns = @JoinColumn(name = "contract_number_id") // Столбец с внешним ключом для ContractNumber
     )
     private Set<ContractNumber> contractNumbers = new HashSet<>();
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<Long> taskIds = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "deficit_account_names", // Имя связующей таблицы для Deficit и AccountName
             joinColumns = @JoinColumn(name = "deficit_id"), // Столбец с внешним ключом для Deficit
             inverseJoinColumns = @JoinColumn(name = "account_name_id") // Столбец с внешним ключом для AccountName
     )
     private Set<AccountName> accountNames = new HashSet<>();
+
+
 }

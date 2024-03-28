@@ -16,11 +16,16 @@ public class TaskMapper {
         task.setOwner(taskData.getOwner());
         task.setReserved(taskData.isReserved());
 
-        if (taskData.getModules() != null && !taskData.getModules().isEmpty())
+        if (taskData.getModules() != null && !taskData.getModules().isEmpty()) {
             for (Module module : taskData.getModules()) {
                 task.getModules().add(ModuleMapper.mapToModule(module));
             }
-
+        }
+        task.getModules().forEach((module) -> {
+            if (module.getFactoryNumber()==null) {
+                module.setFactoryNumber(task.getContractNumber());
+            }
+        });
         return task;
 
     }

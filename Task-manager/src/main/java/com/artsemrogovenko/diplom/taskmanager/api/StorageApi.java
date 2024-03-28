@@ -1,11 +1,9 @@
 package com.artsemrogovenko.diplom.taskmanager.api;
 
 import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
-import com.artsemrogovenko.diplom.taskmanager.config.WebClientConfig;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.taskmanager.dto.ComponentResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

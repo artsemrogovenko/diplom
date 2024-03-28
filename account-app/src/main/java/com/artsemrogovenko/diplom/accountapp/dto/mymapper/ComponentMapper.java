@@ -1,21 +1,19 @@
 package com.artsemrogovenko.diplom.accountapp.dto.mymapper;
 
 import com.artsemrogovenko.diplom.accountapp.dto.ComponentData;
-import com.artsemrogovenko.diplom.accountapp.dto.ModuleData;
 import com.artsemrogovenko.diplom.accountapp.models.Component;
 import com.artsemrogovenko.diplom.accountapp.models.ComponentRequest;
-import com.artsemrogovenko.diplom.accountapp.models.Module;
 
 public class ComponentMapper {
 
     public static <T extends ComponentData> Component mapToComponent(T componentData) {
         Component component;
 
-        if (componentData instanceof Component) {
-            component = new Component(((Component) componentData).getId());
-        } else {
+//        if (componentData instanceof Component) {
+//            component = new Component(((Component) componentData).getId());
+//        } else {
             component = new Component();
-        }
+//        }
 
 
         if (componentData.getFactoryNumber() != null) {

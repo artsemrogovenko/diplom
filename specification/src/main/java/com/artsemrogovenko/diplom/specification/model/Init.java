@@ -1,16 +1,10 @@
 package com.artsemrogovenko.diplom.specification.model;
 
-import com.artsemrogovenko.diplom.specification.dto.ComponentRequest;
-import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
-import com.artsemrogovenko.diplom.specification.dto.mymapper.ModuleMapper;
 import com.artsemrogovenko.diplom.specification.repositories.ComponentRepository;
 import com.artsemrogovenko.diplom.specification.repositories.ModuleRepository;
 import com.artsemrogovenko.diplom.specification.service.ModuleService;
-import lombok.AllArgsConstructor;
 import jakarta.annotation.PostConstruct;
-
-import java.util.Collection;
-import java.util.List;
+import lombok.AllArgsConstructor;
 
 @org.springframework.stereotype.Component
 @AllArgsConstructor
@@ -23,10 +17,12 @@ public class Init {
     @PostConstruct
     public void init() {
         Component mycompo = new Component();
-        mycompo.setName("wire");
-        mycompo.setQuantity(2);
+        mycompo.setName("Кабель");
+        mycompo.setName("ПУГНП");
+        mycompo.setModel("3х2,5");
+        mycompo.setQuantity(1);
         mycompo.setUnit("км");
-        mycompo.setDescription("зеленый");
+        mycompo.setDescription("пвх");
         Module module = new Module();
 
         module.setName("Коробка");
@@ -36,10 +32,10 @@ public class Init {
         module.addComponent(mycompo);
         module.setDescription("black color");
         module.setCircuitFile("https://cdn.pixabay.com/photo/2013/07/13/13/48/cardboard-box-161578_1280.png");
-//        moduleRepository.save(module);
-        if(moduleService.notExist(module)){
+        if (moduleService.notExist(module)) {
             moduleRepository.save(module);
         }
+
     }
 }
 

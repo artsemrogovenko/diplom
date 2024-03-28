@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="compoundSpring" type="CompoundRunConfigurationType">
+    <toRun name="AccountApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="DiagramApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="EurekaApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="SpecificationApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="StorageApplication" type="SpringBootApplicationConfigurationType" />
+    <toRun name="TaskManagerApplication" type="SpringBootApplicationConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>

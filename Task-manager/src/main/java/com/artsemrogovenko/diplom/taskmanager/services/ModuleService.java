@@ -28,6 +28,11 @@ public class ModuleService {
     private final ComponentService componentService;
     private final ModuleRepository moduleRepository;
 
+    /**
+     * Чтобы для преобразования одной модели в другую не занимать столько места,
+     * я сделал Классы с методами преобразования пакете /dto/mymapper
+     * @return
+     */
     public List<ModuleResponse> getAllModules() {
         return moduleRepository.findAll().stream()
                 .map(module ->
@@ -42,7 +47,7 @@ public class ModuleService {
                                 .componentResponses(new MyCollection<>(ComponentResponse.class, module.getComponents().stream()
                                         .map(component -> ComponentMapper.mapToComponentResponse(component))
                                         .collect(Collectors.toSet())))
-                                .circutFile(module.getCircutFile())
+                                .circuitFile(module.getCircuitFile())
                                 .build()
                 ).toList();
     }
@@ -57,6 +62,12 @@ public class ModuleService {
         return ModuleMapper.mapModuleToModuleResponse(moduleRepository.save(moduleById));
     }
 
+    /**
+     * Сохранение и привязка модуля к сущности
+     * @param moduleRequest
+     * @return
+     * @param <T> любой класс имплементирующий SavedModule
+     */
     public <T extends SavedModule> ResponseEntity<ModuleResponse> createModule(T moduleRequest) {
         if (moduleRequest == null) {
             return new ResponseEntity<>(new ModuleResponse(), HttpStatus.BAD_REQUEST);
@@ -79,7 +90,7 @@ public class ModuleService {
             }
             ModuleResponse result = ModuleMapper.mapModuleToModuleResponse(moduleRepository.save(module));
 
-            System.out.println(moduleRepository.findLastModule());
+//            System.out.println(moduleRepository.findLastModule());
             return new ResponseEntity<>(result, CREATED);
         }
         Module newmodule = ModuleMapper.mapToModule(module);
@@ -109,6 +120,12 @@ public class ModuleService {
         moduleRepository.deleteById(id);
     }
 
+    /**
+     * Поиск на совпадение по полям
+     * @param module
+     * @return модуль или null
+     * @throws NoSuchElementException
+     */
     public Module searchModule(Module module) throws NoSuchElementException {
         String factoryNumber = module.getFactoryNumber() == "" ? null : module.getFactoryNumber();
         String model = module.getModel() == "" ? null : module.getModel();
@@ -116,9 +133,9 @@ public class ModuleService {
         Integer quantity = module.getQuantity();
         String unit = module.getUnit();
         String description = module.getDescription() == "" ? null : module.getDescription();
-        String circutFile = module.getCircutFile() == "" ? null : module.getCircutFile();
+        String circutFile = module.getCircuitFile() == "" ? null : module.getCircuitFile();
 
-        Module result = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircutFile(
+        Module result = moduleRepository.findFirstByFactoryNumberAndModelAndNameAndQuantityAndUnitAndDescriptionAndCircuitFile(
                 factoryNumber, model, name, quantity, unit, description, circutFile);
 
         return result;

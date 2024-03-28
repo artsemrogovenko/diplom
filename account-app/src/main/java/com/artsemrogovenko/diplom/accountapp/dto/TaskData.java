@@ -1,7 +1,6 @@
 package com.artsemrogovenko.diplom.accountapp.dto;
 
 import com.artsemrogovenko.diplom.accountapp.models.Module;
-import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus ;
 
 import java.util.List;
 

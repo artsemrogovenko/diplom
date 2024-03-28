@@ -1,7 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.model;
 
 import jakarta.persistence.*;
-import  com.artsemrogovenko.diplom.taskmanager.model.Module;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +15,7 @@ public class Template implements TemplateData {
     private Long id;
     private String name;   //имя
     private String description; // описание
-    @ManyToMany //один компонент может относиться ко многим модулям
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     private List<Module> modules = new ArrayList<>();
     public void addModule(Module module) {
         modules.add(module);

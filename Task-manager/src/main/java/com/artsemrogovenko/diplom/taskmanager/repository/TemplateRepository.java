@@ -1,7 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.repository;
 
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
-import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.Template;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

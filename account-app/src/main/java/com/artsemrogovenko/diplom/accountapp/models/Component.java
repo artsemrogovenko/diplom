@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -54,18 +55,42 @@ public class Component implements ComponentData {
     }
 
     @Override
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        result = result * PRIME + (id == null ? 0 : id.hashCode());
-        result = result * PRIME + (factoryNumber == null ? 0 : factoryNumber.hashCode());
-        result = result * PRIME + (model == null ? 0 : model.hashCode());
-        result = result * PRIME + (name == null ? 0 : name.hashCode());
-        result = result * PRIME + (quantity == null ? 0 : quantity.hashCode());
-        result = result * PRIME + (unit == null ? 0 : unit.hashCode());
-        result = result * PRIME + (description == null ? 0 : description.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Component component = (Component) o;
+        return Objects.equals(factoryNumber, component.factoryNumber) && Objects.equals(model, component.model) && Objects.equals(name, component.name) && Objects.equals(quantity, component.quantity) && Objects.equals(unit, component.unit) && Objects.equals(description, component.description);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(factoryNumber, model, name, quantity, unit, description);
+    }
+
+//    @Override
+//    public int hashCode() {
+//        final int PRIME = 59;
+//        int result = 1;
+////        result = result * PRIME + (id == null ? 0 : id.hashCode());
+//        result = result * PRIME + (factoryNumber == null ? 0 : factoryNumber.hashCode());
+//        result = result * PRIME + (model == null ? 0 : model.hashCode());
+//        result = result * PRIME + (name == null ? 0 : name.hashCode());
+//        result = result * PRIME + (quantity == null ? 0 : quantity.hashCode());
+//        result = result * PRIME + (unit == null ? 0 : unit.hashCode());
+//        result = result * PRIME + (description == null ? 0 : description.hashCode());
+//        return result;
+//    }
+//
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Component component = (Component) o;
+//        return
+////                Objects.equals(id, component.id) &&
+//                        Objects.equals(factoryNumber, component.factoryNumber) && Objects.equals(model, component.model) && Objects.equals(name, component.name) && Objects.equals(quantity, component.quantity) && Objects.equals(unit, component.unit) && Objects.equals(description, component.description);
+//    }
 
 
 }

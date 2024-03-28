@@ -2,10 +2,11 @@ package com.artsemrogovenko.diplom.accountapp.models;
 
 import com.artsemrogovenko.diplom.accountapp.dto.TaskData;
 import com.artsemrogovenko.diplom.accountapp.dto.TaskStatus;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,15 @@ public class Task implements TaskData {
     private String owner; // у кого сейчас задача
     private boolean reserved;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(name = "module_tasks",
             joinColumns = @JoinColumn(name = "module_id"),
             inverseJoinColumns = @JoinColumn(name = "task_id"))
     private List<Module> modules = new ArrayList<>();
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinTable(name = "account_tasks", joinColumns = @JoinColumn(name = "account_name"),
             inverseJoinColumns = @JoinColumn(name = "task_id", columnDefinition = "VARCHAR(50)"))
     private Account account;

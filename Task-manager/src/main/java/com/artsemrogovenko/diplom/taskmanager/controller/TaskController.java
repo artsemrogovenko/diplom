@@ -1,14 +1,11 @@
 package com.artsemrogovenko.diplom.taskmanager.controller;
 
 import com.artsemrogovenko.diplom.taskmanager.aop.TrackUserAction;
-
 import com.artsemrogovenko.diplom.taskmanager.model.Task;
-import com.artsemrogovenko.diplom.taskmanager.model.exceptions.ResourceNotFoundException;
 import com.artsemrogovenko.diplom.taskmanager.services.TaskService;
 import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +29,6 @@ public class TaskController {
      *
      * @return ответ со списком задач.
      */
-
     @TrackUserAction
     @GetMapping
     public ResponseEntity<List<Task>> getTasks() {

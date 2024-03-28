@@ -22,6 +22,7 @@ public class TaskForUser implements TaskData {
     private String contractNumber; // номер договора
     private String owner; // у кого сейчас задача
     private boolean reserved;
+    @Builder.Default
     private List<Module> modules = new ArrayList<>();
 
 

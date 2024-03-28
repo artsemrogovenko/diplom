@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ public class Account {
     private String password;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
-    @OneToMany(mappedBy = "account", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account",  fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();   // список задач
 
     public Account(String username, String password, Collection<? extends GrantedAuthority> authorities) {

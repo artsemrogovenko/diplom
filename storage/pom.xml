@@ -6,7 +6,7 @@
 		<artifactId>diplom</artifactId>
 		<groupId>com.artsemrogovenko</groupId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.artsemrogovenko.diplom</groupId>
 	<artifactId>storage</artifactId>
@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<artifactId>spring-cloud-openfeign-core</artifactId>
 		</dependency>
 
 		<dependency>
@@ -46,12 +46,8 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-netflix-eureka-client</artifactId>
+			<scope>runtime</scope>
         </dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-netflix-eureka-client</artifactId>
-		</dependency>
-
 
 	</dependencies>
 

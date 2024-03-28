@@ -6,13 +6,12 @@ import com.artsemrogovenko.diplom.storage.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.storage.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.storage.dto.mymapper.ComponentMapper;
 import com.artsemrogovenko.diplom.storage.model.Component;
-import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
 import com.artsemrogovenko.diplom.storage.repositories.AccountRepository;
+import com.artsemrogovenko.diplom.storage.repositories.ComponentRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,10 +27,10 @@ public class ComponentService {
     private final ComponentRepository componentRepository;
     private final AccountRepository accountRepository;
 
-    private final Counter subtask = Metrics.counter("Подзадач запрошено");
-    private final Counter noResource = Metrics.counter("Отказ и-за нехватки");
+    private final Counter subtask = Metrics.counter("Subtasks requested");
+    private final Counter noResource = Metrics.counter("Failure and shortage");
 
-    private final Gauge percentGauge = Gauge.builder("Процент успеха склада", () -> 1.0 / percent)
+    private final Gauge percentGauge = Gauge.builder("Warehouse success rate", () -> 1.0 / percent)
             .register(Metrics.globalRegistry);
 
 

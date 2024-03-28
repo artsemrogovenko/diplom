@@ -24,5 +24,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+#    show-sql: true
     generate-ddl: true
+
+
+  output:
+    ansi:
+      enabled=ALWAYS:

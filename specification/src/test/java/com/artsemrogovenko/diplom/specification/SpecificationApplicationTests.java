@@ -1,8 +1,13 @@
 package com.artsemrogovenko.diplom.specification;
 
+import com.artsemrogovenko.diplom.specification.api.AssemblyApi;
+import com.artsemrogovenko.diplom.specification.api.StorageApi;
 import com.artsemrogovenko.diplom.specification.dto.ComponentRequest;
 import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
 import com.artsemrogovenko.diplom.specification.dto.ModuleRequest;
+import com.artsemrogovenko.diplom.specification.model.DiagramDescription;
+import com.artsemrogovenko.diplom.specification.model.Init;
+import com.artsemrogovenko.diplom.specification.model.Module;
 import com.artsemrogovenko.diplom.specification.model.MyCollection;
 import com.artsemrogovenko.diplom.specification.repositories.ComponentRepository;
 import com.artsemrogovenko.diplom.specification.repositories.ModuleRepository;
@@ -10,13 +15,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.PassThroughFilterChain;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,7 +35,6 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -38,11 +45,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureDataMongo
 class SpecificationApplicationTests {
+    @MockBean
+    private Init init;
 
     @Container
     @ServiceConnection
     static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:4.4.2");
-
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry dymDynamicPropertyRegistry) {
+        dymDynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
+    }
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -52,14 +64,16 @@ class SpecificationApplicationTests {
     @Autowired
     private ComponentRepository componentRepository;
 
-    @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry dymDynamicPropertyRegistry) {
-        dymDynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    }
-
+    @MockBean
+    private StorageApi storageApi;
+    @MockBean
+    private AssemblyApi assemblyApi;
     @Test
     @Transactional
     void shouldCreateModule() throws Exception {
+        Mockito.when(assemblyApi.requestSheme(Mockito.any(DiagramDescription.class)))
+                .thenReturn(new ResponseEntity<>("no circuit", HttpStatus.OK));
+
         String moduleRequestString = objectMapper.writeValueAsString(getModuleRequest());
         mockMvc.perform(MockMvcRequestBuilders.post("/module")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -74,9 +88,11 @@ class SpecificationApplicationTests {
         List<ComponentResponse> response = objectMapper.readValue(content, new TypeReference<List<ComponentResponse>>() {
         });
 
-        System.out.println(content);
+        List<Module> modules= moduleRepository.findAll();
+
         Assertions.assertEquals(1, moduleRepository.findAll().size());
         Assertions.assertEquals(2, componentRepository.findAll().size());
+        Assertions.assertEquals("no circuit",modules.get(0).getCircuitFile());
     }
 
     private ModuleRequest getModuleRequest() {

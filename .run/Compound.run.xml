@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Compound" type="CompoundRunConfigurationType">
+    <toRun name="AccountApplication" type="Application" />
+    <toRun name="DiagramApplication" type="Application" />
+    <toRun name="EurekaApplication" type="Application" />
+    <toRun name="SpecificationApplication" type="Application" />
+    <toRun name="StorageApplication" type="Application" />
+    <toRun name="TaskManagerApplication" type="Application" />
+    <method v="2" />
+  </configuration>
+</component>

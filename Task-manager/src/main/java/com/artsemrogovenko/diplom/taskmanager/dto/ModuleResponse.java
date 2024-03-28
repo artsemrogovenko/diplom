@@ -19,7 +19,7 @@ public class ModuleResponse implements ModuleData, SavedModule {
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
     private MyCollection<ComponentResponse> componentResponses;   // список компонентов
-    private String circutFile;
+    private String circuitFile;
 
     public void addComponent(ComponentResponse c) {
         componentResponses.add(c);
@@ -27,6 +27,6 @@ public class ModuleResponse implements ModuleData, SavedModule {
 
     @Override
     public boolean fieldsIsNull() {
-        return factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && componentResponses.isEmpty() && circutFile == null;
+        return factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && componentResponses.isEmpty() && circuitFile == null;
     }
 }

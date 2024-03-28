@@ -20,6 +20,7 @@ public class ModuleRequest implements ModuleData {
     private String description;  // тут можно указать например цвет
 
     //один модуль может содержать несколько компонентов
+    @Builder.Default
     private MyCollection componentRequests=new MyCollection();
     private String circuitVersion;  // схема сборки
 

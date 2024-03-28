@@ -110,7 +110,7 @@ public class TaskService {
                 }
             }
         }
-        System.out.println(modules);
+//        System.out.println(modules);
         result.setModules(modules);
         return taskRepository.save(result);
     }

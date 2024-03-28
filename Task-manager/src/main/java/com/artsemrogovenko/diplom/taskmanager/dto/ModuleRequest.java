@@ -19,7 +19,7 @@ public class ModuleRequest implements ModuleData, SavedModule {
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
     private MyCollection<ComponentRequest> componentRequests;
-    private String circutFile;  // схема сборки
+    private String circuitFile;  // схема сборки
 
     public void addComponent(ComponentRequest c) {
         componentRequests.add(c);
@@ -27,7 +27,7 @@ public class ModuleRequest implements ModuleData, SavedModule {
 
     @Override
     public boolean fieldsIsNull() {
-        return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null && componentRequests==null &&  circutFile==null;
+        return factoryNumber==null && model==null && name==null  && quantity==null && unit==null && description==null && componentRequests==null &&  circuitFile ==null;
     }
 
 

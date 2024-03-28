@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.*;
 
@@ -30,15 +32,16 @@ public class Module {
 
     @Column(columnDefinition = "VARCHAR(255)")
     private String description;  // тут можно указать например цвет
-    private String circutFile;  // схема сборки
+    private String circuitFile;  // схема сборки
 
     //один модуль может содержать несколько компонентов
-    @ManyToMany(fetch = FetchType.LAZY ,cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();    // список компонентов
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "modules")
     private List<Task> tasks = new ArrayList<>();
 
 
@@ -61,7 +64,7 @@ public class Module {
                 ", quantity=" + quantity +
                 ", unit='" + unit + '\'' +
                 ", description='" + description + '\'' +
-                ", circutFile='" + circutFile + '\'' +
+                ", circuitFile='" + circuitFile + '\'' +
                 ", components=" + components +
                 '}';
     }
@@ -71,11 +74,12 @@ public class Module {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Module module = (Module) o;
-        return Objects.equals(getFactoryNumber(), module.getFactoryNumber()) && Objects.equals(getModel(), module.getModel()) && Objects.equals(getName(), module.getName()) && Objects.equals(getQuantity(), module.getQuantity()) && Objects.equals(getUnit(), module.getUnit()) && Objects.equals(getDescription(), module.getDescription()) && Objects.equals(getCircutFile(), module.getCircutFile()) && Objects.equals(getComponents(), module.getComponents());
+        return Objects.equals(factoryNumber, module.factoryNumber) && Objects.equals(model, module.model) && Objects.equals(name, module.name) && Objects.equals(quantity, module.quantity) && Objects.equals(unit, module.unit) && Objects.equals(description, module.description) && Objects.equals(circuitFile, module.circuitFile) && Objects.equals(components, module.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFactoryNumber(), getModel(), getName(), getQuantity(), getUnit(), getDescription(), getCircutFile(), getComponents());
+        return Objects.hash(factoryNumber, model, name, quantity, unit, description, circuitFile, components);
     }
+
 }

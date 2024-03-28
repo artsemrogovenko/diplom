@@ -45,6 +45,7 @@ public class Formula {
         Module special = new Module();
         special.setName("комплектация");
         special.setQuantity(1);
+        special.setCircuitFile("https://img.freepik.com/free-photo/rows-crates-large-indoor-warehouse-generated-by-ai_188544-29647.jpg?t=st=1711640057~exp=1711643657~hmac=5819e14cb9400e645cb2ef2580db7876f2c7424e72925ca92151666cf99a6048&w=1380");
 
         List<Component> additionalComponents = additionalComponents(product);
         special.setComponents(new HashSet<>(additionalComponents));
@@ -58,6 +59,7 @@ public class Formula {
         controlCabinet.setName("шкаф");
         controlCabinet.setUnit("шт");
         controlCabinet.setQuantity(1);
+        controlCabinet.setCircuitFile("https://www.freepik.com/free-ai-image/robot-working-as-welder-instead-humans_76548463.htm#fromView=search&page=1&position=27&uuid=5d663b47-1032-48c2-8729-daea1190204f");
 
         controlCabinet.setModel(product.getType());
         controlCabinet.setDescription(product.getColor());

@@ -25,6 +25,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+#    show-sql: false
     generate-ddl: true
-
+  output:
+    ansi:
+      enabled=ALWAYS:

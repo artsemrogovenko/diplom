@@ -7,7 +7,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -35,10 +38,10 @@ public class Module implements SavedModule, ModuleData {
     private String description;  // тут можно указать например цвет
 
     //один модуль может содержать несколько компонентов
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinTable(name = "module_components", joinColumns = @JoinColumn(name = "module_id"), inverseJoinColumns = @JoinColumn(name = "component_id"))
     private Set<Component> components = new HashSet<>();   // список компонентов
-    private String circutFile;  // схема сборки
+    private String circuitFile;  // схема сборки
     @JsonIgnore
     @ManyToMany
     private List<Template> templates = new ArrayList<>();
@@ -61,7 +64,7 @@ public class Module implements SavedModule, ModuleData {
     }
 
     public boolean fieldsIsNull() {
-        return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && components.isEmpty() && circutFile == null;
+        return id == null && factoryNumber == null && model == null && name == null && quantity == null && unit == null && description == null && components.isEmpty() && circuitFile == null;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class Module implements SavedModule, ModuleData {
                 ", unit='" + unit + '\'' +
                 ", description='" + description + '\'' +
                 ", components=" + components +
-                ", circutFile='" + circutFile + '\'' +
+                ", circuitFile='" + circuitFile + '\'' +
                 '}';
     }
 
@@ -84,11 +87,11 @@ public class Module implements SavedModule, ModuleData {
 //        if (this == o) return true;
 //        if (o == null || getClass() != o.getClass()) return false;
 //        Module module = (Module) o;
-//        return Objects.equals(getFactoryNumber(), module.getFactoryNumber()) && Objects.equals(getModel(), module.getModel()) && Objects.equals(getName(), module.getName()) && Objects.equals(getQuantity(), module.getQuantity()) && Objects.equals(getUnit(), module.getUnit()) && Objects.equals(getDescription(), module.getDescription()) && Objects.equals(getComponents(), module.getComponents()) && Objects.equals(getCircutFile(), module.getCircutFile());
+//        return Objects.equals(getFactoryNumber(), module.getFactoryNumber()) && Objects.equals(getModel(), module.getModel()) && Objects.equals(getName(), module.getName()) && Objects.equals(getQuantity(), module.getQuantity()) && Objects.equals(getUnit(), module.getUnit()) && Objects.equals(getDescription(), module.getDescription()) && Objects.equals(getComponents(), module.getComponents()) && Objects.equals(getCircuitFile(), module.getCircuitFile());
 //    }
 
 //    @Override
 //    public int hashCode() {
-//        return Objects.hash(getFactoryNumber(), getModel(), getName(), getQuantity(), getUnit(), getDescription(), getComponents(), getCircutFile());
+//        return Objects.hash(getFactoryNumber(), getModel(), getName(), getQuantity(), getUnit(), getDescription(), getComponents(), getCircuitFile());
 //    }
 }

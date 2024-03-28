@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SpecificationApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.artsemrogovenko.diplom.specification.SpecificationApplication" />
+    <module name="specification" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +22,8 @@ public class ModuleResponse implements ModuleData {
     private String description;  // тут можно указать например цвет
 
     //один модуль может содержать несколько компонентов
+
+    @Builder.Default
     private Set<ComponentResponse> componentResponses = new HashSet<>();   // список компонентов
 
     private String circuitFile;

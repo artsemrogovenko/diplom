@@ -14,7 +14,7 @@ public interface ModuleData {
 
     String getDescription();
 
-    String getCircutFile();
+    String getCircuitFile();
 
     boolean fieldsIsNull();
 

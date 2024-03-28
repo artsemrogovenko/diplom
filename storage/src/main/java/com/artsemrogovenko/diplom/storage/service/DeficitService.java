@@ -10,10 +10,9 @@ import com.artsemrogovenko.diplom.storage.repositories.DeficitRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -58,18 +57,19 @@ public class DeficitService {
             );
             // если уже есть в базе такой компонент
             if (verify.isPresent()) {
-                // если такой задачи не встречалось и номер заказа то добавлю в закупки
-                if (!verify.get().getTaskIds().equals(taskId) && !verify.get().getContractNumbers().equals(contractNumber)) {
+                Deficit present = verify.get();
+                // если такой задачи не встречалось, и номера заказа, то добавлю в закупки
+                if (!present.getTaskIds().contains(taskId) && !present.getContractNumbers().contains(contractNumber)) {
 
                     // увеличиваю на необходимое значение
-                    int quantitySet = verify.get().getQuantity();
-                    verify.get().setQuantity(quantitySet + (componentQuantity * (-1)));
+                    int quantitySet = present.getQuantity();
+                    present.setQuantity(quantitySet + (componentQuantity * (-1)));
 
                     ContractNumber number = new ContractNumber(contractNumber);
                     if (!contractNumberRepository.existsById(contractNumber)) {
                         contractNumberRepository.save(number);
                     }
-                    verify.get().getContractNumbers().add(contractNumberRepository.getReferenceById(contractNumber));
+                    present.getContractNumbers().add(contractNumberRepository.getReferenceById(contractNumber));
                 }
 
             } else {
@@ -94,6 +94,7 @@ public class DeficitService {
 
                 deficitComponent.getAccountNames().add(accountRepository.getReferenceById(userId));
                 deficitComponent.getContractNumbers().add(contractNumberRepository.getReferenceById(contractNumber));
+                deficitComponent.getTaskIds().add(taskId);
 
                 deficitRepository.save(deficitComponent);
             }

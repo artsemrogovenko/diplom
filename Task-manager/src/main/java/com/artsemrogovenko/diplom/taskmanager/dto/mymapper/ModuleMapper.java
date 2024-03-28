@@ -31,8 +31,8 @@ public class ModuleMapper {
         if (data.getDescription() != null) {
             module.setDescription(data.getDescription().trim());
         }
-        if (data.getCircutFile() != null) {
-            module.setCircutFile(data.getCircutFile().trim());
+        if (data.getCircuitFile() != null) {
+            module.setCircuitFile(data.getCircuitFile().trim());
         }
         // Копирование компонентов
         Set<Component> components = new HashSet<>();
@@ -89,7 +89,7 @@ public class ModuleMapper {
         moduleResponse.setQuantity(module.getQuantity());
         moduleResponse.setUnit(module.getUnit());
         moduleResponse.setDescription(module.getDescription());
-        moduleResponse.setCircutFile(module.getCircutFile());
+        moduleResponse.setCircuitFile(module.getCircuitFile());
         // Копирование компонентов
         Set<ComponentResponse> componentResponses = new HashSet<>();
         for (Component component : module.getComponents()) {

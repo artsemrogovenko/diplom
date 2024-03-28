@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="StorageApplication" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.artsemrogovenko.diplom.storage.StorageApplication" />
+    <module name="storage" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

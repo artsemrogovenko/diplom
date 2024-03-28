@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,18 @@ public class Task implements TemplateData {
     private String contractNumber; // номер договора
     private String owner; // у кого сейчас задача
     private boolean reserved;
-    @ManyToMany // список модулей
+
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinTable(
+//            name = "task_modules", // Имя таблицы для связи между Module и Task
+//            joinColumns = @JoinColumn(name = "module_id"), // Столбец для связи с Module
+//            inverseJoinColumns = @JoinColumn(name = "task_id") // Столбец для связи с Task
+//    )
+    @ManyToMany
     private List<Module> modules = new ArrayList<>();
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
 
     public Task(Template template) {
         this.modules = template.getModules();

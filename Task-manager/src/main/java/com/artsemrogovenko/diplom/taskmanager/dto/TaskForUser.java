@@ -1,7 +1,6 @@
 package com.artsemrogovenko.diplom.taskmanager.dto;
 
 import com.artsemrogovenko.diplom.taskmanager.model.Module;
-import com.artsemrogovenko.diplom.taskmanager.model.Task;
 import com.artsemrogovenko.diplom.taskmanager.model.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

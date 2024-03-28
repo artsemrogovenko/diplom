@@ -4,9 +4,7 @@ import com.artsemrogovenko.diplom.storage.dto.ComponentData;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Builder;
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Data
 @Entity

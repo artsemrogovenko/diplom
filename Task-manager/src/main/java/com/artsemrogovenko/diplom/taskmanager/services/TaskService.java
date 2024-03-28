@@ -43,6 +43,10 @@ public class TaskService {
     private final StorageApi storageApi;
     private final AccountApi accountApi;
 
+    public void deltask(Long id) {
+        taskRepository.deleteById(id);
+    }
+
     /**
      * Получение всех задач.
      *

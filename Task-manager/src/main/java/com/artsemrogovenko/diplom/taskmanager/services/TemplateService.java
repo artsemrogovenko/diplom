@@ -9,14 +9,11 @@ import com.artsemrogovenko.diplom.taskmanager.repository.TemplateRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -57,7 +54,11 @@ public class TemplateService {
         return modules;
     }
 
-
+    /**
+     * Получает список от сервера спецификаций
+     * @return список спецификаций
+     * @throws feign.RetryableException
+     */
     public List<ModuleResponse> pullModules() throws feign.RetryableException {
         ResponseEntity<List<ModuleResponse>> modulesFromSpecification = specificationApi.getAll();
         if (modulesFromSpecification.hasBody()) {
@@ -67,6 +68,13 @@ public class TemplateService {
         return modules;
     }
 
+    /**
+     * Принимает строку с индексами со страницы html
+     * @param rawTemplate объект template
+     * @param selectedModulesJson срока с позициями
+     * @param list список ModuleResponse
+     * @return
+     */
     public ResponseEntity<String> prepareData(TemplateRequest rawTemplate, String selectedModulesJson, List<ModuleResponse> list) {
         List<String> selectedModuleIds = null;
         TemplateRequest temp = rawTemplate;
@@ -103,6 +111,7 @@ public class TemplateService {
         template.getModules().forEach(module -> moduleService.createModule(module));
         templateRepository.save(template);
     }
+
 
     private boolean isExist(String name, String description) {
         Optional<Template> ex = templateRepository.findByNameAndDescription(name, description);

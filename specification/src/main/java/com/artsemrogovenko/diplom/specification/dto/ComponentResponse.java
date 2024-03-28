@@ -1,5 +1,6 @@
 package com.artsemrogovenko.diplom.specification.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,8 @@ public class ComponentResponse implements ComponentData {
     private String unit;     // единица измерения
     private String description;  // тут можно указать например цвет
     private boolean refill;  // можно объединить?
+    @JsonIgnore
+    @Builder.Default
     private Set<ModuleResponse> moduleResponses = new HashSet<>();
     @Override
     public boolean fieldsIsNull() {

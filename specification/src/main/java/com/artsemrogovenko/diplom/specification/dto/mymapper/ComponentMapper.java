@@ -1,6 +1,9 @@
 package com.artsemrogovenko.diplom.specification.dto.mymapper;
 
-import com.artsemrogovenko.diplom.specification.dto.*;
+import com.artsemrogovenko.diplom.specification.dto.ComponentData;
+import com.artsemrogovenko.diplom.specification.dto.ComponentResponse;
+import com.artsemrogovenko.diplom.specification.dto.ModuleData;
+import com.artsemrogovenko.diplom.specification.dto.ModuleResponse;
 import com.artsemrogovenko.diplom.specification.model.Component;
 import com.artsemrogovenko.diplom.specification.model.Module;
 

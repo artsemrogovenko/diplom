@@ -9,7 +9,6 @@
     <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
     <script th:src="@{/webjars/toastr/2.1.4/build/toastr.min.js}"></script>
-    <!--    <script th:src="@{/static/script.js}"></script>-->
 
 </head>
 
@@ -45,7 +44,7 @@
     </tr>
     <tr>
         <th>Статус</th>
-        <th>Id</th>
+<!--        <th>Id</th>-->
         <th>заводской номер</th>
         <th>Название</th>
         <th>Описание</th>
@@ -57,8 +56,8 @@
     <tbody>
     <tr th:each="task: ${tasks}">
 
-        <td class="table-light" th:text="${task.status == 'DONE' ? 'display: none;' : ''}"></td>
-        <td class="table-light" th:text="${task.id}"></td>
+        <td class="table-light" th:text="${task.status}"></td>
+<!--        <td class="table-light" th:text="${task.id}"></td>-->
         <td class="table-light" th:text="${task.contractNumber}"></td>
         <td class="table-light" th:text="${task.name}"></td>
         <td class="table-light" th:text="${task.description}"></td>
